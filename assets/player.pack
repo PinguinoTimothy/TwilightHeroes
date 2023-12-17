@@ -1,0 +1,12 @@
+
+player.png
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+idleycorrer
+  rotate: false
+  xy: 1, 1
+  size: 847, 48
+  orig: 847, 48
+  offset: 0, 0
+  index: -1
