@@ -10,6 +10,7 @@ import com.twilightheroes.game.ecs.components.TextureComponent;
 
 public class AnimationSystem extends IteratingSystem {
 
+
     ComponentMapper<TextureComponent> tm;
     ComponentMapper<AnimationComponent> am;
     ComponentMapper<StateComponent> sm;
@@ -32,9 +33,9 @@ public class AnimationSystem extends IteratingSystem {
 
         if(ani.animations.containsKey(state.get())){
             TextureComponent tex = tm.get(entity);
-            tex.region = ani.animations.get(state.get()).getKeyFrame(state.time, state.isLooping);
+            tex.sprite.setRegion(ani.animations.get(state.get()).getKeyFrame(state.time, true));
+
         }
 
-        state.time += deltaTime;
     }
 }

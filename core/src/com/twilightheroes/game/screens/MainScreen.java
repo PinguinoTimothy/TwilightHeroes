@@ -7,15 +7,26 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.g2d.Animation;
-import com.badlogic.gdx.graphics.g2d.Sprite;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.maps.tiled.TiledMap;
+import com.badlogic.gdx.maps.tiled.TmxMapLoader;
+import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.BodyDef;
+import com.badlogic.gdx.physics.box2d.EdgeShape;
+import com.badlogic.gdx.physics.box2d.FixtureDef;
+import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
-import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.ui.Button;
+import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
+import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.badlogic.gdx.scenes.scene2d.ui.Touchpad;
+import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.twilightheroes.game.TwilightHeroes;
@@ -25,7 +36,6 @@ import com.twilightheroes.game.ecs.components.CollisionComponent;
 import com.twilightheroes.game.ecs.components.PlayerComponent;
 import com.twilightheroes.game.ecs.components.StateComponent;
 import com.twilightheroes.game.ecs.components.TextureComponent;
-import com.twilightheroes.game.ecs.components.TransformComponent;
 import com.twilightheroes.game.ecs.components.TypeComponent;
 import com.twilightheroes.game.ecs.systems.AnimationSystem;
 import com.twilightheroes.game.ecs.systems.CollisionSystem;
@@ -33,8 +43,12 @@ import com.twilightheroes.game.ecs.systems.PhysicsDebugSystem;
 import com.twilightheroes.game.ecs.systems.PhysicsSystem;
 import com.twilightheroes.game.ecs.systems.PlayerControlSystem;
 import com.twilightheroes.game.ecs.systems.RenderingSystem;
+import com.twilightheroes.game.scenes.Hud;
+import com.twilightheroes.game.tools.AnimationMaker;
+import com.twilightheroes.game.tools.B2WorldCreator;
 import com.twilightheroes.game.tools.BodyFactory;
 import com.twilightheroes.game.tools.KeyboardController;
+import com.twilightheroes.game.tools.MyInputProcessor;
 
 
 public class MainScreen implements Screen {
@@ -46,35 +60,109 @@ public class MainScreen implements Screen {
     private TextureAtlas atlas;
     private SpriteBatch sb;
 
-    private OrthographicCamera cam;
     private Engine engine;
 
+   // private Viewport viewport;
+
+ //   private float viewportWidth,viewportHeight;
+
+    private Hud hud;
+
+    private Touchpad touchpad;
+    private Skin touchpadSkin;
+
+    private  RenderingSystem renderingSystem;
+    private TmxMapLoader mapLoader;
+    private TiledMap map;
+    private OrthogonalTiledMapRenderer mapRenderer;
+
     private Viewport viewport;
+private     float viewportWidth,viewportHeight;
+    private OrthographicCamera gameCam;
 
-    private float viewportWidth,viewportHeight;
+    private float dt;
+    private     Skin btnJumpSkin;
+    private Button btnJump;
 
+    private  Skin btnAttackSkin;
+    private Button btnAttack;
 
+    public MyInputProcessor myInputProcessor;
 
     public MainScreen(TwilightHeroes twilightHeroes){
         parent = twilightHeroes;
         controller = new KeyboardController();
-        world = new World(new Vector2(0,0f), true);
+        world = new World(new Vector2(0,-9.8f), true);
         bodyFactory = BodyFactory.getInstance(world);
+
+
 
         atlas = new TextureAtlas(Gdx.files.internal("jugador.atlas"));
 
+        gameCam = new OrthographicCamera();
+        viewportWidth=12*16;
+        viewportHeight=10*16;
+        viewport = new ExtendViewport(viewportWidth/TwilightHeroes.PPM,viewportHeight/TwilightHeroes.PPM,gameCam);
+
+        mapLoader = new TmxMapLoader();
+        map = mapLoader.load("nivel.tmx");
+        mapRenderer = new OrthogonalTiledMapRenderer(map,1/TwilightHeroes.PPM);
+
+        gameCam.position.set(viewport.getWorldWidth()/2 ,viewport.getWorldHeight()/2,0);
+        new B2WorldCreator(world,map);
 
 
         sb = new SpriteBatch();
+
+        hud = new Hud(sb);
+
+        touchpadSkin = new Skin();
+        touchpadSkin.add("touchBackground", new Texture("Joystick.png"));
+        touchpadSkin.add("touchKnob", new Texture("SmallHandleFilled.png"));
+
+        Touchpad.TouchpadStyle  touchpadStyle = new Touchpad.TouchpadStyle();
+        touchpadStyle.background = touchpadSkin.getDrawable("touchBackground");
+        touchpadStyle.knob = touchpadSkin.getDrawable("touchKnob");
+        touchpadStyle.knob.setMinWidth(10f);
+        touchpadStyle.knob.setMinHeight(10f);
+        touchpad = new Touchpad(1f, touchpadStyle);
+
+        touchpad.setBounds(15, 15, 50, 50);
+        touchpad.setScale(1.2f,1.2f);
+        touchpad.setOrigin(Align.center);
+        hud.stage.addActor(touchpad);
+
+         myInputProcessor = new MyInputProcessor(viewport.getScreenWidth(), viewport.getScreenHeight(),this);
+        Gdx.input.setInputProcessor(myInputProcessor);
+
         // Create our new rendering system
-        RenderingSystem renderingSystem = new RenderingSystem(sb);
-        cam = renderingSystem.getCamera();
-        sb.setProjectionMatrix(cam.combined);
-        viewportWidth=12*16;
-        viewportHeight=10*16;
-        viewport = new ExtendViewport(viewportWidth/TwilightHeroes.PPM,viewportHeight/TwilightHeroes.PPM,cam);
-        //create a pooled engine
+        renderingSystem = new RenderingSystem(sb,gameCam,viewport);
+        gameCam = renderingSystem.getCamera();
+        sb.setProjectionMatrix(gameCam.combined);
+       // viewportWidth=12*16;
+      // viewportHeight=10*16;
+     //   viewport = new ExtendViewport(viewportWidth/TwilightHeroes.PPM,viewportHeight/TwilightHeroes.PPM,cam);
+        //create a pooled engineHud
         engine = new PooledEngine();
+
+        // Boton Salto
+        btnJumpSkin = new Skin();
+        btnJumpSkin.add("jump", new Texture("jump.png"));
+        btnJump = new ImageButton(btnJumpSkin.getDrawable("jump"));
+        btnJump.setScale(1.5f,1.5f);
+        btnJump.setBounds(350, 15, 30, 30);
+        hud.stage.addActor(btnJump);
+
+// Boton Ataque
+        btnAttackSkin = new Skin();
+        btnAttackSkin.add("attack", new Texture("attack.png"));
+        btnAttack = new ImageButton(btnAttackSkin.getDrawable("attack"));
+btnAttack.setScale(1.5f,1.5f);
+        btnAttack.setBounds(300, 15, 30, 30);
+        hud.stage.addActor(btnAttack);
+hud.stage.setDebugAll(true);
+
+
 
         // add all the relevant systems our engine should run
         engine.addSystem(new AnimationSystem());
@@ -82,18 +170,22 @@ public class MainScreen implements Screen {
         engine.addSystem(new PhysicsSystem(world));
         engine.addSystem(new PhysicsDebugSystem(world, renderingSystem.getCamera()));
         engine.addSystem(new CollisionSystem());
-        engine.addSystem(new PlayerControlSystem(controller));
+        engine.addSystem(new PlayerControlSystem(touchpad,btnJump,btnAttack));
 
         // create some game objects
         createPlayer();
 
     }
 
+    public void crearTouchpad(float x, float y){
+        System.out.println("Crear touchpad en " + x + "  " + y);
+    }
+
     public void createPlayer(){
         // Create the Entity and all the components that will go in the entity
         Entity entity = engine.createEntity();
         B2dBodyComponent b2dbody = engine.createComponent(B2dBodyComponent.class);
-        TransformComponent position = engine.createComponent(TransformComponent.class);
+      //  TransformComponent position = engine.createComponent(TransformComponent.class);
         TextureComponent texture = engine.createComponent(TextureComponent.class);
         PlayerComponent player = engine.createComponent(PlayerComponent.class);
         CollisionComponent colComp = engine.createComponent(CollisionComponent.class);
@@ -102,19 +194,47 @@ public class MainScreen implements Screen {
         AnimationComponent animCom = engine.createComponent(AnimationComponent.class);
 
         // create the data for the components and add them to the components
-        // set object position (x,y,z) z used to define draw order 0 first drawn
-        position.position.set(0.12f, 0.64f);
-        position.scale.set(0.1f, 0.1f); // Ajusta estos valores según tus necesidades
-        texture.region = atlas.findRegion("Idle-Sheet");
+        texture.sprite.setRegion(atlas.findRegion("Idle-Sheet"));
+
+        texture.sprite.setBounds(0,1,35/TwilightHeroes.PPM,47/TwilightHeroes.PPM);
+
         type.type = TypeComponent.PLAYER;
         stateCom.set(StateComponent.STATE_NORMAL);
         stateCom.isLooping = true;
+
+        BodyDef bodyDef = new BodyDef();
+        bodyDef.position.set(texture.sprite.getX(),texture.sprite.getY());
+        bodyDef.type = BodyDef.BodyType.DynamicBody;
+        b2dbody.body = world.createBody(bodyDef);
+        b2dbody.body.setFixedRotation(true);
+
+        // Define la hitbox rectangular
+        PolygonShape shape = new PolygonShape();
+        shape.setAsBox(4 / TwilightHeroes.PPM, 8 / TwilightHeroes.PPM); // Tamaño de la hitbox
+
+        FixtureDef fixtureDef = new FixtureDef();
+        fixtureDef.shape = shape;
+
+        b2dbody.body.createFixture(fixtureDef);
+
+        FixtureDef fdef2 = new FixtureDef();
+        EdgeShape feet = new EdgeShape();
+        feet.set(new Vector2(-4 / TwilightHeroes.PPM, -12 / TwilightHeroes.PPM), new Vector2(4 / TwilightHeroes.PPM, -12 / TwilightHeroes.PPM));
+        fdef2.shape = feet;
+        b2dbody.body.createFixture(fdef2);
+
+        // Libera los recursos del shape
+        shape.dispose();
+
+        /*
         b2dbody.body = bodyFactory.makeBoxPolyBody(
-                position.position.x, position.position.y,
-                4 * position.scale.x / TwilightHeroes.PPM,  // Ancho escalado
-                8 * position.scale.y / TwilightHeroes.PPM,  // Altura escalada
+                texture.sprite.getX(), position.position.y,
+                4/TwilightHeroes.PPM,  // Ancho escalado
+                8/TwilightHeroes.PPM,  // Altura escalada
                 BodyFactory.STONE, BodyDef.BodyType.DynamicBody
         );
+
+         */
         b2dbody.body.setUserData(entity);
 
         // Create the animation and add it to AnimationComponent
@@ -126,12 +246,51 @@ public class MainScreen implements Screen {
         for (int i = 0; i < 4; i++) {
             idleFrames[i] = tmpIdle[0][i];
         }
-        animCom.animations.put(StateComponent.STATE_NORMAL,new Animation<TextureRegion>(1f/4f,idleFrames));
+        animCom.animations.put(StateComponent.STATE_NORMAL, AnimationMaker.crearAnimacion(atlas,"Idle-Sheet",4));
+        animCom.animations.put(StateComponent.STATE_MOVING, AnimationMaker.crearAnimacion(atlas,"Run-Sheet",8));
+        animCom.animations.put(StateComponent.STATE_ATTACK, AnimationMaker.crearAnimacion(atlas,"ataque1",4));
+        /*
+        runSheet = new Texture("Run-Sheet.png");
+        idleSheet = new Texture("Idle-Sheet.png");
+        jumpSheet = new Texture("Jump-Start-Sheet.png");
+        attackSheet = new Texture("attack-sheet.png");
+
+        TextureRegion[][] tmpRun = TextureRegion.split(runSheet,runSheet.getWidth() / 8,runSheet.getHeight());
+
+        TextureRegion[] runFrames = new TextureRegion[8];
+        for (int i = 0; i < 8; i++) {
+            runFrames[i] = tmpRun[0][i];
+        }
+        therionRun = new Animation<TextureRegion>(1f/8f,runFrames);
+
+        TextureRegion[][] tmpIdle = TextureRegion.split(idleSheet,idleSheet.getWidth() / 4,idleSheet.getHeight());
+        TextureRegion[] idleFrames = new TextureRegion[4];
+        for (int i = 0; i < 4; i++) {
+            idleFrames[i] = tmpIdle[0][i];
+        }
+        therionIdle = new Animation<TextureRegion>(1f/4f,idleFrames);
 
 
+        TextureRegion[][] tmpJump = TextureRegion.split(jumpSheet,jumpSheet.getWidth() / 4,jumpSheet.getHeight());
+        TextureRegion[] jumpFrames = new TextureRegion[4];
+        for (int i = 0; i < 4; i++) {
+            jumpFrames[i] = tmpJump[0][i];
+        }
+        therionJump = new Animation<TextureRegion>(1f/4f,jumpFrames);
+
+
+        TextureRegion[][] tmpAttack = TextureRegion.split(attackSheet,attackSheet.getWidth() / 8,attackSheet.getHeight());
+        TextureRegion[] attackFrames = new TextureRegion[8];
+        for (int i = 0; i < 8; i++) {
+            attackFrames[i] = tmpAttack[0][i];
+        }
+        therionAttack = new Animation<TextureRegion>(1f/8f,attackFrames);
+
+
+         */
         // add the components to the entity
         entity.add(b2dbody);
-        entity.add(position);
+        //entity.add(position);
         entity.add(texture);
         entity.add(player);
         entity.add(colComp);
@@ -143,6 +302,8 @@ public class MainScreen implements Screen {
         engine.addEntity(entity);
     }
 
+
+
     @Override
     public void show() {
 
@@ -153,14 +314,24 @@ public class MainScreen implements Screen {
         Gdx.gl.glClearColor(0f, 0f, 0f, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
+        // Render the background (tiled map) first
+        mapRenderer.setView(gameCam);
+        mapRenderer.render();
+
+        // Update and render the game entities
+dt = delta;
         engine.update(delta);
+
+        // Render the HUD on top
+        hud.stage.act(delta);
+        hud.stage.draw();
+
     }
 
     @Override
     public void resize(int width, int height) {
-        viewport.update(width,height,false);
-        viewport.getCamera().position.set(viewportWidth/2f/TwilightHeroes.PPM,viewportHeight/2f/TwilightHeroes.PPM,0);
-        viewport.getCamera().update();
+   renderingSystem.resize(width,height);
+   myInputProcessor.resize(width,height);
     }
 
     @Override
@@ -180,6 +351,8 @@ public class MainScreen implements Screen {
 
     @Override
     public void dispose() {
-
+        hud.dispose();
+        map.dispose();
+        mapRenderer.dispose();
     }
 }
