@@ -32,15 +32,16 @@ public class B2dContactListener implements ContactListener {
     }
 
     private void entityCollision(Entity ent, Fixture fb) {
-        if(fb.getBody().getUserData() instanceof Entity){
+        if (fb.getBody().getUserData() instanceof Entity) {
             Entity colEnt = (Entity) fb.getBody().getUserData();
 
             CollisionComponent col = ent.getComponent(CollisionComponent.class);
             CollisionComponent colb = colEnt.getComponent(CollisionComponent.class);
 
-            if(col != null){
+            if (col != null) {
                 col.collisionEntity = colEnt;
-            }else if(colb != null){
+            }
+            if (colb != null) {
                 colb.collisionEntity = ent;
             }
         }

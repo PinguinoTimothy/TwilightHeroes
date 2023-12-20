@@ -17,6 +17,7 @@ import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.EdgeShape;
+import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
@@ -31,6 +32,7 @@ import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.twilightheroes.game.TwilightHeroes;
 import com.twilightheroes.game.ecs.components.AnimationComponent;
+import com.twilightheroes.game.ecs.components.AttackComponent;
 import com.twilightheroes.game.ecs.components.B2dBodyComponent;
 import com.twilightheroes.game.ecs.components.CollisionComponent;
 import com.twilightheroes.game.ecs.components.PlayerComponent;
@@ -195,6 +197,7 @@ hud.stage.setDebugAll(true);
         TypeComponent type = engine.createComponent(TypeComponent.class);
         StateComponent stateCom = engine.createComponent(StateComponent.class);
         AnimationComponent animCom = engine.createComponent(AnimationComponent.class);
+        AttackComponent attackComponent = engine.createComponent(AttackComponent.class);
 
         // create the data for the components and add them to the components
         texture.sprite.setRegion(atlas.findRegion("Idle-Sheet"));
@@ -217,6 +220,7 @@ hud.stage.setDebugAll(true);
         shape.setAsBox(4 / TwilightHeroes.PPM, 8 / TwilightHeroes.PPM); // Tamaño de la hitbox
 
         FixtureDef fixtureDef = new FixtureDef();
+        fixtureDef.friction = 0;
         fixtureDef.shape = shape;
 
         b2dbody.body.createFixture(fixtureDef);
@@ -230,18 +234,31 @@ hud.stage.setDebugAll(true);
         // Libera los recursos del shape
         shape.dispose();
 
-        /*
-        b2dbody.body = bodyFactory.makeBoxPolyBody(
-                texture.sprite.getX(), position.position.y,
-                4/TwilightHeroes.PPM,  // Ancho escalado
-                8/TwilightHeroes.PPM,  // Altura escalada
-                BodyFactory.STONE, BodyDef.BodyType.DynamicBody
-        );
+        Fixture attackFixture;
+        PolygonShape attackShape = new PolygonShape();
+        float offsetX = texture.runningRight ? 16 / TwilightHeroes.PPM : -16 / TwilightHeroes.PPM;
+        attackShape.setAsBox(12 / TwilightHeroes.PPM, 8 / TwilightHeroes.PPM, new Vector2(offsetX, 0), 0);
 
-         */
+        FixtureDef attackFixtureDef = new FixtureDef();
+        attackFixtureDef.shape = attackShape;
+        attackFixtureDef.isSensor = true; // Configurar la fixture como un sensor
+        attackFixture = b2dbody.body.createFixture(attackFixtureDef);
+        attackFixture.setUserData("playerAttackSensor");
+        attackComponent.attackFixture = attackFixture;
+        // Liberar los recursos del shape
+        attackShape.dispose();
+
+
+
+
         b2dbody.body.setUserData(entity);
 
-        // Create the animation and add it to AnimationComponent
+
+
+
+
+
+             // Create the animation and add it to AnimationComponent
 
         TextureAtlas.AtlasRegion atlasRegion = atlas.findRegion("Idle-Sheet");
 
@@ -252,7 +269,7 @@ hud.stage.setDebugAll(true);
         }
         animCom.animations.put(StateComponent.STATE_NORMAL, AnimationMaker.crearAnimacion(atlas,"Idle-Sheet",4));
         animCom.animations.put(StateComponent.STATE_MOVING, AnimationMaker.crearAnimacion(atlas,"Run-Sheet",8));
-        animCom.animations.put(StateComponent.STATE_ATTACK, AnimationMaker.crearAnimacion(atlas,"ataque1",4));
+        animCom.animations.put(StateComponent.STATE_ATTACK01, AnimationMaker.crearAnimacion(atlas,"ataque1",4));
         /*
         runSheet = new Texture("Run-Sheet.png");
         idleSheet = new Texture("Idle-Sheet.png");
@@ -299,6 +316,7 @@ hud.stage.setDebugAll(true);
         entity.add(type);
         entity.add(stateCom);
         entity.add(animCom);
+        entity.add(attackComponent);
 
 
 // add the entity to the engine
