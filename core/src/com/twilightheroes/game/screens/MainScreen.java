@@ -109,7 +109,7 @@ private     float viewportWidth,viewportHeight;
         viewport = new ExtendViewport(viewportWidth/TwilightHeroes.PPM,viewportHeight/TwilightHeroes.PPM,gameCam);
 
         mapLoader = new TmxMapLoader();
-        map = mapLoader.load("mapa2.tmx");
+        map = mapLoader.load("maps/nivelPlataformas.tmx");
         mapRenderer = new OrthogonalTiledMapRenderer(map,1/TwilightHeroes.PPM);
 
         gameCam.position.set(viewport.getWorldWidth()/2 ,viewport.getWorldHeight()/2,0);
@@ -222,7 +222,7 @@ hud.stage.setDebugAll(true);
         FixtureDef fixtureDef = new FixtureDef();
         fixtureDef.friction = 0;
         fixtureDef.shape = shape;
-
+        fixtureDef.filter.categoryBits = TwilightHeroes.PLAYER_BIT;
         b2dbody.body.createFixture(fixtureDef);
 
         FixtureDef fdef2 = new FixtureDef();
@@ -242,11 +242,14 @@ hud.stage.setDebugAll(true);
         FixtureDef attackFixtureDef = new FixtureDef();
         attackFixtureDef.shape = attackShape;
         attackFixtureDef.isSensor = true; // Configurar la fixture como un sensor
+        attackFixtureDef.filter.categoryBits = TwilightHeroes.HITBOX_BIT;
+        attackFixtureDef.filter.maskBits = TwilightHeroes.ENEMY_BIT;
         attackFixture = b2dbody.body.createFixture(attackFixtureDef);
         attackFixture.setUserData("playerAttackSensor");
         attackComponent.attackFixture = attackFixture;
         // Liberar los recursos del shape
         attackShape.dispose();
+
 
 
 

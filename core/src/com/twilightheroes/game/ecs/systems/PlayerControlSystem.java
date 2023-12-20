@@ -62,10 +62,10 @@ public class PlayerControlSystem extends IteratingSystem {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 // Lógica para el salto aquí
-                if (b2body.body.getLinearVelocity().y == 0) {
+               // if (b2body.body.getLinearVelocity().y == 0) {
                     b2body.body.setLinearVelocity(b2body.body.getLinearVelocity().x, 0);
                     b2body.body.applyLinearImpulse(new Vector2(0, 3f), b2body.body.getWorldCenter(), true);
-                }
+                //}
             }
         });
 

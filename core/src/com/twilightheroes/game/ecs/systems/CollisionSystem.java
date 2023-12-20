@@ -43,8 +43,7 @@ public class CollisionSystem extends IteratingSystem {
                         System.out.println("player switch scenery");
                         ComponentMapper<B2dBodyComponent> bm;
                         bm = ComponentMapper.getFor(B2dBodyComponent.class);
-
-                        renderingSystem.updateRoom(bm.get(collidedEntity).width,bm.get(collidedEntity).height,bm.get(collidedEntity).startX,bm.get(collidedEntity).startY);
+                            renderingSystem.updateRoom(bm.get(collidedEntity).width,bm.get(collidedEntity).height,bm.get(collidedEntity).startX,bm.get(collidedEntity).startY);
                         break;
                     case TypeComponent.OTHER:
                         //do player hit other thing

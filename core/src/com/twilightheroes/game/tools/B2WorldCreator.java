@@ -67,13 +67,14 @@ public class B2WorldCreator {
             shape.setAsBox(rectangle.getWidth()/2/TwilightHeroes.PPM,rectangle.getHeight()/2/TwilightHeroes.PPM);
             fixtureDef.shape = shape;
             fixtureDef.isSensor = true;
+            fixtureDef.filter.categoryBits = TwilightHeroes.ROOM_BIT;
+            fixtureDef.filter.maskBits = TwilightHeroes.PLAYER_BIT;
             b2dbody.body.createFixture(fixtureDef);
             b2dbody.body.setUserData(entity);
             b2dbody.width = rectangle.getWidth();
             b2dbody.height = rectangle.getHeight();
             b2dbody.startX = rectangle.getX();
             b2dbody.startY = rectangle.getY();
-            shape.dispose();
 
 
             // add the components to the entity
@@ -85,7 +86,7 @@ public class B2WorldCreator {
 
 
         }
-
+shape.dispose();
 
 
 
