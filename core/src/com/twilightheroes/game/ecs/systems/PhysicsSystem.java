@@ -33,7 +33,6 @@ public class PhysicsSystem extends IteratingSystem {
             for (Entity entity : bodiesQueue) {
 
                 B2dBodyComponent bodyComp = bm.get(entity);
-                Vector2 position = bodyComp.body.getPosition();
 
             }
 

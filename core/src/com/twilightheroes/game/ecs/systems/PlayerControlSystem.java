@@ -73,12 +73,13 @@ public class PlayerControlSystem extends IteratingSystem {
                 if (b2body.body.getLinearVelocity().x != 0) {
                     state.set(StateComponent.STATE_MOVING);
 
-                    // Actualiza la dirección del sprite según la velocidad
-                    texture.runningRight = b2body.body.getLinearVelocity().x > 0;
+
                 } else {
                     state.set(StateComponent.STATE_NORMAL);
                 }
             }
+            // Actualiza la dirección del sprite según la velocidad
+            texture.runningRight = b2body.body.getLinearVelocity().x > 0;
         }
 
         state.time = state.get() == state.previousState ? state.time + deltaTime : 0f;

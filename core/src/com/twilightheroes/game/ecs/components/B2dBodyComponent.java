@@ -5,4 +5,9 @@ import com.badlogic.gdx.physics.box2d.Body;
 
 public class B2dBodyComponent implements Component {
     public Body body;
+    public float width;
+    public float height;
+    public float startX;
+    public float startY;
+
 }

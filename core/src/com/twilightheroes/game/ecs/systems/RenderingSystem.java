@@ -7,6 +7,7 @@
         import com.badlogic.gdx.Gdx;
         import com.badlogic.gdx.graphics.OrthographicCamera;
         import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+        import com.badlogic.gdx.math.MathUtils;
         import com.badlogic.gdx.math.Vector2;
         import com.badlogic.gdx.math.Vector3;
         import com.badlogic.gdx.utils.Array;
@@ -50,7 +51,10 @@
 
             private Viewport viewport;
 
-
+            private float roomWidth;
+            private float roomHeight;
+    private float roomStartX;
+    private  float roomStartY;
             public RenderingSystem(SpriteBatch batch,OrthographicCamera cam, Viewport viewport) {
                 super(Family.all(TextureComponent.class).get());
 
@@ -62,6 +66,14 @@
             this.viewport = viewport;
             this.cam = cam;
 
+
+            }
+
+            public void updateRoom(float roomWidth, float roomHeight, float roomStartX, float roomStartY){
+                this.roomWidth = roomWidth;
+                this.roomHeight = roomHeight;
+                this.roomStartX = roomStartX;
+                this.roomStartY = roomStartY;
 
             }
 
@@ -87,8 +99,10 @@
                     if (entity.getComponents().contains(ComponentMapper.getFor(PlayerComponent.class).get(entity),true)){
 
                         float lerp = 0.1f; // Ajusta este valor según sea necesario
-                        cam.position.lerp(new Vector3(tex.sprite.getX(), cam.position.y, 0), lerp);
+                        float targetX = MathUtils.clamp(tex.sprite.getX(),  PixelsToMeters(roomStartX) + cam.viewportWidth / 2, PixelsToMeters(roomStartX) +PixelsToMeters(roomWidth) - cam.viewportWidth / 2);
+                        float targetY = MathUtils.clamp(tex.sprite.getY(),  PixelsToMeters(roomStartY) + cam.viewportHeight / 2, PixelsToMeters(roomStartY) +PixelsToMeters(roomHeight) - cam.viewportHeight / 2);
 
+                        cam.position.lerp(new Vector3(targetX, targetY, 0), lerp);
 
                     }
                     if (tex.sprite == null) {
@@ -119,9 +133,7 @@
                 }
 
                 // Invierte el sprite si el jugador se está moviendo hacia la izquierda
-                if (!tex.runningRight) {
-                    tex.sprite.setFlip(true, false);
-                }
+                tex.sprite.setFlip(!tex.runningRight, false);
             }
 
 

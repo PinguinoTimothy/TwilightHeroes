@@ -46,6 +46,7 @@ import com.twilightheroes.game.ecs.systems.RenderingSystem;
 import com.twilightheroes.game.scenes.Hud;
 import com.twilightheroes.game.tools.AnimationMaker;
 import com.twilightheroes.game.tools.B2WorldCreator;
+import com.twilightheroes.game.tools.B2dContactListener;
 import com.twilightheroes.game.tools.BodyFactory;
 import com.twilightheroes.game.tools.KeyboardController;
 import com.twilightheroes.game.tools.MyInputProcessor;
@@ -93,6 +94,7 @@ private     float viewportWidth,viewportHeight;
         parent = twilightHeroes;
         controller = new KeyboardController();
         world = new World(new Vector2(0,-9.8f), true);
+        world.setContactListener(new B2dContactListener());
         bodyFactory = BodyFactory.getInstance(world);
 
 
@@ -105,11 +107,13 @@ private     float viewportWidth,viewportHeight;
         viewport = new ExtendViewport(viewportWidth/TwilightHeroes.PPM,viewportHeight/TwilightHeroes.PPM,gameCam);
 
         mapLoader = new TmxMapLoader();
-        map = mapLoader.load("nivel.tmx");
+        map = mapLoader.load("mapa2.tmx");
         mapRenderer = new OrthogonalTiledMapRenderer(map,1/TwilightHeroes.PPM);
 
         gameCam.position.set(viewport.getWorldWidth()/2 ,viewport.getWorldHeight()/2,0);
-        new B2WorldCreator(world,map);
+        engine = new PooledEngine();
+        new B2WorldCreator(world,map,engine);
+
 
 
         sb = new SpriteBatch();
@@ -133,7 +137,7 @@ private     float viewportWidth,viewportHeight;
         hud.stage.addActor(touchpad);
 
          myInputProcessor = new MyInputProcessor(viewport.getScreenWidth(), viewport.getScreenHeight(),this);
-        Gdx.input.setInputProcessor(myInputProcessor);
+        Gdx.input.setInputProcessor(hud.stage);
 
         // Create our new rendering system
         renderingSystem = new RenderingSystem(sb,gameCam,viewport);
@@ -143,7 +147,6 @@ private     float viewportWidth,viewportHeight;
       // viewportHeight=10*16;
      //   viewport = new ExtendViewport(viewportWidth/TwilightHeroes.PPM,viewportHeight/TwilightHeroes.PPM,cam);
         //create a pooled engineHud
-        engine = new PooledEngine();
 
         // Boton Salto
         btnJumpSkin = new Skin();
@@ -169,7 +172,7 @@ hud.stage.setDebugAll(true);
         engine.addSystem(renderingSystem);
         engine.addSystem(new PhysicsSystem(world));
         engine.addSystem(new PhysicsDebugSystem(world, renderingSystem.getCamera()));
-        engine.addSystem(new CollisionSystem());
+        engine.addSystem(new CollisionSystem(renderingSystem));
         engine.addSystem(new PlayerControlSystem(touchpad,btnJump,btnAttack));
 
         // create some game objects
@@ -196,11 +199,12 @@ hud.stage.setDebugAll(true);
         // create the data for the components and add them to the components
         texture.sprite.setRegion(atlas.findRegion("Idle-Sheet"));
 
-        texture.sprite.setBounds(0,1,35/TwilightHeroes.PPM,47/TwilightHeroes.PPM);
+        texture.sprite.setBounds(2, 1,35/TwilightHeroes.PPM,47/TwilightHeroes.PPM);
 
         type.type = TypeComponent.PLAYER;
         stateCom.set(StateComponent.STATE_NORMAL);
         stateCom.isLooping = true;
+        colComp.collisionEntity = entity;
 
         BodyDef bodyDef = new BodyDef();
         bodyDef.position.set(texture.sprite.getX(),texture.sprite.getY());
@@ -288,18 +292,18 @@ hud.stage.setDebugAll(true);
 
 
          */
-        // add the components to the entity
         entity.add(b2dbody);
-        //entity.add(position);
         entity.add(texture);
-        entity.add(player);
+        entity.add(player);  // Add PlayerComponent to the entity
         entity.add(colComp);
         entity.add(type);
         entity.add(stateCom);
         entity.add(animCom);
 
-        // add the entity to the engine
+
+// add the entity to the engine
         engine.addEntity(entity);
+
     }
 
 
