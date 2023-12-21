@@ -45,6 +45,7 @@ public class PlayerControlSystem extends IteratingSystem {
 
     int numAtaqueActual=0;
     int numAtaqueTotal = 0;
+    private boolean knockback;
     public PlayerControlSystem(Touchpad touchpad, Button btnSaltar, Button btnAtacar) {
         super(Family.all(PlayerComponent.class).get());
         this.touchpad = touchpad;
@@ -62,10 +63,10 @@ public class PlayerControlSystem extends IteratingSystem {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 // Lógica para el salto aquí
-               // if (b2body.body.getLinearVelocity().y == 0) {
+                if (b2body.body.getLinearVelocity().y == 0 && !knockback) {
                     b2body.body.setLinearVelocity(b2body.body.getLinearVelocity().x, 0);
                     b2body.body.applyLinearImpulse(new Vector2(0, 3f), b2body.body.getWorldCenter(), true);
-                //}
+                }
             }
         });
 
@@ -73,7 +74,7 @@ public class PlayerControlSystem extends IteratingSystem {
             @Override
             public void clicked(InputEvent event, float x, float y) {
 
-                if (numAtaqueTotal<3){
+                if (numAtaqueTotal<3 && !knockback){
                     numAtaqueTotal++;
                     numAtaqueActual++;
                 }
@@ -90,20 +91,25 @@ public class PlayerControlSystem extends IteratingSystem {
         TextureComponent texture = tm.get(entity);
         animation = am.get(entity);
         attackComponent = atkm.get(entity);
+        PlayerComponent playerComponent = pm.get(entity);
+        knockback = playerComponent.knockback;
+if (knockback){
 
-        texture.sprite.setPosition(
-                b2body.body.getPosition().x - texture.sprite.getWidth() / 2,
-                b2body.body.getPosition().y - texture.sprite.getHeight() / 2
-        );
-
+    state.set(StateComponent.STATE_DAMAGED);
+    numAtaqueActual = 0;
+    numAtaqueTotal = 0;
+    if (b2body.body.getLinearVelocity().y == 0){
+        playerComponent.knockback = false;
+    }
+}else{
         if (state.get() == StateComponent.STATE_ATTACK01 && !animation.animations.get(state.get()).isAnimationFinished(state.time)) {
             state.set(StateComponent.STATE_ATTACK01);
         } else {
-            if (numAtaqueActual>0){
+            if (numAtaqueActual > 0) {
                 numAtaqueActual--;
                 state.set(StateComponent.STATE_ATTACK01);
                 state.time = 0f;
-            }else {
+            } else {
                 numAtaqueTotal = 0;
                 if (b2body.body.getLinearVelocity().y > 0) {
                     state.set(StateComponent.STATE_FALLING);
@@ -121,6 +127,7 @@ public class PlayerControlSystem extends IteratingSystem {
                         state.set(StateComponent.STATE_NORMAL);
                     }
                 }
+
                 // Actualiza la dirección del sprite según la velocidad
                 if (b2body.body.getLinearVelocity().x > 0 && !texture.runningRight) {
                     texture.runningRight = true;
@@ -131,7 +138,7 @@ public class PlayerControlSystem extends IteratingSystem {
                     }
 
                     // Crear una nueva fixture de ataque
-                    createAttackFixture(texture,b2body,attackComponent);
+                    createAttackFixture(texture, b2body, attackComponent);
                 } else if (b2body.body.getLinearVelocity().x < 0 && texture.runningRight) {
                     texture.runningRight = false;
                     if (attackComponent.attackFixture != null) {
@@ -141,40 +148,38 @@ public class PlayerControlSystem extends IteratingSystem {
                     }
 
                     // Crear una nueva fixture de ataque
-                    createAttackFixture(texture,b2body,attackComponent);
+                    createAttackFixture(texture, b2body, attackComponent);
                 }
             }
         }
-        state.time = state.get() == state.previousState ? state.time + deltaTime : 0f;
-        if (touchpad.isTouched()) {
-            float knobPercentX = touchpad.getKnobPercentX();
-            float velocityX = knobPercentX * 2.0f;
-
-            if (state.get() != StateComponent.STATE_ATTACK01) {
-                b2body.body.setLinearVelocity(new Vector2(velocityX, b2body.body.getLinearVelocity().y));
-            }
         }
-
 
 
 
         state.time =  state.get() == state.previousState ? state.time + deltaTime : 0f;
-        if (touchpad.isTouched()) {
+
+if (!knockback) {
 
 
-            float knobPercentX = touchpad.getKnobPercentX();
+    if (touchpad.isTouched()) {
 
-            // Puedes ajustar la velocidad según tus necesidades
-            float velocityX = knobPercentX * 2.0f;
 
-            // Aplica la velocidad al cuerpo del jugador
-            if (state.get() != StateComponent.STATE_ATTACK01) {
-                b2body.body.setLinearVelocity(new Vector2(velocityX, b2body.body.getLinearVelocity().y));
-            }
+        float knobPercentX = touchpad.getKnobPercentX();
 
+        // Puedes ajustar la velocidad según tus necesidades
+        float velocityX = knobPercentX * 2.0f;
+
+        // Aplica la velocidad al cuerpo del jugador
+        if (state.get() != StateComponent.STATE_ATTACK01) {
+            b2body.body.setLinearVelocity(new Vector2(velocityX, b2body.body.getLinearVelocity().y));
         }
 
+    }else{
+        b2body.body.setLinearVelocity(new Vector2(0, b2body.body.getLinearVelocity().y));
 
+    }
+
+}
 
     }
 

@@ -5,4 +5,6 @@ import com.badlogic.ashley.core.Entity;
 
 public class CollisionComponent implements Component {
     public Entity collisionEntity;
-}
+    public boolean isTouching;
+    public boolean isAttackHitbox;
+    }

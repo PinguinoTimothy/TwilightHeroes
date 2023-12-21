@@ -1,5 +1,6 @@
 package com.twilightheroes.game.scenes;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
@@ -138,6 +139,10 @@ int vidas = 5;
             }
 
 
+        }
+
+        public void update(){
+            timeLabel.setText(Gdx.graphics.getFramesPerSecond());
         }
 
 

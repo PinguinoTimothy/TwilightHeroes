@@ -11,6 +11,7 @@ import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.Shape;
 import com.badlogic.gdx.physics.box2d.World;
+import com.twilightheroes.game.TwilightHeroes;
 
 
 public class BodyFactory {
@@ -73,7 +74,7 @@ public class BodyFactory {
         //create the body to attach said definition
         Body boxBody = world.createBody(boxBodyDef);
         PolygonShape poly = new PolygonShape();
-        poly.setAsBox(width/2, height/2);
+        poly.setAsBox(width/TwilightHeroes.PPM, height/ TwilightHeroes.PPM);
         boxBody.createFixture(makeFixture(material,poly));
         poly.dispose();
 

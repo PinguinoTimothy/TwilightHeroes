@@ -3,6 +3,7 @@ package com.twilightheroes.game.tools;
 import com.badlogic.ashley.core.Engine;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.PooledEngine;
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.maps.MapObject;
@@ -15,6 +16,7 @@ import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.EdgeShape;
 import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
+import com.badlogic.gdx.physics.box2d.MassData;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
 import com.twilightheroes.game.TwilightHeroes;
@@ -33,6 +35,7 @@ public class B2WorldCreator {
     private PooledEngine engine;
     private World world;
     private TiledMap map;
+    private BodyFactory bodyFactory;
 
     public B2WorldCreator(World world, TiledMap map, PooledEngine engine,TextureAtlas playerAtlas){
         BodyDef bodyDef = new BodyDef();
@@ -42,6 +45,7 @@ public class B2WorldCreator {
         this.engine = engine;
         this.world = world;
         this.map = map;
+        bodyFactory = BodyFactory.getInstance(world);
         //Crear el suelo
         for(MapObject object : map.getLayers().get(1).getObjects().getByType(RectangleMapObject.class)){
             Rectangle rectangle = ((RectangleMapObject) object).getRectangle();
@@ -100,7 +104,9 @@ public class B2WorldCreator {
 shape.dispose();
 
         createPlayer(playerAtlas);
+        TextureAtlas atlasEnemigo = new TextureAtlas(Gdx.files.internal("enemy.atlas"));
 
+        createEnemy(playerAtlas.findRegion("Idle-Sheet"),3,1,4,8,atlasEnemigo);
 
 
     }
@@ -109,7 +115,6 @@ shape.dispose();
         // Create the Entity and all the components that will go in the entity
         Entity entity = engine.createEntity();
         B2dBodyComponent b2dbody = engine.createComponent(B2dBodyComponent.class);
-        //  TransformComponent position = engine.createComponent(TransformComponent.class);
         TextureComponent texture = engine.createComponent(TextureComponent.class);
         PlayerComponent player = engine.createComponent(PlayerComponent.class);
         CollisionComponent colComp = engine.createComponent(CollisionComponent.class);
@@ -148,6 +153,7 @@ shape.dispose();
         EdgeShape feet = new EdgeShape();
         feet.set(new Vector2(-4 / TwilightHeroes.PPM, -12 / TwilightHeroes.PPM), new Vector2(4 / TwilightHeroes.PPM, -12 / TwilightHeroes.PPM));
         fdef2.shape = feet;
+        fdef2.friction = 1;
         b2dbody.body.createFixture(fdef2);
 
         // Libera los recursos del shape
@@ -182,55 +188,11 @@ shape.dispose();
 
         // Create the animation and add it to AnimationComponent
 
-        TextureAtlas.AtlasRegion atlasRegion = atlas.findRegion("Idle-Sheet");
 
-        TextureRegion[][] tmpIdle = atlasRegion.split(atlasRegion.getRegionWidth()/4,atlasRegion.getRegionHeight());
-        TextureRegion[] idleFrames = new TextureRegion[4];
-        for (int i = 0; i < 4; i++) {
-            idleFrames[i] = tmpIdle[0][i];
-        }
         animCom.animations.put(StateComponent.STATE_NORMAL, AnimationMaker.crearAnimacion(atlas,"Idle-Sheet",4));
         animCom.animations.put(StateComponent.STATE_MOVING, AnimationMaker.crearAnimacion(atlas,"Run-Sheet",8));
         animCom.animations.put(StateComponent.STATE_ATTACK01, AnimationMaker.crearAnimacion(atlas,"ataque1",4));
-        /*
-        runSheet = new Texture("Run-Sheet.png");
-        idleSheet = new Texture("Idle-Sheet.png");
-        jumpSheet = new Texture("Jump-Start-Sheet.png");
-        attackSheet = new Texture("attack-sheet.png");
 
-        TextureRegion[][] tmpRun = TextureRegion.split(runSheet,runSheet.getWidth() / 8,runSheet.getHeight());
-
-        TextureRegion[] runFrames = new TextureRegion[8];
-        for (int i = 0; i < 8; i++) {
-            runFrames[i] = tmpRun[0][i];
-        }
-        therionRun = new Animation<TextureRegion>(1f/8f,runFrames);
-
-        TextureRegion[][] tmpIdle = TextureRegion.split(idleSheet,idleSheet.getWidth() / 4,idleSheet.getHeight());
-        TextureRegion[] idleFrames = new TextureRegion[4];
-        for (int i = 0; i < 4; i++) {
-            idleFrames[i] = tmpIdle[0][i];
-        }
-        therionIdle = new Animation<TextureRegion>(1f/4f,idleFrames);
-
-
-        TextureRegion[][] tmpJump = TextureRegion.split(jumpSheet,jumpSheet.getWidth() / 4,jumpSheet.getHeight());
-        TextureRegion[] jumpFrames = new TextureRegion[4];
-        for (int i = 0; i < 4; i++) {
-            jumpFrames[i] = tmpJump[0][i];
-        }
-        therionJump = new Animation<TextureRegion>(1f/4f,jumpFrames);
-
-
-        TextureRegion[][] tmpAttack = TextureRegion.split(attackSheet,attackSheet.getWidth() / 8,attackSheet.getHeight());
-        TextureRegion[] attackFrames = new TextureRegion[8];
-        for (int i = 0; i < 8; i++) {
-            attackFrames[i] = tmpAttack[0][i];
-        }
-        therionAttack = new Animation<TextureRegion>(1f/8f,attackFrames);
-
-
-         */
         entity.add(b2dbody);
         entity.add(texture);
         entity.add(player);  // Add PlayerComponent to the entity
@@ -246,30 +208,95 @@ shape.dispose();
 
     }
 
-    public Entity createEnemy(TextureRegion tex, float x, float y){
+    public void createEnemy(TextureRegion tex, float x, float y, float width, float height,TextureAtlas atlas){
+        // Create the Entity and all the components that will go in the entity
         Entity entity = engine.createEntity();
         B2dBodyComponent b2dbody = engine.createComponent(B2dBodyComponent.class);
         TextureComponent texture = engine.createComponent(TextureComponent.class);
-        EnemyComponent enemy = engine.createComponent(EnemyComponent.class);
+        EnemyComponent enemyComponent = engine.createComponent(EnemyComponent.class);
+        CollisionComponent colComp = engine.createComponent(CollisionComponent.class);
         TypeComponent type = engine.createComponent(TypeComponent.class);
+        StateComponent stateCom = engine.createComponent(StateComponent.class);
+        AnimationComponent animCom = engine.createComponent(AnimationComponent.class);
+        AttackComponent attackComponent = engine.createComponent(AttackComponent.class);
+
+        // create the data for the components and add them to the components
+        texture.sprite.setRegion(atlas.findRegion("skeleton-idle"));
+
+        texture.sprite.setBounds(2.2f, 1f,35/TwilightHeroes.PPM,47/TwilightHeroes.PPM);
+
+        type.type = TypeComponent.ENEMY;
+        stateCom.set(StateComponent.STATE_NORMAL);
+        stateCom.isLooping = true;
+        colComp.collisionEntity = entity;
+
+        BodyDef bodyDef = new BodyDef();
+        bodyDef.position.set(texture.sprite.getX(),texture.sprite.getY());
+        bodyDef.type = BodyDef.BodyType.DynamicBody;
+        b2dbody.body = world.createBody(bodyDef);
+        b2dbody.body.setFixedRotation(true);
+        b2dbody.body.setLinearVelocity(1f,0f);
         // Define la hitbox rectangular
         PolygonShape shape = new PolygonShape();
         shape.setAsBox(4 / TwilightHeroes.PPM, 8 / TwilightHeroes.PPM); // Tamaño de la hitbox
-        b2dbody.body = bodyFactory.makeCirclePolyBody(x,y,1, BodyFactory.STONE, BodyType.KinematicBody,true);
-        position.position.set(x,y,0);
-        texture.region = tex;
-        enemy.xPosCenter = x;
-        type.type = TypeComponent.ENEMY;
+
+        FixtureDef fixtureDef = new FixtureDef();
+        fixtureDef.friction = 0;
+        fixtureDef.shape = shape;
+        fixtureDef.filter.categoryBits = TwilightHeroes.ENEMY_BIT;
+        b2dbody.body.createFixture(fixtureDef);
+
+        FixtureDef fdef2 = new FixtureDef();
+        EdgeShape feet = new EdgeShape();
+
+        feet.set(new Vector2(-4 / TwilightHeroes.PPM, -12 / TwilightHeroes.PPM), new Vector2(4 / TwilightHeroes.PPM, -12 / TwilightHeroes.PPM));
+        fdef2.shape = feet;
+        fdef2.friction = 1;
+        b2dbody.body.createFixture(fdef2);
+
+        // Libera los recursos del shape
+        shape.dispose();
+ /*
+        Fixture attackFixture;
+        PolygonShape attackShape = new PolygonShape();
+        float offsetX = texture.runningRight ? 16 / TwilightHeroes.PPM : -16 / TwilightHeroes.PPM;
+        attackShape.setAsBox(12 / TwilightHeroes.PPM, 8 / TwilightHeroes.PPM, new Vector2(offsetX, 0), 0);
+
+
+        FixtureDef attackFixtureDef = new FixtureDef();
+        attackFixtureDef.shape = attackShape;
+        attackFixtureDef.isSensor = true; // Configurar la fixture como un sensor
+        attackFixtureDef.filter.categoryBits = TwilightHeroes.HITBOX_BIT;
+        attackFixtureDef.filter.maskBits = TwilightHeroes.PLAYER_BIT;
+        attackFixture = b2dbody.body.createFixture(attackFixtureDef);
+        attackFixture.setUserData("enemyAttackSensor");
+        attackComponent.attackFixture = attackFixture;
+        // Liberar los recursos del shape
+        attackShape.dispose();
+*/
         b2dbody.body.setUserData(entity);
 
+
+
+
+
+
+        // Create the animation and add it to AnimationComponent
+
+
+        animCom.animations.put(StateComponent.STATE_NORMAL, AnimationMaker.crearAnimacion(atlas,"skeleton-idle",4));
+
         entity.add(b2dbody);
-        entity.add(position);
         entity.add(texture);
-        entity.add(enemy);
+        entity.add(enemyComponent);  // Add PlayerComponent to the entity
+        entity.add(colComp);
         entity.add(type);
+        entity.add(stateCom);
+        entity.add(animCom);
+        entity.add(attackComponent);
 
+
+// add the entity to the engine
         engine.addEntity(entity);
-
-        return entity;
     }
 }

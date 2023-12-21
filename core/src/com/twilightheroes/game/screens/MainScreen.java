@@ -211,6 +211,7 @@ dt = delta;
         // Render the HUD on top
         hud.stage.act(delta);
         hud.stage.draw();
+        hud.update();
 
     }
 
