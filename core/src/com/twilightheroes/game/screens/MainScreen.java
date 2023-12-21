@@ -63,7 +63,7 @@ public class MainScreen implements Screen {
     private TextureAtlas atlas;
     private SpriteBatch sb;
 
-    private Engine engine;
+    private PooledEngine engine;
 
    // private Viewport viewport;
 
@@ -114,7 +114,7 @@ private     float viewportWidth,viewportHeight;
 
         gameCam.position.set(viewport.getWorldWidth()/2 ,viewport.getWorldHeight()/2,0);
         engine = new PooledEngine();
-        new B2WorldCreator(world,map,engine);
+        new B2WorldCreator(world,map,engine,atlas);
 
 
 
@@ -178,7 +178,7 @@ hud.stage.setDebugAll(true);
         engine.addSystem(new PlayerControlSystem(touchpad,btnJump,btnAttack));
 
         // create some game objects
-        createPlayer();
+
 
     }
 
@@ -186,146 +186,7 @@ hud.stage.setDebugAll(true);
         System.out.println("Crear touchpad en " + x + "  " + y);
     }
 
-    public void createPlayer(){
-        // Create the Entity and all the components that will go in the entity
-        Entity entity = engine.createEntity();
-        B2dBodyComponent b2dbody = engine.createComponent(B2dBodyComponent.class);
-      //  TransformComponent position = engine.createComponent(TransformComponent.class);
-        TextureComponent texture = engine.createComponent(TextureComponent.class);
-        PlayerComponent player = engine.createComponent(PlayerComponent.class);
-        CollisionComponent colComp = engine.createComponent(CollisionComponent.class);
-        TypeComponent type = engine.createComponent(TypeComponent.class);
-        StateComponent stateCom = engine.createComponent(StateComponent.class);
-        AnimationComponent animCom = engine.createComponent(AnimationComponent.class);
-        AttackComponent attackComponent = engine.createComponent(AttackComponent.class);
 
-        // create the data for the components and add them to the components
-        texture.sprite.setRegion(atlas.findRegion("Idle-Sheet"));
-
-        texture.sprite.setBounds(2, 1,35/TwilightHeroes.PPM,47/TwilightHeroes.PPM);
-
-        type.type = TypeComponent.PLAYER;
-        stateCom.set(StateComponent.STATE_NORMAL);
-        stateCom.isLooping = true;
-        colComp.collisionEntity = entity;
-
-        BodyDef bodyDef = new BodyDef();
-        bodyDef.position.set(texture.sprite.getX(),texture.sprite.getY());
-        bodyDef.type = BodyDef.BodyType.DynamicBody;
-        b2dbody.body = world.createBody(bodyDef);
-        b2dbody.body.setFixedRotation(true);
-
-        // Define la hitbox rectangular
-        PolygonShape shape = new PolygonShape();
-        shape.setAsBox(4 / TwilightHeroes.PPM, 8 / TwilightHeroes.PPM); // Tamaño de la hitbox
-
-        FixtureDef fixtureDef = new FixtureDef();
-        fixtureDef.friction = 0;
-        fixtureDef.shape = shape;
-        fixtureDef.filter.categoryBits = TwilightHeroes.PLAYER_BIT;
-        b2dbody.body.createFixture(fixtureDef);
-
-        FixtureDef fdef2 = new FixtureDef();
-        EdgeShape feet = new EdgeShape();
-        feet.set(new Vector2(-4 / TwilightHeroes.PPM, -12 / TwilightHeroes.PPM), new Vector2(4 / TwilightHeroes.PPM, -12 / TwilightHeroes.PPM));
-        fdef2.shape = feet;
-        b2dbody.body.createFixture(fdef2);
-
-        // Libera los recursos del shape
-        shape.dispose();
-
-        Fixture attackFixture;
-        PolygonShape attackShape = new PolygonShape();
-        float offsetX = texture.runningRight ? 16 / TwilightHeroes.PPM : -16 / TwilightHeroes.PPM;
-        attackShape.setAsBox(12 / TwilightHeroes.PPM, 8 / TwilightHeroes.PPM, new Vector2(offsetX, 0), 0);
-
-        FixtureDef attackFixtureDef = new FixtureDef();
-        attackFixtureDef.shape = attackShape;
-        attackFixtureDef.isSensor = true; // Configurar la fixture como un sensor
-        attackFixtureDef.filter.categoryBits = TwilightHeroes.HITBOX_BIT;
-        attackFixtureDef.filter.maskBits = TwilightHeroes.ENEMY_BIT;
-        attackFixture = b2dbody.body.createFixture(attackFixtureDef);
-        attackFixture.setUserData("playerAttackSensor");
-        attackComponent.attackFixture = attackFixture;
-        // Liberar los recursos del shape
-        attackShape.dispose();
-
-
-
-
-
-        b2dbody.body.setUserData(entity);
-
-
-
-
-
-
-             // Create the animation and add it to AnimationComponent
-
-        TextureAtlas.AtlasRegion atlasRegion = atlas.findRegion("Idle-Sheet");
-
-        TextureRegion[][] tmpIdle = atlasRegion.split(atlasRegion.getRegionWidth()/4,atlasRegion.getRegionHeight());
-        TextureRegion[] idleFrames = new TextureRegion[4];
-        for (int i = 0; i < 4; i++) {
-            idleFrames[i] = tmpIdle[0][i];
-        }
-        animCom.animations.put(StateComponent.STATE_NORMAL, AnimationMaker.crearAnimacion(atlas,"Idle-Sheet",4));
-        animCom.animations.put(StateComponent.STATE_MOVING, AnimationMaker.crearAnimacion(atlas,"Run-Sheet",8));
-        animCom.animations.put(StateComponent.STATE_ATTACK01, AnimationMaker.crearAnimacion(atlas,"ataque1",4));
-        /*
-        runSheet = new Texture("Run-Sheet.png");
-        idleSheet = new Texture("Idle-Sheet.png");
-        jumpSheet = new Texture("Jump-Start-Sheet.png");
-        attackSheet = new Texture("attack-sheet.png");
-
-        TextureRegion[][] tmpRun = TextureRegion.split(runSheet,runSheet.getWidth() / 8,runSheet.getHeight());
-
-        TextureRegion[] runFrames = new TextureRegion[8];
-        for (int i = 0; i < 8; i++) {
-            runFrames[i] = tmpRun[0][i];
-        }
-        therionRun = new Animation<TextureRegion>(1f/8f,runFrames);
-
-        TextureRegion[][] tmpIdle = TextureRegion.split(idleSheet,idleSheet.getWidth() / 4,idleSheet.getHeight());
-        TextureRegion[] idleFrames = new TextureRegion[4];
-        for (int i = 0; i < 4; i++) {
-            idleFrames[i] = tmpIdle[0][i];
-        }
-        therionIdle = new Animation<TextureRegion>(1f/4f,idleFrames);
-
-
-        TextureRegion[][] tmpJump = TextureRegion.split(jumpSheet,jumpSheet.getWidth() / 4,jumpSheet.getHeight());
-        TextureRegion[] jumpFrames = new TextureRegion[4];
-        for (int i = 0; i < 4; i++) {
-            jumpFrames[i] = tmpJump[0][i];
-        }
-        therionJump = new Animation<TextureRegion>(1f/4f,jumpFrames);
-
-
-        TextureRegion[][] tmpAttack = TextureRegion.split(attackSheet,attackSheet.getWidth() / 8,attackSheet.getHeight());
-        TextureRegion[] attackFrames = new TextureRegion[8];
-        for (int i = 0; i < 8; i++) {
-            attackFrames[i] = tmpAttack[0][i];
-        }
-        therionAttack = new Animation<TextureRegion>(1f/8f,attackFrames);
-
-
-         */
-        entity.add(b2dbody);
-        entity.add(texture);
-        entity.add(player);  // Add PlayerComponent to the entity
-        entity.add(colComp);
-        entity.add(type);
-        entity.add(stateCom);
-        entity.add(animCom);
-        entity.add(attackComponent);
-
-
-// add the entity to the engine
-        engine.addEntity(entity);
-
-    }
 
 
 
