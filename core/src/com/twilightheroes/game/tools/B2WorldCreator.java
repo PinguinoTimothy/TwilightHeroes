@@ -25,10 +25,12 @@ import com.twilightheroes.game.ecs.components.AttackComponent;
 import com.twilightheroes.game.ecs.components.B2dBodyComponent;
 import com.twilightheroes.game.ecs.components.CollisionComponent;
 import com.twilightheroes.game.ecs.components.EnemyComponent;
+import com.twilightheroes.game.ecs.components.ExitComponent;
 import com.twilightheroes.game.ecs.components.PlayerComponent;
 import com.twilightheroes.game.ecs.components.StateComponent;
 import com.twilightheroes.game.ecs.components.TextureComponent;
 import com.twilightheroes.game.ecs.components.TypeComponent;
+import com.twilightheroes.game.screens.MainScreen;
 
 public class B2WorldCreator {
 
@@ -36,8 +38,9 @@ public class B2WorldCreator {
     private World world;
     private TiledMap map;
     private BodyFactory bodyFactory;
+private MainScreen screen;
 
-    public B2WorldCreator(World world, TiledMap map, PooledEngine engine,TextureAtlas playerAtlas){
+    public B2WorldCreator(World world, TiledMap map, PooledEngine engine, TextureAtlas playerAtlas, MainScreen screen){
         BodyDef bodyDef = new BodyDef();
         PolygonShape shape = new PolygonShape();
         FixtureDef fixtureDef = new FixtureDef();
@@ -46,8 +49,9 @@ public class B2WorldCreator {
         this.world = world;
         this.map = map;
         bodyFactory = BodyFactory.getInstance(world);
+        this.screen = screen;
         //Crear el suelo
-        for(MapObject object : map.getLayers().get(1).getObjects().getByType(RectangleMapObject.class)){
+        for(MapObject object : map.getLayers().get(2).getObjects().getByType(RectangleMapObject.class)){
             Rectangle rectangle = ((RectangleMapObject) object).getRectangle();
             bodyDef.type = BodyDef.BodyType.StaticBody;
             bodyDef.position.set((rectangle.getX()+rectangle.getWidth()/2)/ TwilightHeroes.PPM,(rectangle.getY()+rectangle.getHeight()/2)/TwilightHeroes.PPM);
@@ -56,8 +60,10 @@ public class B2WorldCreator {
             shape.setAsBox(rectangle.getWidth()/2/TwilightHeroes.PPM,rectangle.getHeight()/2/TwilightHeroes.PPM);
             fixtureDef.shape = shape;
             body.createFixture(fixtureDef);
+            screen.bodies.add(body);
         }
 
+        /*
         //Crear las habitaciones
         for(MapObject object : map.getLayers().get(2).getObjects().getByType(RectangleMapObject.class)){
 
@@ -101,6 +107,8 @@ public class B2WorldCreator {
 
 
         }
+
+         */
 shape.dispose();
 
         createPlayer(playerAtlas);
@@ -108,7 +116,63 @@ shape.dispose();
 
         createEnemy(playerAtlas.findRegion("Idle-Sheet"),3,1,4,8,atlasEnemigo);
 
+crearSalidas();
+    }
 
+    public void crearSalidas(){
+        BodyDef bodyDef = new BodyDef();
+        PolygonShape shape = new PolygonShape();
+        FixtureDef fixtureDef = new FixtureDef();
+        Body body;
+
+        //Crear las habitaciones
+        for(MapObject object : map.getLayers().get(3).getObjects().getByType(RectangleMapObject.class)){
+
+            // Create the Entity and all the components that will go in the entity
+            Entity entity = engine.createEntity();
+            B2dBodyComponent b2dbody = engine.createComponent(B2dBodyComponent.class);
+            ExitComponent exitComponent = engine.createComponent(ExitComponent.class);
+            //  TransformComponent position = engine.createComponent(TransformComponent.class);
+
+
+            CollisionComponent colComp = engine.createComponent(CollisionComponent.class);
+            TypeComponent type = engine.createComponent(TypeComponent.class);
+
+
+            type.type = TypeComponent.EXIT;
+            colComp.collisionEntity = entity;
+
+            Rectangle rectangle = ((RectangleMapObject) object).getRectangle();
+            bodyDef.type = BodyDef.BodyType.StaticBody;
+            bodyDef.position.set((rectangle.getX()+rectangle.getWidth()/2)/ TwilightHeroes.PPM,(rectangle.getY()+rectangle.getHeight()/2)/TwilightHeroes.PPM);
+
+            b2dbody.body = world.createBody(bodyDef);
+            shape.setAsBox(rectangle.getWidth()/2/TwilightHeroes.PPM,rectangle.getHeight()/2/TwilightHeroes.PPM);
+            fixtureDef.shape = shape;
+            fixtureDef.isSensor = true;
+            fixtureDef.filter.categoryBits = TwilightHeroes.EXIT_BIT;
+            fixtureDef.filter.maskBits = TwilightHeroes.PLAYER_BIT;
+            b2dbody.body.createFixture(fixtureDef);
+            b2dbody.body.setUserData(entity);
+            b2dbody.width = rectangle.getWidth();
+            b2dbody.height = rectangle.getHeight();
+            b2dbody.startX = rectangle.getX();
+            b2dbody.startY = rectangle.getY();
+
+            exitComponent.exitToRoom = (int) object.getProperties().get("salida");
+
+            // add the components to the entity
+            entity.add(b2dbody);
+            entity.add(colComp);
+            entity.add(type);
+            entity.add(exitComponent);
+
+            engine.addEntity(entity);
+            screen.bodies.add(b2dbody.body);
+
+
+
+        }
     }
 
     public void createPlayer(TextureAtlas atlas){
@@ -182,7 +246,7 @@ shape.dispose();
         b2dbody.body.setUserData(entity);
 
 
-
+screen.bodies.add(b2dbody.body);
 
 
 
@@ -279,7 +343,7 @@ shape.dispose();
 
 
 
-
+screen.bodies.add(b2dbody.body);
 
         // Create the animation and add it to AnimationComponent
 

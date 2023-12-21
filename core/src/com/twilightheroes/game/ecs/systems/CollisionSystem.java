@@ -8,23 +8,27 @@ import com.badlogic.gdx.math.Vector2;
 import com.twilightheroes.game.ecs.components.B2dBodyComponent;
 import com.twilightheroes.game.ecs.components.CollisionComponent;
 import com.twilightheroes.game.ecs.components.EnemyComponent;
+import com.twilightheroes.game.ecs.components.ExitComponent;
 import com.twilightheroes.game.ecs.components.PlayerComponent;
 import com.twilightheroes.game.ecs.components.TextureComponent;
 import com.twilightheroes.game.ecs.components.TypeComponent;
+import com.twilightheroes.game.screens.MainScreen;
 import com.twilightheroes.game.tools.B2dContactListener;
 
 public class CollisionSystem extends IteratingSystem {
     ComponentMapper<CollisionComponent> cm;
     ComponentMapper<PlayerComponent> pm;
     RenderingSystem renderingSystem;
+    MainScreen screen;
 
-    public CollisionSystem(RenderingSystem renderingSystem) {
+    public CollisionSystem(RenderingSystem renderingSystem, MainScreen screen) {
         // only need to worry about player collisions;
         super(Family.all(CollisionComponent.class).get());
 
         cm = ComponentMapper.getFor(CollisionComponent.class);
         pm = ComponentMapper.getFor(PlayerComponent.class);
         this.renderingSystem = renderingSystem;
+        this.screen = screen;
     }
 
     @Override
@@ -62,6 +66,13 @@ public class CollisionSystem extends IteratingSystem {
                             ComponentMapper<B2dBodyComponent> bm;
                             bm = ComponentMapper.getFor(B2dBodyComponent.class);
                             renderingSystem.updateRoom(bm.get(collidedEntity).width, bm.get(collidedEntity).height, bm.get(collidedEntity).startX, bm.get(collidedEntity).startY);
+                            break;
+                        case TypeComponent.EXIT:
+                            ComponentMapper<ExitComponent> ex;
+                            ex = ComponentMapper.getFor(ExitComponent.class);
+                            ExitComponent exitComponent = ex.get(collidedEntity);
+                            screen.change = true;
+                            screen.newMap = (exitComponent.exitToRoom);
                             break;
                         case TypeComponent.OTHER:
                             //do player hit other thing

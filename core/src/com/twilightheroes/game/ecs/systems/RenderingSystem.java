@@ -99,10 +99,10 @@
                     if (entity.getComponents().contains(ComponentMapper.getFor(PlayerComponent.class).get(entity),true)){
 
                         float lerp = 0.1f; // Ajusta este valor según sea necesario
-                        float targetX = MathUtils.clamp(tex.sprite.getX(),  PixelsToMeters(roomStartX) + cam.viewportWidth / 2, PixelsToMeters(roomStartX) +PixelsToMeters(roomWidth) - cam.viewportWidth / 2);
-                        float targetY = MathUtils.clamp(tex.sprite.getY(),  PixelsToMeters(roomStartY) + cam.viewportHeight / 2, PixelsToMeters(roomStartY) +PixelsToMeters(roomHeight) - cam.viewportHeight / 2);
+                     //   float targetX = MathUtils.clamp(tex.sprite.getX(),  PixelsToMeters(roomStartX) + cam.viewportWidth / 2, PixelsToMeters(roomStartX) +PixelsToMeters(roomWidth) - cam.viewportWidth / 2);
+                    //    float targetY = MathUtils.clamp(tex.sprite.getY(),  PixelsToMeters(roomStartY) + cam.viewportHeight / 2, PixelsToMeters(roomStartY) +PixelsToMeters(roomHeight) - cam.viewportHeight / 2);
 
-                        cam.position.lerp(new Vector3(targetX, targetY, 0), lerp);
+                        cam.position.lerp(new Vector3(tex.sprite.getX(),tex.sprite.getY(), 0), lerp);
 
                     }
                     if (tex.sprite == null) {

@@ -15,6 +15,7 @@ import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.EdgeShape;
 import com.badlogic.gdx.physics.box2d.Fixture;
@@ -28,6 +29,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Touchpad;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Align;
+import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.twilightheroes.game.TwilightHeroes;
@@ -52,6 +54,8 @@ import com.twilightheroes.game.tools.B2dContactListener;
 import com.twilightheroes.game.tools.BodyFactory;
 import com.twilightheroes.game.tools.KeyboardController;
 import com.twilightheroes.game.tools.MyInputProcessor;
+
+import java.util.ArrayList;
 
 
 public class MainScreen implements Screen {
@@ -114,7 +118,6 @@ private     float viewportWidth,viewportHeight;
 
         gameCam.position.set(viewport.getWorldWidth()/2 ,viewport.getWorldHeight()/2,0);
         engine = new PooledEngine();
-        new B2WorldCreator(world,map,engine,atlas);
 
 
 
@@ -174,11 +177,11 @@ hud.stage.setDebugAll(true);
         engine.addSystem(renderingSystem);
         engine.addSystem(new PhysicsSystem(world));
         engine.addSystem(new PhysicsDebugSystem(world, renderingSystem.getCamera()));
-        engine.addSystem(new CollisionSystem(renderingSystem));
+        engine.addSystem(new CollisionSystem(renderingSystem,this));
         engine.addSystem(new PlayerControlSystem(touchpad,btnJump,btnAttack));
 
         // create some game objects
-
+changeMap();
 
     }
 
@@ -195,10 +198,34 @@ hud.stage.setDebugAll(true);
 
     }
 
+    private String[] maps = {"mapa0","mapa1","mapa2","mapa3"};
+    public Array<Body> bodies = new Array<>();
+    public boolean change = false;
+    public int newMap;
+
+    private void changeMap(){
+        if (map != null){
+            map.dispose();
+        }
+        for (int i = bodies.size - 1; i >= 0; i--) {
+            world.destroyBody(bodies.get(i));
+        }
+        engine.removeAllEntities();
+        bodies.clear();
+        map = mapLoader.load(new String("maps/"+maps[newMap] + ".tmx"));
+        new B2WorldCreator(world,map,engine,atlas,this);
+        mapRenderer = new OrthogonalTiledMapRenderer(map,1/TwilightHeroes.PPM);
+    }
+
     @Override
     public void render(float delta) {
         Gdx.gl.glClearColor(0f, 0f, 0f, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+        if (change){
+            changeMap();
+            change = false;
+
+        }
 
         // Render the background (tiled map) first
         mapRenderer.setView(gameCam);
@@ -220,6 +247,8 @@ dt = delta;
    renderingSystem.resize(width,height);
    myInputProcessor.resize(width,height);
     }
+
+
 
     @Override
     public void pause() {
