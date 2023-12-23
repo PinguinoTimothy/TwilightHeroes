@@ -7,7 +7,7 @@ import com.twilightheroes.game.ecs.components.StateComponent;
 
 public class AnimationMaker {
 
-    public static Animation<TextureRegion> crearAnimacion(TextureAtlas atlas, String regionName, int nFrames){
+    public static Animation<TextureRegion> crearAnimacion(TextureAtlas atlas, String regionName, int nFrames,int frameDuration){
         TextureAtlas.AtlasRegion atlasRegion = atlas.findRegion(regionName);
 
         TextureRegion[][] tmpIdle = atlasRegion.split(atlasRegion.getRegionWidth()/nFrames,atlasRegion.getRegionHeight());
@@ -15,6 +15,6 @@ public class AnimationMaker {
         for (int i = 0; i < nFrames; i++) {
             idleFrames[i] = tmpIdle[0][i];
         }
-        return new Animation<TextureRegion>(1f/nFrames,idleFrames);
+        return new Animation<TextureRegion>(1f/frameDuration,idleFrames);
     }
 }

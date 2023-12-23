@@ -253,9 +253,9 @@ screen.bodies.add(b2dbody.body);
         // Create the animation and add it to AnimationComponent
 
 
-        animCom.animations.put(StateComponent.STATE_NORMAL, AnimationMaker.crearAnimacion(atlas,"Idle-Sheet",4));
-        animCom.animations.put(StateComponent.STATE_MOVING, AnimationMaker.crearAnimacion(atlas,"Run-Sheet",8));
-        animCom.animations.put(StateComponent.STATE_ATTACK01, AnimationMaker.crearAnimacion(atlas,"ataque1",4));
+        animCom.animations.put(StateComponent.STATE_NORMAL, AnimationMaker.crearAnimacion(atlas,"Idle-Sheet",4,4));
+        animCom.animations.put(StateComponent.STATE_MOVING, AnimationMaker.crearAnimacion(atlas,"Run-Sheet",8,8));
+        animCom.animations.put(StateComponent.STATE_ATTACK01, AnimationMaker.crearAnimacion(atlas,"ataque1",4,16));
 
         entity.add(b2dbody);
         entity.add(texture);
@@ -348,7 +348,7 @@ screen.bodies.add(b2dbody.body);
         // Create the animation and add it to AnimationComponent
 
 
-        animCom.animations.put(StateComponent.STATE_NORMAL, AnimationMaker.crearAnimacion(atlas,"skeleton-idle",4));
+        animCom.animations.put(StateComponent.STATE_NORMAL, AnimationMaker.crearAnimacion(atlas,"skeleton-idle",4,4));
 
         entity.add(b2dbody);
         entity.add(texture);

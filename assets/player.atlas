@@ -1,12 +1,9 @@
-
 player.png
-format: RGBA8888
-filter: Nearest,Nearest
-repeat: none
+size:2048,128
+repeat:none
+Attack-01-Sheet
+bounds:2,2,768,80
 Idle-Sheet
-  rotate: false
-  xy: 1, 1
-  size: 256, 80
-  orig: 256, 80
-  offset: 0, 0
-  index: -1
+bounds:1414,2,256,80
+Run-Sheet
+bounds:772,2,640,80

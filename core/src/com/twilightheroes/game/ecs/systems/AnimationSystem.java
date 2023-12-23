@@ -36,6 +36,6 @@ public class AnimationSystem extends IteratingSystem {
             tex.sprite.setRegion(ani.animations.get(state.get()).getKeyFrame(state.time, true));
 
         }
-
+        state.time += deltaTime;
     }
 }

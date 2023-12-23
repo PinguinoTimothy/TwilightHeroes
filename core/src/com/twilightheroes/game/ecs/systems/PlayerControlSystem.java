@@ -46,6 +46,7 @@ public class PlayerControlSystem extends IteratingSystem {
     int numAtaqueActual=0;
     int numAtaqueTotal = 0;
     private boolean knockback;
+    private float coyoteTime = 0f;
     public PlayerControlSystem(Touchpad touchpad, Button btnSaltar, Button btnAtacar) {
         super(Family.all(PlayerComponent.class).get());
         this.touchpad = touchpad;
@@ -63,7 +64,8 @@ public class PlayerControlSystem extends IteratingSystem {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 // Lógica para el salto aquí
-                if (b2body.body.getLinearVelocity().y == 0 && !knockback) {
+                if ((b2body.body.getLinearVelocity().y == 0 || coyoteTime < 0.1f) && !knockback) {
+                    coyoteTime += 1f;
                     b2body.body.setLinearVelocity(b2body.body.getLinearVelocity().x, 0);
                     b2body.body.applyLinearImpulse(new Vector2(0, 3f), b2body.body.getWorldCenter(), true);
                 }
@@ -111,14 +113,12 @@ if (knockback){
                 state.time = 0f;
             } else {
                 numAtaqueTotal = 0;
-                if (b2body.body.getLinearVelocity().y > 0) {
+                if (b2body.body.getLinearVelocity().y < 0) {
+                    coyoteTime += deltaTime;
                     state.set(StateComponent.STATE_FALLING);
-                }
+                } else if (b2body.body.getLinearVelocity().y == 0) {
+                    coyoteTime = 0f;
 
-                if (b2body.body.getLinearVelocity().y == 0) {
-                    if (state.get() == StateComponent.STATE_FALLING) {
-                        state.set(StateComponent.STATE_NORMAL);
-                    }
                     if (b2body.body.getLinearVelocity().x != 0) {
                         state.set(StateComponent.STATE_MOVING);
 
@@ -156,7 +156,7 @@ if (knockback){
 
 
 
-        state.time =  state.get() == state.previousState ? state.time + deltaTime : 0f;
+       // state.time =  state.get() == state.previousState ? state.time + deltaTime : 0f;
 
 if (!knockback) {
 
