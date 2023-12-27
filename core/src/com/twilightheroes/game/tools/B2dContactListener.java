@@ -1,5 +1,6 @@
 package com.twilightheroes.game.tools;
 
+import com.badlogic.gdx.ai.utils.Collision;
 import com.badlogic.gdx.physics.box2d.ContactListener;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.gdx.physics.box2d.Contact;
@@ -41,6 +42,7 @@ public class B2dContactListener implements ContactListener {
     public void collide(boolean collision){
 
     }
+
     private void entityCollision(Entity ent, Fixture fb, boolean touching, boolean hitbox) {
         if (fb.getBody().getUserData() instanceof Entity) {
             Entity colEnt = (Entity) fb.getBody().getUserData();
@@ -49,18 +51,35 @@ public class B2dContactListener implements ContactListener {
             CollisionComponent colb = colEnt.getComponent(CollisionComponent.class);
 
             if (col != null) {
-                col.collisionEntity = colEnt;
-                col.isTouching = touching;
+                Collisions collisionsAux = new Collisions();  // Nueva instancia para cada colisión
+                collisionsAux.collisionEntity = colEnt;
+                collisionsAux.isAttackHitbox = hitbox;
+
+                if (touching) {
+                    // Si las entidades están en contacto, añade la entidad a la lista de colisiones
+                    col.collisionEntities.add(collisionsAux);
+                } else {
+                    // Si las entidades ya no están en contacto, elimina la entidad de la lista de colisiones
+                    col.collisionEntities.removeValue(collisionsAux, true);
+                }
+                col.isTouching = !col.collisionEntities.isEmpty();
                 col.isAttackHitbox = hitbox;
             }
             if (colb != null) {
-                colb.collisionEntity = ent;
-                col.isTouching = touching;
-                col.isAttackHitbox = hitbox;
+                Collisions collisionsAux = new Collisions();  // Nueva instancia para cada colisión
+                collisionsAux.collisionEntity = ent;
+                collisionsAux.isAttackHitbox = hitbox;
+
+                if (touching) {
+                    colb.collisionEntities.add(collisionsAux);
+                } else {
+                    colb.collisionEntities.removeValue(collisionsAux, true);
+                }
+                colb.isTouching = !colb.collisionEntities.isEmpty();
+                colb.isAttackHitbox = hitbox;
             }
         }
     }
-
     @Override
     public void endContact(Contact contact) {
 

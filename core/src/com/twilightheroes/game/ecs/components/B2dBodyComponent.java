@@ -10,5 +10,6 @@ public class B2dBodyComponent implements Component {
     public float startX;
     public float startY;
     public boolean isDead = false;
+    public int hp = 100;
 
 }

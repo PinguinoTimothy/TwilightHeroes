@@ -14,6 +14,7 @@ import com.twilightheroes.game.ecs.components.TextureComponent;
 import com.twilightheroes.game.ecs.components.TypeComponent;
 import com.twilightheroes.game.screens.MainScreen;
 import com.twilightheroes.game.tools.B2dContactListener;
+import com.twilightheroes.game.tools.Collisions;
 
 public class CollisionSystem extends IteratingSystem {
     ComponentMapper<CollisionComponent> cm;
@@ -35,8 +36,15 @@ public class CollisionSystem extends IteratingSystem {
     protected void processEntity(Entity entity, float deltaTime) {
         // get collision for this entity
         CollisionComponent cc = cm.get(entity);
+
+        for (int i = cc.collisionEntities.size-1; i >= 0; i--) {
+
+            Collisions auxCollision = cc.collisionEntities.get(i);
+
         //get collided entity
-        Entity collidedEntity = cc.collisionEntity;
+        Entity collidedEntity = auxCollision.collisionEntity;
+        boolean isHitbox = auxCollision.isAttackHitbox;
+
 
         TypeComponent thisType = entity.getComponent(TypeComponent.class);
 
@@ -50,7 +58,14 @@ public class CollisionSystem extends IteratingSystem {
 
                             PlayerComponent player = pm.get(entity);
 
+                            if (isHitbox){
+                                collidedEntity.getComponent(B2dBodyComponent.class).hp -= 25;
+                                if (       collidedEntity.getComponent(B2dBodyComponent.class).hp <= 0){
+                                    collidedEntity.getComponent(B2dBodyComponent.class).isDead = true;
+                                }
+                            }
 
+                            /*
                                     if (cc.isTouching) {
                                         if (!player.enemigosEnRango.contains(entity,true)){
                                             player.enemigosEnRango.add(collidedEntity);
@@ -61,6 +76,8 @@ public class CollisionSystem extends IteratingSystem {
                                         System.out.println("player no longer hits enemy");
                                     }
 
+
+                             */
 
                             break;
                         case TypeComponent.SCENERY:
@@ -80,7 +97,8 @@ public class CollisionSystem extends IteratingSystem {
                             //do player hit other thing
                             break; //technically this isn't needed
                     }
-                    cc.collisionEntity = null; // collision handled reset component
+                    cc.collisionEntities.removeIndex(i); // collision handled reset component
+
                 }
             }
         } else if (thisType.type == TypeComponent.ENEMY) {
@@ -89,28 +107,27 @@ public class CollisionSystem extends IteratingSystem {
                 if (type != null) {
                     switch (type.type) {
                         case TypeComponent.PLAYER:
-
                             PlayerComponent player = pm.get(collidedEntity);
                             B2dBodyComponent bodyPlayer = collidedEntity.getComponent(B2dBodyComponent.class);
                             B2dBodyComponent bodyEnemy = entity.getComponent(B2dBodyComponent.class);
-                           CollisionComponent cca = cm.get(collidedEntity);
-                            if (!cca.isAttackHitbox) {
+                            CollisionComponent cca = cm.get(collidedEntity);
+                            if (!isHitbox) {
                                 System.out.println("enemy hit player");
-                                float xForce = 1f;
-                                if (bodyPlayer.body.getPosition().x < bodyEnemy.body.getPosition().x){
-                                    xForce = -1;
+                                float xForce = 2f;
+                                if (bodyPlayer.body.getPosition().x < bodyEnemy.body.getPosition().x) {
+                                    xForce = -2;
                                 }
                                 bodyPlayer.body.applyLinearImpulse(new Vector2(xForce, 0.6f), bodyPlayer.body.getWorldCenter(), true);
                                 player.knockback = true;
                             }
-
                             break;
                     }
-                    cc.collisionEntity = null; // collision handled reset component
+                    cc.collisionEntities.removeIndex(i); // collision handled reset component
                 } else {
                     System.out.println("Enemy: collidedEntity.type == null");
                 }
             }
+        }
 
         }
 

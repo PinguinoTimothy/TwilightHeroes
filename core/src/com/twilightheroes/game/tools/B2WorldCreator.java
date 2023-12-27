@@ -115,9 +115,9 @@ shape.dispose();
         TextureAtlas atlasEnemigo = new TextureAtlas(Gdx.files.internal("enemy.atlas"));
 
         createEnemy(playerAtlas.findRegion("Idle-Sheet"),4f,1,4,8,atlasEnemigo);
-        createEnemy(playerAtlas.findRegion("Idle-Sheet"),4f,1,4,8,atlasEnemigo);
-        createEnemy(playerAtlas.findRegion("Idle-Sheet"),4f,1,4,8,atlasEnemigo);
-        createEnemy(playerAtlas.findRegion("Idle-Sheet"),4f,1,4,8,atlasEnemigo);
+        createEnemy(playerAtlas.findRegion("Idle-Sheet"),5f,1,4,8,atlasEnemigo);
+        createEnemy(playerAtlas.findRegion("Idle-Sheet"),6f,1,4,8,atlasEnemigo);
+        createEnemy(playerAtlas.findRegion("Idle-Sheet"),7f,1,4,8,atlasEnemigo);
 
 crearSalidas();
     }

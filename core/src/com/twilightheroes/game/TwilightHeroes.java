@@ -20,7 +20,7 @@ public class TwilightHeroes extends Game {
 	public static final short PLAYER_BIT = 2;
 	public static final short HITBOX_BIT = 4;
 
-	public static final short ROOM_BIT = 8;
+	public static final short SOLID_BIT = 8;
 	public static final short ENEMY_BIT = 16;
 
 	public static final short EXIT_BIT = 32;

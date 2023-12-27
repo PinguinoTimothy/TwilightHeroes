@@ -117,12 +117,7 @@ public class PlayerControlSystem extends IteratingSystem {
         });
     }
 
-    public void atacar(PlayerComponent playerComponent){
-        for (int i = playerComponent.enemigosEnRango.size-1; i >= 0; i--) {
-            playerComponent.enemigosEnRango.get(i).getComponent(B2dBodyComponent.class).isDead = true;
-            playerComponent.enemigosEnRango.removeIndex(i);
-        }
-    }
+
 
     private float speed;
     @Override
@@ -150,20 +145,28 @@ if (knockback){
 
         } else {
 
+            if (attackComponent.attackFixture != null) {
+                // Si la fixture de ataque ya existe, la eliminamos antes de recrearla
+                b2body.body.destroyFixture(attackComponent.attackFixture);
+                attackComponent.attackFixture = null;
+            }
+
+
+            // Crear una nueva fixture de ataque
             if (numAtaquesDeseados > 0) {
                 numAtaqueActual++;
                 switch (numAtaqueActual) {
                     case 1:
                         state.set(StateComponent.STATE_ATTACK01);
-atacar(playerComponent);
+                        createAttackFixture(texture, b2body, attackComponent);
                         break;
                     case 2:
                         state.set(StateComponent.STATE_ATTACK02);
-                        atacar(playerComponent);
+                        createAttackFixture(texture, b2body, attackComponent);
                         break;
                     case 3:
                         state.set(StateComponent.STATE_ATTACK03);
-                        atacar(playerComponent);
+                        createAttackFixture(texture, b2body, attackComponent);
 
                         break;
                 }
@@ -212,6 +215,7 @@ atacar(playerComponent);
                 if (b2body.body.getLinearVelocity().x > 0 && !texture.runningRight) {
                     texture.runningRight = true;
 
+                    /*
                     if (attackComponent.attackFixture != null) {
                         // Si la fixture de ataque ya existe, la eliminamos antes de recrearla
                         b2body.body.destroyFixture(attackComponent.attackFixture);
@@ -222,9 +226,12 @@ atacar(playerComponent);
                     // Crear una nueva fixture de ataque
                     createAttackFixture(texture, b2body, attackComponent);
 
+
+                     */
                 } else if (b2body.body.getLinearVelocity().x < 0 && texture.runningRight) {
                     texture.runningRight = false;
 
+                    /*
                     if (attackComponent.attackFixture != null) {
                         // Si la fixture de ataque ya existe, la eliminamos antes de recrearla
                         b2body.body.destroyFixture(attackComponent.attackFixture);
@@ -234,6 +241,8 @@ atacar(playerComponent);
                     // Crear una nueva fixture de ataque
                     createAttackFixture(texture, b2body, attackComponent);
 
+
+                     */
                 }
 
 
