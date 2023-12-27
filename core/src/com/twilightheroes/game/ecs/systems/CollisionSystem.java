@@ -50,19 +50,21 @@ public class CollisionSystem extends IteratingSystem {
 
                             PlayerComponent player = pm.get(entity);
 
-                            if (cc.isTouching) {
-                                player.enemigosEnRango.add(collidedEntity);
-                                System.out.println("player hit enemy");
-                            } else {
-                                player.enemigosEnRango.removeValue(collidedEntity, true);
-                                System.out.println("player no longer hits enemy");
-                            }
+
+                                    if (cc.isTouching) {
+                                        if (!player.enemigosEnRango.contains(entity,true)){
+                                            player.enemigosEnRango.add(collidedEntity);
+                                            System.out.println("player hit enemy");
+                                        }
+                                    } else {
+                                        player.enemigosEnRango.removeValue(collidedEntity, true);
+                                        System.out.println("player no longer hits enemy");
+                                    }
 
 
                             break;
                         case TypeComponent.SCENERY:
                             //do player hit scenery thing
-                            System.out.println("player switch scenery");
                             ComponentMapper<B2dBodyComponent> bm;
                             bm = ComponentMapper.getFor(B2dBodyComponent.class);
                             renderingSystem.updateRoom(bm.get(collidedEntity).width, bm.get(collidedEntity).height, bm.get(collidedEntity).startX, bm.get(collidedEntity).startY);
@@ -76,7 +78,6 @@ public class CollisionSystem extends IteratingSystem {
                             break;
                         case TypeComponent.OTHER:
                             //do player hit other thing
-                            System.out.println("player hit other");
                             break; //technically this isn't needed
                     }
                     cc.collisionEntity = null; // collision handled reset component
@@ -88,19 +89,21 @@ public class CollisionSystem extends IteratingSystem {
                 if (type != null) {
                     switch (type.type) {
                         case TypeComponent.PLAYER:
-                            System.out.println("enemy hit player");
+
                             PlayerComponent player = pm.get(collidedEntity);
-                            B2dBodyComponent body = collidedEntity.getComponent(B2dBodyComponent.class);
-                            TextureComponent text = entity.getComponent(TextureComponent.class);
+                            B2dBodyComponent bodyPlayer = collidedEntity.getComponent(B2dBodyComponent.class);
+                            B2dBodyComponent bodyEnemy = entity.getComponent(B2dBodyComponent.class);
                            CollisionComponent cca = cm.get(collidedEntity);
                             if (!cca.isAttackHitbox) {
+                                System.out.println("enemy hit player");
                                 float xForce = 1f;
-                                if (!text.runningRight) {
-                                    xForce *= -1;
+                                if (bodyPlayer.body.getPosition().x < bodyEnemy.body.getPosition().x){
+                                    xForce = -1;
                                 }
-                                body.body.applyLinearImpulse(new Vector2(xForce, 0.6f), body.body.getWorldCenter(), true);
+                                bodyPlayer.body.applyLinearImpulse(new Vector2(xForce, 0.6f), bodyPlayer.body.getWorldCenter(), true);
                                 player.knockback = true;
                             }
+
                             break;
                     }
                     cc.collisionEntity = null; // collision handled reset component

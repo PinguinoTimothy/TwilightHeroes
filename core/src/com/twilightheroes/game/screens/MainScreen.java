@@ -105,7 +105,7 @@ private     float viewportWidth,viewportHeight;
 
 
 
-        atlas = new TextureAtlas(Gdx.files.internal("jugador.atlas"));
+        atlas = new TextureAtlas(Gdx.files.internal("player.atlas"));
 
         gameCam = new OrthographicCamera();
         viewportWidth=12*16;
@@ -175,7 +175,7 @@ hud.stage.setDebugAll(true);
         // add all the relevant systems our engine should run
         engine.addSystem(new AnimationSystem());
         engine.addSystem(renderingSystem);
-        engine.addSystem(new PhysicsSystem(world));
+        engine.addSystem(new PhysicsSystem(world,engine));
         engine.addSystem(new PhysicsDebugSystem(world, renderingSystem.getCamera()));
         engine.addSystem(new CollisionSystem(renderingSystem,this));
         engine.addSystem(new PlayerControlSystem(touchpad,btnJump,btnAttack));
@@ -210,6 +210,7 @@ changeMap();
         for (int i = bodies.size - 1; i >= 0; i--) {
             world.destroyBody(bodies.get(i));
         }
+
         engine.removeAllEntities();
         bodies.clear();
         map = mapLoader.load(new String("maps/"+maps[newMap] + ".tmx"));
@@ -267,8 +268,15 @@ dt = delta;
 
     @Override
     public void dispose() {
+        hud.stage.dispose();
         hud.dispose();
         map.dispose();
         mapRenderer.dispose();
+        sb.dispose();
+        btnAttackSkin.dispose();
+        btnJumpSkin.dispose();
+        atlas.dispose();
+        world.dispose();
+        engine.clearPools();
     }
 }

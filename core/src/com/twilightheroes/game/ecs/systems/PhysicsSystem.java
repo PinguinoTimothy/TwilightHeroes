@@ -3,6 +3,7 @@ package com.twilightheroes.game.ecs.systems;
 import com.badlogic.ashley.core.ComponentMapper;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.Family;
+import com.badlogic.ashley.core.PooledEngine;
 import com.badlogic.ashley.systems.IteratingSystem;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.World;
@@ -14,14 +15,16 @@ public class PhysicsSystem extends IteratingSystem {
 
     private World world;
     private Array<Entity> bodiesQueue;
+    private PooledEngine engine;
 
     private ComponentMapper<B2dBodyComponent> bm = ComponentMapper.getFor(B2dBodyComponent.class);
     private ComponentMapper<TextureComponent> tm = ComponentMapper.getFor(TextureComponent.class);
 
-    public PhysicsSystem(World world) {
+    public PhysicsSystem(World world, PooledEngine engine) {
         super(Family.all(B2dBodyComponent.class, TextureComponent.class).get());
         this.world = world;
         this.bodiesQueue = new Array<Entity>();
+        this.engine = engine;
     }
 
     @Override
@@ -41,6 +44,10 @@ public class PhysicsSystem extends IteratingSystem {
                         bodyComp.body.getPosition().x - textureComponent.sprite.getWidth() / 2,
                         bodyComp.body.getPosition().y - textureComponent.sprite.getHeight() / 2
                 );
+                if (bodyComp.isDead){
+                    world.destroyBody(bodyComp.body);
+                    engine.removeEntity(entity);
+                }
             }
 
         bodiesQueue.clear();

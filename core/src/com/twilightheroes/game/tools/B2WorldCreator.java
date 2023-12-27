@@ -114,7 +114,10 @@ shape.dispose();
         createPlayer(playerAtlas);
         TextureAtlas atlasEnemigo = new TextureAtlas(Gdx.files.internal("enemy.atlas"));
 
-        createEnemy(playerAtlas.findRegion("Idle-Sheet"),3,1,4,8,atlasEnemigo);
+        createEnemy(playerAtlas.findRegion("Idle-Sheet"),4f,1,4,8,atlasEnemigo);
+        createEnemy(playerAtlas.findRegion("Idle-Sheet"),4f,1,4,8,atlasEnemigo);
+        createEnemy(playerAtlas.findRegion("Idle-Sheet"),4f,1,4,8,atlasEnemigo);
+        createEnemy(playerAtlas.findRegion("Idle-Sheet"),4f,1,4,8,atlasEnemigo);
 
 crearSalidas();
     }
@@ -232,6 +235,7 @@ crearSalidas();
         attackFixtureDef.shape = attackShape;
         attackFixtureDef.isSensor = true; // Configurar la fixture como un sensor
         attackFixtureDef.filter.categoryBits = TwilightHeroes.HITBOX_BIT;
+
         attackFixtureDef.filter.maskBits = TwilightHeroes.ENEMY_BIT;
         attackFixture = b2dbody.body.createFixture(attackFixtureDef);
         attackFixture.setUserData("playerAttackSensor");
@@ -256,6 +260,8 @@ screen.bodies.add(b2dbody.body);
         animCom.animations.put(StateComponent.STATE_NORMAL, AnimationMaker.crearAnimacion(atlas,"Idle-Sheet",4,4));
         animCom.animations.put(StateComponent.STATE_MOVING, AnimationMaker.crearAnimacion(atlas,"Run-Sheet",8,8));
         animCom.animations.put(StateComponent.STATE_ATTACK01, AnimationMaker.crearAnimacion(atlas,"ataque1",4,16));
+        animCom.animations.put(StateComponent.STATE_ATTACK02, AnimationMaker.crearAnimacion(atlas,"ataque2",4,16));
+        animCom.animations.put(StateComponent.STATE_ATTACK03, AnimationMaker.crearAnimacion(atlas,"ataque3",4,16));
 
         entity.add(b2dbody);
         entity.add(texture);
@@ -287,7 +293,7 @@ screen.bodies.add(b2dbody.body);
         // create the data for the components and add them to the components
         texture.sprite.setRegion(atlas.findRegion("skeleton-idle"));
 
-        texture.sprite.setBounds(2.2f, 1f,35/TwilightHeroes.PPM,47/TwilightHeroes.PPM);
+        texture.sprite.setBounds(x, y,35/TwilightHeroes.PPM,47/TwilightHeroes.PPM);
 
         type.type = TypeComponent.ENEMY;
         stateCom.set(StateComponent.STATE_NORMAL);
