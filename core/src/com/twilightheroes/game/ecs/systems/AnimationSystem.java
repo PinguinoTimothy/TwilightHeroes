@@ -7,34 +7,31 @@ import com.badlogic.ashley.systems.IteratingSystem;
 import com.twilightheroes.game.ecs.components.AnimationComponent;
 import com.twilightheroes.game.ecs.components.StateComponent;
 import com.twilightheroes.game.ecs.components.TextureComponent;
+import com.twilightheroes.game.tools.Mappers;
 
 public class AnimationSystem extends IteratingSystem {
 
 
-    ComponentMapper<TextureComponent> tm;
-    ComponentMapper<AnimationComponent> am;
-    ComponentMapper<StateComponent> sm;
+
 
     public AnimationSystem(){
         super(Family.all(TextureComponent.class,
                 AnimationComponent.class,
                 StateComponent.class).get());
 
-        tm = ComponentMapper.getFor(TextureComponent.class);
-        am = ComponentMapper.getFor(AnimationComponent.class);
-        sm = ComponentMapper.getFor(StateComponent.class);
+
     }
 
     @Override
     protected void processEntity(Entity entity, float deltaTime) {
 
-        AnimationComponent ani = am.get(entity);
-        StateComponent state = sm.get(entity);
+        AnimationComponent ani = Mappers.animCom.get(entity);
+        StateComponent state = Mappers.stateCom.get(entity);
 
         if(ani.animations.containsKey(state.get())){
-            TextureComponent tex = tm.get(entity);
+            TextureComponent tex = Mappers.texCom.get(entity);
             tex.sprite.setRegion(ani.animations.get(state.get()).getKeyFrame(state.time, true));
-
+        ani.currentFrame = ani.animations.get(state.get()).getKeyFrameIndex(state.time);
         }
         state.time += deltaTime;
     }

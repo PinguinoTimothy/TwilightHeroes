@@ -4,6 +4,9 @@ import com.badlogic.ashley.core.Component;
 import com.badlogic.gdx.physics.box2d.Fixture;
 
 public class AttackComponent implements Component {
-    public boolean isAttacking = false;
     public Fixture attackFixture;
+    public float attackCooldown = 0f;
+
+    public int attackFrame = 5;
+    public boolean performAttack = false;
 }

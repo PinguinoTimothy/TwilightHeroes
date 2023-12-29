@@ -31,10 +31,7 @@ public class Hud implements Disposable {
 
     Label countdownLabel;
     Label scoreLabel;
-    Label timeLabel;
-    Label levelLabel;
-    Label worldLabel;
-    Label marioLabel;
+
 
     Image healthBar;
 
@@ -55,13 +52,11 @@ public class Hud implements Disposable {
         table.top();
         table.setFillParent(true);
 
-        countdownLabel = new Label(String.format("%03d",worldTimer),new Label.LabelStyle(new BitmapFont(), Color.WHITE));
-        scoreLabel =  new Label(String.format("%06d",score),new Label.LabelStyle(new BitmapFont(), Color.WHITE));
-        timeLabel =  new Label("TIME",new Label.LabelStyle(new BitmapFont(), Color.WHITE));
 
-        levelLabel =  new Label("1-1",new Label.LabelStyle(new BitmapFont(), Color.WHITE));
-        worldLabel =  new Label("WORLD",new Label.LabelStyle(new BitmapFont(), Color.WHITE));
-        marioLabel =  new Label("MARIO",new Label.LabelStyle(new BitmapFont(), Color.WHITE));
+        scoreLabel =  new Label(String.format("%06d",score),new Label.LabelStyle(new BitmapFont(), Color.WHITE));
+
+
+
 
         Skin skin = new Skin();
         skin.add("logo", new Texture("prueba1.png"));
@@ -98,12 +93,8 @@ public class Hud implements Disposable {
 
 
         table.add(healthBar).expandX().padTop(10);
-        table.add(worldLabel).expandX().padTop(10);
-        table.add(timeLabel).expandX().padTop(10);
-        table.row();
         table.add(scoreLabel).expandX().padTop(10);
-        table.add(levelLabel).expandX().padTop(10);
-        table.add(countdownLabel).expandX().padTop(10);
+
 
 
 
@@ -141,9 +132,6 @@ int vidas = 5;
 
         }
 
-        public void update(){
-            timeLabel.setText(Gdx.graphics.getFramesPerSecond());
-        }
 
 
     @Override

@@ -15,6 +15,6 @@ public class AnimationMaker {
         for (int i = 0; i < nFrames; i++) {
             idleFrames[i] = tmpIdle[0][i];
         }
-        return new Animation<TextureRegion>(1f/frameDuration,idleFrames);
+        return new Animation<>(1f / frameDuration, idleFrames);
     }
 }

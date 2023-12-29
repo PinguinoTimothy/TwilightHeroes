@@ -43,6 +43,7 @@ import com.twilightheroes.game.ecs.components.TextureComponent;
 import com.twilightheroes.game.ecs.components.TypeComponent;
 import com.twilightheroes.game.ecs.systems.AnimationSystem;
 import com.twilightheroes.game.ecs.systems.CollisionSystem;
+import com.twilightheroes.game.ecs.systems.EnemySystem;
 import com.twilightheroes.game.ecs.systems.PhysicsDebugSystem;
 import com.twilightheroes.game.ecs.systems.PhysicsSystem;
 import com.twilightheroes.game.ecs.systems.PlayerControlSystem;
@@ -95,6 +96,7 @@ private     float viewportWidth,viewportHeight;
     private Button btnAttack;
 
     public MyInputProcessor myInputProcessor;
+    public Entity playerEntity;
 
     public MainScreen(TwilightHeroes twilightHeroes){
         parent = twilightHeroes;
@@ -179,6 +181,7 @@ hud.stage.setDebugAll(true);
         engine.addSystem(new PhysicsDebugSystem(world, renderingSystem.getCamera()));
         engine.addSystem(new CollisionSystem(renderingSystem,this));
         engine.addSystem(new PlayerControlSystem(touchpad,btnJump,btnAttack));
+        engine.addSystem(new EnemySystem(this));
 
         // create some game objects
 changeMap();
@@ -239,7 +242,7 @@ dt = delta;
         // Render the HUD on top
         hud.stage.act(delta);
         hud.stage.draw();
-        hud.update();
+
 
     }
 

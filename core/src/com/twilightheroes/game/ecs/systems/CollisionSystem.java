@@ -1,6 +1,5 @@
 package com.twilightheroes.game.ecs.systems;
 
-import com.badlogic.ashley.core.ComponentMapper;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.systems.IteratingSystem;
@@ -15,10 +14,12 @@ import com.twilightheroes.game.ecs.components.TypeComponent;
 import com.twilightheroes.game.screens.MainScreen;
 import com.twilightheroes.game.tools.B2dContactListener;
 import com.twilightheroes.game.tools.Collisions;
+import com.twilightheroes.game.tools.Mappers;
+
+import java.util.Map;
 
 public class CollisionSystem extends IteratingSystem {
-    ComponentMapper<CollisionComponent> cm;
-    ComponentMapper<PlayerComponent> pm;
+
     RenderingSystem renderingSystem;
     MainScreen screen;
 
@@ -26,8 +27,7 @@ public class CollisionSystem extends IteratingSystem {
         // only need to worry about player collisions;
         super(Family.all(CollisionComponent.class).get());
 
-        cm = ComponentMapper.getFor(CollisionComponent.class);
-        pm = ComponentMapper.getFor(PlayerComponent.class);
+
         this.renderingSystem = renderingSystem;
         this.screen = screen;
     }
@@ -35,7 +35,7 @@ public class CollisionSystem extends IteratingSystem {
     @Override
     protected void processEntity(Entity entity, float deltaTime) {
         // get collision for this entity
-        CollisionComponent cc = cm.get(entity);
+        CollisionComponent cc = Mappers.collisionCom.get(entity);
 
         for (int i = cc.collisionEntities.size-1; i >= 0; i--) {
 
@@ -46,22 +46,22 @@ public class CollisionSystem extends IteratingSystem {
         boolean isHitbox = auxCollision.isAttackHitbox;
 
 
-        TypeComponent thisType = entity.getComponent(TypeComponent.class);
+        TypeComponent thisType = Mappers.typeCom.get(entity);
 
         if (thisType.type == TypeComponent.PLAYER) {
             if (collidedEntity != null) {
-                TypeComponent type = collidedEntity.getComponent(TypeComponent.class);
+                TypeComponent type = Mappers.typeCom.get(collidedEntity);
                 if (type != null) {
                     switch (type.type) {
                         case TypeComponent.ENEMY:
                             //do player hit enemy thing
 
-                            PlayerComponent player = pm.get(entity);
+                            PlayerComponent player = Mappers.playerCom.get(entity);
 
                             if (isHitbox){
-                                collidedEntity.getComponent(B2dBodyComponent.class).hp -= 25;
-                                if (       collidedEntity.getComponent(B2dBodyComponent.class).hp <= 0){
-                                    collidedEntity.getComponent(B2dBodyComponent.class).isDead = true;
+                                Mappers.b2dCom.get(collidedEntity).hp -= 25;
+                                if (Mappers.b2dCom.get(collidedEntity).hp <= 0){
+                                    Mappers.b2dCom.get(collidedEntity).isDead = true;
                                 }
                             }
 
@@ -82,14 +82,13 @@ public class CollisionSystem extends IteratingSystem {
                             break;
                         case TypeComponent.SCENERY:
                             //do player hit scenery thing
-                            ComponentMapper<B2dBodyComponent> bm;
-                            bm = ComponentMapper.getFor(B2dBodyComponent.class);
-                            renderingSystem.updateRoom(bm.get(collidedEntity).width, bm.get(collidedEntity).height, bm.get(collidedEntity).startX, bm.get(collidedEntity).startY);
+
+                            renderingSystem.updateRoom(Mappers.b2dCom.get(collidedEntity).width, Mappers.b2dCom.get(collidedEntity).height, Mappers.b2dCom.get(collidedEntity).startX, Mappers.b2dCom.get(collidedEntity).startY);
                             break;
                         case TypeComponent.EXIT:
-                            ComponentMapper<ExitComponent> ex;
-                            ex = ComponentMapper.getFor(ExitComponent.class);
-                            ExitComponent exitComponent = ex.get(collidedEntity);
+
+
+                            ExitComponent exitComponent = Mappers.exitCom.get(collidedEntity);
                             screen.change = true;
                             screen.newMap = (exitComponent.exitToRoom);
                             break;
@@ -103,14 +102,15 @@ public class CollisionSystem extends IteratingSystem {
             }
         } else if (thisType.type == TypeComponent.ENEMY) {
             if (collidedEntity != null) {
-                TypeComponent type = collidedEntity.getComponent(TypeComponent.class);
+                TypeComponent type = Mappers.typeCom.get(collidedEntity);
                 if (type != null) {
                     switch (type.type) {
                         case TypeComponent.PLAYER:
-                            PlayerComponent player = pm.get(collidedEntity);
-                            B2dBodyComponent bodyPlayer = collidedEntity.getComponent(B2dBodyComponent.class);
-                            B2dBodyComponent bodyEnemy = entity.getComponent(B2dBodyComponent.class);
-                            CollisionComponent cca = cm.get(collidedEntity);
+                            PlayerComponent player = Mappers.playerCom.get(collidedEntity);
+                            B2dBodyComponent bodyPlayer = Mappers.b2dCom.get(collidedEntity);
+                            B2dBodyComponent bodyEnemy = Mappers.b2dCom.get(entity);
+
+
                             if (!isHitbox) {
                                 System.out.println("enemy hit player");
                                 float xForce = 2f;

@@ -39,10 +39,6 @@ public class B2dContactListener implements ContactListener {
         }
     }
 
-    public void collide(boolean collision){
-
-    }
-
     private void entityCollision(Entity ent, Fixture fb, boolean touching, boolean hitbox) {
         if (fb.getBody().getUserData() instanceof Entity) {
             Entity colEnt = (Entity) fb.getBody().getUserData();

@@ -8,7 +8,5 @@ import com.badlogic.gdx.utils.IntMap;
 public class AnimationComponent implements Component {
     public IntMap<Animation<TextureRegion>> animations = new IntMap<Animation<TextureRegion>>();
 
-    public void reset() {
-        animations = new IntMap<Animation<TextureRegion>>();
-    }
+    public int currentFrame = 0;
 }

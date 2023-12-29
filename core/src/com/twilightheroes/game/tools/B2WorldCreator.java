@@ -1,6 +1,5 @@
 package com.twilightheroes.game.tools;
 
-import com.badlogic.ashley.core.Engine;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.PooledEngine;
 import com.badlogic.gdx.Gdx;
@@ -16,7 +15,6 @@ import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.EdgeShape;
 import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
-import com.badlogic.gdx.physics.box2d.MassData;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
 import com.twilightheroes.game.TwilightHeroes;
@@ -196,7 +194,7 @@ crearSalidas();
         texture.sprite.setBounds(2, 1,35/TwilightHeroes.PPM,47/TwilightHeroes.PPM);
 
         type.type = TypeComponent.PLAYER;
-        stateCom.set(StateComponent.STATE_NORMAL);
+        stateCom.set(StateComponent.STATE_IDLE);
         stateCom.isLooping = true;
         colComp.collisionEntity = entity;
 
@@ -257,7 +255,7 @@ screen.bodies.add(b2dbody.body);
         // Create the animation and add it to AnimationComponent
 
 
-        animCom.animations.put(StateComponent.STATE_NORMAL, AnimationMaker.crearAnimacion(atlas,"Idle-Sheet",4,4));
+        animCom.animations.put(StateComponent.STATE_IDLE, AnimationMaker.crearAnimacion(atlas,"Idle-Sheet",4,4));
         animCom.animations.put(StateComponent.STATE_MOVING, AnimationMaker.crearAnimacion(atlas,"Run-Sheet",8,8));
         animCom.animations.put(StateComponent.STATE_ATTACK01, AnimationMaker.crearAnimacion(atlas,"ataque1",4,16));
         animCom.animations.put(StateComponent.STATE_ATTACK02, AnimationMaker.crearAnimacion(atlas,"ataque2",4,16));
@@ -274,8 +272,9 @@ screen.bodies.add(b2dbody.body);
 
 
 // add the entity to the engine
-        engine.addEntity(entity);
 
+        engine.addEntity(entity);
+screen.playerEntity = entity;
     }
 
     public void createEnemy(TextureRegion tex, float x, float y, float width, float height,TextureAtlas atlas){
@@ -291,12 +290,12 @@ screen.bodies.add(b2dbody.body);
         AttackComponent attackComponent = engine.createComponent(AttackComponent.class);
 
         // create the data for the components and add them to the components
-        texture.sprite.setRegion(atlas.findRegion("skeleton-idle"));
+        texture.sprite.setRegion(atlas.findRegion("IDLE"));
 
         texture.sprite.setBounds(x, y,35/TwilightHeroes.PPM,47/TwilightHeroes.PPM);
 
         type.type = TypeComponent.ENEMY;
-        stateCom.set(StateComponent.STATE_NORMAL);
+        stateCom.set(StateComponent.STATE_IDLE);
         stateCom.isLooping = true;
         colComp.collisionEntity = entity;
 
@@ -323,6 +322,9 @@ screen.bodies.add(b2dbody.body);
         fdef2.shape = feet;
         fdef2.friction = 1;
         b2dbody.body.createFixture(fdef2);
+
+
+
 
         // Libera los recursos del shape
         shape.dispose();
@@ -354,7 +356,11 @@ screen.bodies.add(b2dbody.body);
         // Create the animation and add it to AnimationComponent
 
 
-        animCom.animations.put(StateComponent.STATE_NORMAL, AnimationMaker.crearAnimacion(atlas,"skeleton-idle",4,4));
+        animCom.animations.put(StateComponent.STATE_IDLE, AnimationMaker.crearAnimacion(atlas,"IDLE",3,3));
+        animCom.animations.put(StateComponent.STATE_ENEMY_ATTACK, AnimationMaker.crearAnimacion(atlas,"ATTACK",7,7));
+        animCom.animations.put(StateComponent.STATE_CHASING, AnimationMaker.crearAnimacion(atlas,"WALK",8,8));
+
+
 
         entity.add(b2dbody);
         entity.add(texture);
@@ -364,7 +370,6 @@ screen.bodies.add(b2dbody.body);
         entity.add(stateCom);
         entity.add(animCom);
         entity.add(attackComponent);
-
 
 // add the entity to the engine
         engine.addEntity(entity);

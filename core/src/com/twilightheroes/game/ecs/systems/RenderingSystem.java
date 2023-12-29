@@ -1,6 +1,5 @@
         package com.twilightheroes.game.ecs.systems;
 
-        import com.badlogic.ashley.core.ComponentMapper;
         import com.badlogic.ashley.core.Entity;
         import com.badlogic.ashley.core.Family;
         import com.badlogic.ashley.systems.IteratingSystem;
@@ -14,6 +13,9 @@
         import com.badlogic.gdx.utils.viewport.Viewport;
         import com.twilightheroes.game.ecs.components.PlayerComponent;
         import com.twilightheroes.game.ecs.components.TextureComponent;
+        import com.twilightheroes.game.tools.Mappers;
+
+        import java.util.Map;
 
         public class RenderingSystem extends IteratingSystem {
 
@@ -46,8 +48,7 @@
             private Array<Entity> renderQueue; // an array used to allow sorting of images allowing us to draw images on top of each other
             private OrthographicCamera cam; // a reference to our camera
 
-            // component mappers to get components from entities
-            private ComponentMapper<TextureComponent> textureM;
+
 
             private Viewport viewport;
 
@@ -58,7 +59,6 @@
             public RenderingSystem(SpriteBatch batch,OrthographicCamera cam, Viewport viewport) {
                 super(Family.all(TextureComponent.class).get());
 
-                textureM = ComponentMapper.getFor(TextureComponent.class);
 
                 renderQueue = new Array<Entity>();
 
@@ -94,9 +94,9 @@
                 batch.begin();
 
                 for (Entity entity : renderQueue) {
-                    TextureComponent tex = textureM.get(entity);
+                    TextureComponent tex = Mappers.texCom.get(entity);
 
-                    if (entity.getComponents().contains(ComponentMapper.getFor(PlayerComponent.class).get(entity),true)){
+                    if (entity.getComponents().contains(Mappers.playerCom.get(entity),true)){
 
                         float lerp = 0.1f; // Ajusta este valor según sea necesario
                      //   float targetX = MathUtils.clamp(tex.sprite.getX(),  PixelsToMeters(roomStartX) + cam.viewportWidth / 2, PixelsToMeters(roomStartX) +PixelsToMeters(roomWidth) - cam.viewportWidth / 2);
@@ -127,7 +127,7 @@
             public void processEntity(Entity entity, float deltaTime) {
                 renderQueue.add(entity);
 
-                TextureComponent tex = textureM.get(entity);
+                TextureComponent tex = Mappers.texCom.get(entity);
                 if (tex.sprite == null) {
                     return;
                 }

@@ -12,4 +12,5 @@ public class B2dBodyComponent implements Component {
     public boolean isDead = false;
     public int hp = 100;
 
+
 }

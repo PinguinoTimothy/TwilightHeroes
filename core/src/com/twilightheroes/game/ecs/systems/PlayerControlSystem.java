@@ -4,16 +4,12 @@ import com.badlogic.ashley.core.ComponentMapper;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.systems.IteratingSystem;
-import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
-import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Touchpad;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Queue;
@@ -21,20 +17,13 @@ import com.twilightheroes.game.TwilightHeroes;
 import com.twilightheroes.game.ecs.components.AnimationComponent;
 import com.twilightheroes.game.ecs.components.AttackComponent;
 import com.twilightheroes.game.ecs.components.B2dBodyComponent;
-import com.twilightheroes.game.ecs.components.EnemyComponent;
 import com.twilightheroes.game.ecs.components.PlayerComponent;
 import com.twilightheroes.game.ecs.components.StateComponent;
 import com.twilightheroes.game.ecs.components.TextureComponent;
-import com.twilightheroes.game.tools.KeyboardController;
+import com.twilightheroes.game.tools.Mappers;
 
 public class PlayerControlSystem extends IteratingSystem {
-    ComponentMapper<PlayerComponent> pm;
-    ComponentMapper<B2dBodyComponent> bodm;
-    ComponentMapper<StateComponent> sm;
-    ComponentMapper<TextureComponent> tm;
 
-    ComponentMapper<AnimationComponent> am;
-    ComponentMapper<AttackComponent> atkm;
 
 
     Touchpad touchpad;
@@ -59,12 +48,7 @@ public class PlayerControlSystem extends IteratingSystem {
         this.touchpad = touchpad;
         this.btnSaltar = btnSaltar;
         this.btnAtacar = btnAtacar;
-        pm = ComponentMapper.getFor(PlayerComponent.class);
-        bodm = ComponentMapper.getFor(B2dBodyComponent.class);
-        sm = ComponentMapper.getFor(StateComponent.class);
-        tm = ComponentMapper.getFor(TextureComponent.class);
-        am = ComponentMapper.getFor(AnimationComponent.class);
-        atkm = ComponentMapper.getFor(AttackComponent.class);
+
 
         // Initialize the button listeners here
         btnSaltar.addListener(new InputListener(){
@@ -122,12 +106,12 @@ public class PlayerControlSystem extends IteratingSystem {
     private float speed;
     @Override
     protected void processEntity(Entity entity, float deltaTime) {
-        b2body = bodm.get(entity);
-        state = sm.get(entity);
-        TextureComponent texture = tm.get(entity);
-        animation = am.get(entity);
-        attackComponent = atkm.get(entity);
-        PlayerComponent playerComponent = pm.get(entity);
+        b2body = Mappers.b2dCom.get(entity);
+        state = Mappers.stateCom.get(entity);
+        TextureComponent texture = Mappers.texCom.get(entity);
+        animation = Mappers.animCom.get(entity);
+        attackComponent = Mappers.atkCom.get(entity);
+        PlayerComponent playerComponent = Mappers.playerCom.get(entity);
         knockback = playerComponent.knockback;
         speed = playerComponent.speed;
 
@@ -137,7 +121,7 @@ if (knockback){
     numAtaqueActual = 0;
     numAtaquesLimite = 0;
     numAtaquesDeseados = 0;
-    if (b2body.body.getLinearVelocity().y == 0){
+    if (b2body.body.getLinearVelocity().y == 0 && b2body.body.getLinearVelocity().x == 0){
         playerComponent.knockback = false;
     }
 }else{
@@ -206,43 +190,20 @@ if (knockback){
 
 
                     } else if (state.get() != StateComponent.STATE_JUMPING){
-                        state.set(StateComponent.STATE_NORMAL);
+                        state.set(StateComponent.STATE_IDLE);
                     }
                 }
 
 
                 // Actualiza la dirección del sprite según la velocidad
-                if (b2body.body.getLinearVelocity().x > 0 && !texture.runningRight) {
-                    texture.runningRight = true;
+                if (!knockback) {
+                    if (b2body.body.getLinearVelocity().x > 0 && !texture.runningRight ) {
+                        texture.runningRight = true;
 
-                    /*
-                    if (attackComponent.attackFixture != null) {
-                        // Si la fixture de ataque ya existe, la eliminamos antes de recrearla
-                        b2body.body.destroyFixture(attackComponent.attackFixture);
-                        attackComponent.attackFixture = null;
+                    } else if (b2body.body.getLinearVelocity().x < 0 && texture.runningRight ) {
+                        texture.runningRight = false;
+
                     }
-
-
-                    // Crear una nueva fixture de ataque
-                    createAttackFixture(texture, b2body, attackComponent);
-
-
-                     */
-                } else if (b2body.body.getLinearVelocity().x < 0 && texture.runningRight) {
-                    texture.runningRight = false;
-
-                    /*
-                    if (attackComponent.attackFixture != null) {
-                        // Si la fixture de ataque ya existe, la eliminamos antes de recrearla
-                        b2body.body.destroyFixture(attackComponent.attackFixture);
-                        attackComponent.attackFixture = null;
-                    }
-
-                    // Crear una nueva fixture de ataque
-                    createAttackFixture(texture, b2body, attackComponent);
-
-
-                     */
                 }
 
 
@@ -252,7 +213,6 @@ if (knockback){
 
 
 
-       // state.time =  state.get() == state.previousState ? state.time + deltaTime : 0f;
 
 if (!knockback) {
 

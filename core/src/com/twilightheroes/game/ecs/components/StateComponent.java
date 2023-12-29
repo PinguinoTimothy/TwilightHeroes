@@ -3,7 +3,7 @@ package com.twilightheroes.game.ecs.components;
 import com.badlogic.ashley.core.Component;
 
 public class StateComponent implements Component {
-    public static final int STATE_NORMAL = 0;
+    public static final int STATE_IDLE = 0;
     public static final int STATE_JUMPING = 1;
     public static final int STATE_FALLING = 2;
     public static final int STATE_MOVING = 3;
@@ -12,6 +12,9 @@ public class StateComponent implements Component {
     public static final int STATE_ATTACK02 = 6;
     public static final int STATE_ATTACK03 = 7;
     public static final int STATE_DAMAGED = 8;
+
+    public static final int STATE_ENEMY_ATTACK = 9;
+    public static final int STATE_CHASING = 10;
 
 
 

@@ -10,6 +10,9 @@ import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Array;
 import com.twilightheroes.game.ecs.components.B2dBodyComponent;
 import com.twilightheroes.game.ecs.components.TextureComponent;
+import com.twilightheroes.game.tools.Mappers;
+
+import java.util.Map;
 
 public class PhysicsSystem extends IteratingSystem {
 
@@ -17,8 +20,6 @@ public class PhysicsSystem extends IteratingSystem {
     private Array<Entity> bodiesQueue;
     private PooledEngine engine;
 
-    private ComponentMapper<B2dBodyComponent> bm = ComponentMapper.getFor(B2dBodyComponent.class);
-    private ComponentMapper<TextureComponent> tm = ComponentMapper.getFor(TextureComponent.class);
 
     public PhysicsSystem(World world, PooledEngine engine) {
         super(Family.all(B2dBodyComponent.class, TextureComponent.class).get());
@@ -37,8 +38,8 @@ public class PhysicsSystem extends IteratingSystem {
             //Entity Queue
             for (Entity entity : bodiesQueue) {
 
-                B2dBodyComponent bodyComp = bm.get(entity);
-                TextureComponent textureComponent = tm.get(entity);
+                B2dBodyComponent bodyComp = Mappers.b2dCom.get(entity);
+                TextureComponent textureComponent = Mappers.texCom.get(entity);
 
                 textureComponent.sprite.setPosition(
                         bodyComp.body.getPosition().x - textureComponent.sprite.getWidth() / 2,

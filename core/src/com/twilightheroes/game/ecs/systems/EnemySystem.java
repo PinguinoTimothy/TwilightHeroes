@@ -1,41 +1,139 @@
 package com.twilightheroes.game.ecs.systems;
 
-import com.badlogic.ashley.core.ComponentMapper;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.systems.IteratingSystem;
+import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.physics.box2d.FixtureDef;
+import com.badlogic.gdx.physics.box2d.PolygonShape;
+import com.twilightheroes.game.TwilightHeroes;
+import com.twilightheroes.game.ecs.components.AnimationComponent;
+import com.twilightheroes.game.ecs.components.AttackComponent;
 import com.twilightheroes.game.ecs.components.B2dBodyComponent;
 import com.twilightheroes.game.ecs.components.EnemyComponent;
+import com.twilightheroes.game.ecs.components.StateComponent;
+import com.twilightheroes.game.ecs.components.TextureComponent;
+import com.twilightheroes.game.screens.MainScreen;
+import com.twilightheroes.game.tools.Mappers;
 
 public class EnemySystem extends IteratingSystem {
 
-    private ComponentMapper<EnemyComponent> em;
-    private ComponentMapper<B2dBodyComponent> bodm;
+
+
+    private MainScreen screen;
 
     @SuppressWarnings("unchecked")
-    public EnemySystem(){
+    public EnemySystem(MainScreen screen) {
         super(Family.all(EnemyComponent.class).get());
-        em = ComponentMapper.getFor(EnemyComponent.class);
-        bodm = ComponentMapper.getFor(B2dBodyComponent.class);
+        this.screen = screen;
+    }
+
+    private Vector2 calculateDistance(Entity enemigo) {
+        Vector2 distanceVector = new Vector2();
+
+        if (screen.playerEntity != null) {
+            B2dBodyComponent playerBody = screen.playerEntity.getComponent(B2dBodyComponent.class);
+            B2dBodyComponent enemigoBody = enemigo.getComponent(B2dBodyComponent.class);
+
+            if (enemigoBody != null && playerBody != null) {
+                float x1 = playerBody.body.getPosition().x;
+                float y1 = playerBody.body.getPosition().y;
+
+                float x2 = enemigoBody.body.getPosition().x;
+                float y2 = enemigoBody.body.getPosition().y;
+
+                distanceVector.set(x2 - x1, y2 - y1);
+            }
+        }
+
+        return distanceVector;
     }
 
     @Override
     protected void processEntity(Entity entity, float deltaTime) {
-        EnemyComponent enemyCom = em.get(entity);		// get EnemyComponent
-        B2dBodyComponent bodyCom = bodm.get(entity);	// get B2dBodyComponent
+        EnemyComponent enemyCom = Mappers.enemyCom.get(entity);        // get EnemyComponent
+        B2dBodyComponent bodyCom =  Mappers.b2dCom.get(entity);    // get B2dBodyComponent
+        StateComponent enemyStateComponent =  Mappers.stateCom.get(entity);
+        TextureComponent textureComponent =  Mappers.texCom.get(entity);
+        AttackComponent attackComponent = Mappers.atkCom.get(entity);
+        AnimationComponent animationComponent = Mappers.animCom.get(entity);
 
-        // get distance of enemy from its original start position (pad center)
-        float distFromOrig = Math.abs(enemyCom.xPosCenter - bodyCom.body.getPosition().x);
+        Vector2 distanceToPlayer = calculateDistance(entity);
 
-        // if distance > 1 swap direction
-        enemyCom.isGoingLeft = (distFromOrig > 1)? !enemyCom.isGoingLeft:enemyCom.isGoingLeft;
+        if (attackComponent.attackFixture != null) {
+            // Si la fixture de ataque ya existe, la eliminamos antes de recrearla
+            bodyCom.body.destroyFixture(attackComponent.attackFixture);
+            attackComponent.attackFixture = null;
+        }
 
-        // set speed base on direction
-        float speed = enemyCom.isGoingLeft?-0.01f:0.01f;
+        float auxDistance = Math.abs(distanceToPlayer.x*10);
+        if (Math.abs(distanceToPlayer.y) < 10) {
+            if (auxDistance >= 0 && auxDistance <= enemyCom.attackDistance) {
+                enemyStateComponent.set(StateComponent.STATE_ENEMY_ATTACK);
+            } else if (auxDistance >= 0 && auxDistance <= enemyCom.viewDistance) {
+                enemyStateComponent.set(StateComponent.STATE_CHASING);
+            } else {
+                enemyStateComponent.set(StateComponent.STATE_IDLE);
+            }
+        }
+        switch (enemyStateComponent.get()) {
 
-        // apply speed to body
-        bodyCom.body.setTransform(bodyCom.body.getPosition().x + speed,
-                bodyCom.body.getPosition().y,
-                bodyCom.body.getAngle());
+            case StateComponent.STATE_IDLE:
+
+                break;
+
+            case StateComponent.STATE_CHASING:
+                float speed = distanceToPlayer.x < 0 ? 0.5f : -0.5f;
+                bodyCom.body.setLinearVelocity(new Vector2(speed, bodyCom.body.getLinearVelocity().y));
+
+                break;
+
+            case StateComponent.STATE_ENEMY_ATTACK:
+                if (enemyStateComponent.get() == StateComponent.STATE_ENEMY_ATTACK && !animationComponent.animations.get(enemyStateComponent.get()).isAnimationFinished(enemyStateComponent.time)){
+                    if (animationComponent.currentFrame == attackComponent.attackFrame && attackComponent.performAttack){
+                        createAttackFixture(textureComponent, bodyCom,attackComponent);
+                        attackComponent.performAttack = false;
+                    }
+                }else {
+
+                    if (attackComponent.attackCooldown <= 0) {
+                        attackComponent.attackCooldown = 5f;
+                        enemyStateComponent.time = 0f;
+                        attackComponent.performAttack = true;
+                    } else {
+                        attackComponent.attackCooldown -= deltaTime;
+                        enemyStateComponent.set(StateComponent.STATE_IDLE);
+
+                    }
+                }
+
+                break;
+        }
+
+        if (bodyCom.body.getLinearVelocity().x > 0 && !textureComponent.runningRight) {
+            textureComponent.runningRight = true;
+
+        } else if (bodyCom.body.getLinearVelocity().x < 0 && textureComponent.runningRight) {
+            textureComponent.runningRight = false;
+
+        }
+
+    }
+
+
+    private void createAttackFixture(TextureComponent texture, B2dBodyComponent b2dbody,AttackComponent attackComponent) {
+        PolygonShape attackShape = new PolygonShape();
+        float offsetX = texture.runningRight ? 16 / TwilightHeroes.PPM : -16 / TwilightHeroes.PPM;
+        attackShape.setAsBox(12 / TwilightHeroes.PPM, 8 / TwilightHeroes.PPM, new Vector2(offsetX, 0), 0);
+        FixtureDef attackFixtureDef = new FixtureDef();
+        attackFixtureDef.shape = attackShape;
+        attackFixtureDef.isSensor = true; // Configurar la fixture como un sensor
+        attackComponent.attackFixture = b2dbody.body.createFixture(attackFixtureDef);
+        // Liberar los recursos del shape
+        attackShape.dispose();
+        b2dbody.body.applyForce(new Vector2((texture.runningRight ? 1f : -1f),0f),b2dbody.body.getWorldCenter(),true);
+
+
+
     }
 }
