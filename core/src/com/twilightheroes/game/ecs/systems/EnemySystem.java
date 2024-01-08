@@ -68,9 +68,9 @@ public class EnemySystem extends IteratingSystem {
 
         float auxDistance = Math.abs(distanceToPlayer.x*10);
         if (Math.abs(distanceToPlayer.y) < 10) {
-            if (auxDistance >= 0 && auxDistance <= enemyCom.attackDistance) {
+            if (auxDistance >= 0 && auxDistance <= enemyCom.attackDistance && Math.abs(distanceToPlayer.y) < 0.5) {
                 enemyStateComponent.set(StateComponent.STATE_ENEMY_ATTACK);
-            } else if (auxDistance >= 0 && auxDistance <= enemyCom.viewDistance) {
+            } else if (auxDistance > 0 && auxDistance <= enemyCom.viewDistance) {
                 enemyStateComponent.set(StateComponent.STATE_CHASING);
             } else {
                 enemyStateComponent.set(StateComponent.STATE_IDLE);
@@ -83,9 +83,15 @@ public class EnemySystem extends IteratingSystem {
                 break;
 
             case StateComponent.STATE_CHASING:
-                float speed = distanceToPlayer.x < 0 ? 0.5f : -0.5f;
-                bodyCom.body.setLinearVelocity(new Vector2(speed, bodyCom.body.getLinearVelocity().y));
+                if (distanceToPlayer.x > 0.001f) {
 
+
+                    float speed = distanceToPlayer.x < 0 ? 0.5f : -0.5f;
+                    bodyCom.body.setLinearVelocity(new Vector2(speed, bodyCom.body.getLinearVelocity().y));
+                }else{
+                    enemyStateComponent.set(StateComponent.STATE_IDLE);
+
+                }
                 break;
 
             case StateComponent.STATE_ENEMY_ATTACK:
@@ -97,7 +103,7 @@ public class EnemySystem extends IteratingSystem {
                 }else {
 
                     if (attackComponent.attackCooldown <= 0) {
-                        attackComponent.attackCooldown = 5f;
+                        attackComponent.attackCooldown = 1.5f;
                         enemyStateComponent.time = 0f;
                         attackComponent.performAttack = true;
                     } else {
@@ -110,10 +116,10 @@ public class EnemySystem extends IteratingSystem {
                 break;
         }
 
-        if (bodyCom.body.getLinearVelocity().x > 0 && !textureComponent.runningRight) {
+        if (distanceToPlayer.x < 0 && !textureComponent.runningRight) {
             textureComponent.runningRight = true;
 
-        } else if (bodyCom.body.getLinearVelocity().x < 0 && textureComponent.runningRight) {
+        } else if (distanceToPlayer.x > 0 && textureComponent.runningRight) {
             textureComponent.runningRight = false;
 
         }

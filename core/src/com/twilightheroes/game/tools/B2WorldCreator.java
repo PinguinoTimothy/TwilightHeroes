@@ -15,6 +15,7 @@ import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.EdgeShape;
 import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
+import com.badlogic.gdx.physics.box2d.MassData;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
 import com.twilightheroes.game.TwilightHeroes;
@@ -57,65 +58,20 @@ private MainScreen screen;
             body = world.createBody(bodyDef);
             shape.setAsBox(rectangle.getWidth()/2/TwilightHeroes.PPM,rectangle.getHeight()/2/TwilightHeroes.PPM);
             fixtureDef.shape = shape;
+            fixtureDef.filter.categoryBits = TwilightHeroes.SOLID_BIT;
             body.createFixture(fixtureDef);
             screen.bodies.add(body);
         }
 
-        /*
-        //Crear las habitaciones
-        for(MapObject object : map.getLayers().get(2).getObjects().getByType(RectangleMapObject.class)){
-
-            // Create the Entity and all the components that will go in the entity
-            Entity entity = engine.createEntity();
-            B2dBodyComponent b2dbody = engine.createComponent(B2dBodyComponent.class);
-            //  TransformComponent position = engine.createComponent(TransformComponent.class);
-
-
-            CollisionComponent colComp = engine.createComponent(CollisionComponent.class);
-            TypeComponent type = engine.createComponent(TypeComponent.class);
-
-
-            type.type = TypeComponent.SCENERY;
-            colComp.collisionEntity = entity;
-
-            Rectangle rectangle = ((RectangleMapObject) object).getRectangle();
-            bodyDef.type = BodyDef.BodyType.StaticBody;
-            bodyDef.position.set((rectangle.getX()+rectangle.getWidth()/2)/ TwilightHeroes.PPM,(rectangle.getY()+rectangle.getHeight()/2)/TwilightHeroes.PPM);
-
-            b2dbody.body = world.createBody(bodyDef);
-            shape.setAsBox(rectangle.getWidth()/2/TwilightHeroes.PPM,rectangle.getHeight()/2/TwilightHeroes.PPM);
-            fixtureDef.shape = shape;
-            fixtureDef.isSensor = true;
-            fixtureDef.filter.categoryBits = TwilightHeroes.ROOM_BIT;
-            fixtureDef.filter.maskBits = TwilightHeroes.PLAYER_BIT;
-            b2dbody.body.createFixture(fixtureDef);
-            b2dbody.body.setUserData(entity);
-            b2dbody.width = rectangle.getWidth();
-            b2dbody.height = rectangle.getHeight();
-            b2dbody.startX = rectangle.getX();
-            b2dbody.startY = rectangle.getY();
-
-
-            // add the components to the entity
-            entity.add(b2dbody);
-            entity.add(colComp);
-            entity.add(type);
-
-            engine.addEntity(entity);
-
-
-        }
-
-         */
 shape.dispose();
 
         createPlayer(playerAtlas);
         TextureAtlas atlasEnemigo = new TextureAtlas(Gdx.files.internal("enemy.atlas"));
 
         createEnemy(playerAtlas.findRegion("Idle-Sheet"),4f,1,4,8,atlasEnemigo);
-        createEnemy(playerAtlas.findRegion("Idle-Sheet"),5f,1,4,8,atlasEnemigo);
-        createEnemy(playerAtlas.findRegion("Idle-Sheet"),6f,1,4,8,atlasEnemigo);
-        createEnemy(playerAtlas.findRegion("Idle-Sheet"),7f,1,4,8,atlasEnemigo);
+     //   createEnemy(playerAtlas.findRegion("Idle-Sheet"),5f,1,4,8,atlasEnemigo);
+       // createEnemy(playerAtlas.findRegion("Idle-Sheet"),6f,1,4,8,atlasEnemigo);
+        //createEnemy(playerAtlas.findRegion("Idle-Sheet"),7f,1,4,8,atlasEnemigo);
 
 crearSalidas();
     }
@@ -224,6 +180,8 @@ crearSalidas();
         // Libera los recursos del shape
         shape.dispose();
 
+
+        //Esto no estoy seguro porque pero sin el no funciona el ataque. No tocar.
         Fixture attackFixture;
         PolygonShape attackShape = new PolygonShape();
         float offsetX = texture.runningRight ? 16 / TwilightHeroes.PPM : -16 / TwilightHeroes.PPM;
@@ -240,7 +198,6 @@ crearSalidas();
         attackComponent.attackFixture = attackFixture;
         // Liberar los recursos del shape
         attackShape.dispose();
-
 
 
 
@@ -313,6 +270,7 @@ screen.playerEntity = entity;
         fixtureDef.friction = 0;
         fixtureDef.shape = shape;
         fixtureDef.filter.categoryBits = TwilightHeroes.ENEMY_BIT;
+        fixtureDef.filter.maskBits = TwilightHeroes.SOLID_BIT | TwilightHeroes.HITBOX_BIT | TwilightHeroes.PLAYER_BIT;
         b2dbody.body.createFixture(fixtureDef);
 
         FixtureDef fdef2 = new FixtureDef();
@@ -321,31 +279,14 @@ screen.playerEntity = entity;
         feet.set(new Vector2(-4 / TwilightHeroes.PPM, -12 / TwilightHeroes.PPM), new Vector2(4 / TwilightHeroes.PPM, -12 / TwilightHeroes.PPM));
         fdef2.shape = feet;
         fdef2.friction = 1;
+        fdef2.filter.categoryBits = TwilightHeroes.ENEMY_BIT;
+        fdef2.filter.maskBits = TwilightHeroes.SOLID_BIT | TwilightHeroes.PLAYER_BIT;
         b2dbody.body.createFixture(fdef2);
-
 
 
 
         // Libera los recursos del shape
         shape.dispose();
- /*
-        Fixture attackFixture;
-        PolygonShape attackShape = new PolygonShape();
-        float offsetX = texture.runningRight ? 16 / TwilightHeroes.PPM : -16 / TwilightHeroes.PPM;
-        attackShape.setAsBox(12 / TwilightHeroes.PPM, 8 / TwilightHeroes.PPM, new Vector2(offsetX, 0), 0);
-
-
-        FixtureDef attackFixtureDef = new FixtureDef();
-        attackFixtureDef.shape = attackShape;
-        attackFixtureDef.isSensor = true; // Configurar la fixture como un sensor
-        attackFixtureDef.filter.categoryBits = TwilightHeroes.HITBOX_BIT;
-        attackFixtureDef.filter.maskBits = TwilightHeroes.PLAYER_BIT;
-        attackFixture = b2dbody.body.createFixture(attackFixtureDef);
-        attackFixture.setUserData("enemyAttackSensor");
-        attackComponent.attackFixture = attackFixture;
-        // Liberar los recursos del shape
-        attackShape.dispose();
-*/
         b2dbody.body.setUserData(entity);
 
 

@@ -5,6 +5,7 @@ import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.systems.IteratingSystem;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
@@ -121,7 +122,7 @@ if (knockback){
     numAtaqueActual = 0;
     numAtaquesLimite = 0;
     numAtaquesDeseados = 0;
-    if (b2body.body.getLinearVelocity().y == 0 && b2body.body.getLinearVelocity().x == 0){
+    if (b2body.body.getLinearVelocity().x == 0){
         playerComponent.knockback = false;
     }
 }else{
@@ -254,6 +255,7 @@ if (!knockback) {
         attackShape.setAsBox(12 / TwilightHeroes.PPM, 8 / TwilightHeroes.PPM, new Vector2(offsetX, 0), 0);
         FixtureDef attackFixtureDef = new FixtureDef();
         attackFixtureDef.shape = attackShape;
+attackFixtureDef.filter.categoryBits = TwilightHeroes.HITBOX_BIT;
         attackFixtureDef.isSensor = true; // Configurar la fixture como un sensor
         attackComponent.attackFixture = b2dbody.body.createFixture(attackFixtureDef);
         attackComponent.attackFixture.setUserData("playerAttackSensor");
