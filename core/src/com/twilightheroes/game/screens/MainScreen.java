@@ -94,6 +94,7 @@ private     float viewportWidth,viewportHeight;
 
     private  Skin btnAttackSkin;
     private Button btnAttack;
+    private B2WorldCreator b2WorldCreator;
 
     public MyInputProcessor myInputProcessor;
     public Entity playerEntity;
@@ -115,7 +116,7 @@ private     float viewportWidth,viewportHeight;
         viewport = new ExtendViewport(viewportWidth/TwilightHeroes.PPM,viewportHeight/TwilightHeroes.PPM,gameCam);
 
         mapLoader = new TmxMapLoader();
-        map = mapLoader.load("maps/nivelPlataformas.tmx");
+        map = mapLoader.load("maps/mapa0.tmx");
         mapRenderer = new OrthogonalTiledMapRenderer(map,1/TwilightHeroes.PPM);
 
         gameCam.position.set(viewport.getWorldWidth()/2 ,viewport.getWorldHeight()/2,0);
@@ -177,12 +178,13 @@ hud.stage.setDebugAll(true);
         // add all the relevant systems our engine should run
         engine.addSystem(new AnimationSystem());
         engine.addSystem(renderingSystem);
-        engine.addSystem(new PhysicsSystem(world,engine));
+        engine.addSystem(new PhysicsSystem(world,engine,this));
         engine.addSystem(new PhysicsDebugSystem(world, renderingSystem.getCamera()));
         engine.addSystem(new CollisionSystem(renderingSystem,this));
         engine.addSystem(new PlayerControlSystem(touchpad,btnJump,btnAttack));
         engine.addSystem(new EnemySystem(this));
 
+        b2WorldCreator = new B2WorldCreator(world,engine,atlas,this);
         // create some game objects
 changeMap();
 
@@ -207,6 +209,8 @@ changeMap();
     public int newMap;
 
     private void changeMap(){
+        auxChangeMap = 5;
+       change = false;
         if (map != null){
             map.dispose();
         }
@@ -214,22 +218,25 @@ changeMap();
             world.destroyBody(bodies.get(i));
         }
 
+
         engine.removeAllEntities();
         bodies.clear();
+
+
         map = mapLoader.load(new String("maps/"+maps[newMap] + ".tmx"));
-        new B2WorldCreator(world,map,engine,atlas,this);
-        mapRenderer = new OrthogonalTiledMapRenderer(map,1/TwilightHeroes.PPM);
+       b2WorldCreator.generateLevel(map);
+        mapRenderer.setMap(map);
+
     }
+
+    public  int auxChangeMap = 0;
 
     @Override
     public void render(float delta) {
         Gdx.gl.glClearColor(0f, 0f, 0f, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-        if (change){
-            changeMap();
-            change = false;
 
-        }
+
 
         // Render the background (tiled map) first
         mapRenderer.setView(gameCam);
@@ -242,8 +249,14 @@ dt = delta;
         // Render the HUD on top
         hud.stage.act(delta);
         hud.stage.draw();
+        if (auxChangeMap > 0){
+            auxChangeMap--;
+        }
 
+        if (change){
+            changeMap();
 
+        }
     }
 
     @Override

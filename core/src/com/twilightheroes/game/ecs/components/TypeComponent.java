@@ -1,6 +1,7 @@
 package com.twilightheroes.game.ecs.components;
 
 import com.badlogic.ashley.core.Component;
+import com.badlogic.gdx.utils.Pool;
 
 public class TypeComponent implements Component {
     public static final int PLAYER = 4;

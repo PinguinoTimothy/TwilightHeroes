@@ -1,0 +1,13 @@
+enemy.png
+size:2048,256
+repeat:none
+ATTACK
+bounds:868,100,672,96
+DEATH
+bounds:2,100,864,96
+HURT
+bounds:1542,100,288,96
+IDLE
+bounds:772,2,288,96
+WALK
+bounds:2,2,768,96

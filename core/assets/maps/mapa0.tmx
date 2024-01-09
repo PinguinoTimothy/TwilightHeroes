@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.10.2" orientation="orthogonal" renderorder="right-down" width="60" height="20" tilewidth="16" tileheight="16" infinite="0" nextlayerid="6" nextobjectid="21">
+<map version="1.10" tiledversion="1.10.2" orientation="orthogonal" renderorder="right-down" width="60" height="20" tilewidth="16" tileheight="16" infinite="0" nextlayerid="5" nextobjectid="19">
  <tileset firstgid="1" source="Background.tsx"/>
  <tileset firstgid="511" source="Tiles.tsx"/>
  <layer id="1" name="background" width="60" height="20">
@@ -73,13 +73,6 @@
   <object id="18" x="464" y="0" width="32" height="16">
    <properties>
     <property name="salida" type="int" value="2"/>
-   </properties>
-  </object>
- </objectgroup>
- <objectgroup id="5" name="enemigos">
-  <object id="20" x="528" y="288" width="16" height="16">
-   <properties>
-    <property name="tipo" value="1"/>
    </properties>
   </object>
  </objectgroup>

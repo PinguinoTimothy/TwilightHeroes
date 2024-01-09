@@ -34,87 +34,94 @@ public class CollisionSystem extends IteratingSystem {
 
     @Override
     protected void processEntity(Entity entity, float deltaTime) {
-        // get collision for this entity
-        CollisionComponent cc = Mappers.collisionCom.get(entity);
 
-        for (int i = cc.collisionEntities.size-1; i >= 0; i--) {
+            // get collision for this entity
+            CollisionComponent cc = Mappers.collisionCom.get(entity);
 
-            Collisions auxCollision = cc.collisionEntities.get(i);
+            for (int i = cc.collisionEntities.size - 1; i >= 0; i--) {
 
-        //get collided entity
-        Entity collidedEntity = auxCollision.collisionEntity;
-        boolean isHitbox = auxCollision.isAttackHitbox;
+                Collisions auxCollision = cc.collisionEntities.get(i);
 
-
-        TypeComponent thisType = Mappers.typeCom.get(entity);
-
-        if (thisType.type == TypeComponent.PLAYER) {
-            if (collidedEntity != null) {
-                TypeComponent type = Mappers.typeCom.get(collidedEntity);
-                if (type != null) {
-                    switch (type.type) {
-                        case TypeComponent.ENEMY:
-                            //do player hit enemy thing
+                //get collided entity
+                Entity collidedEntity = auxCollision.collisionEntity;
+                boolean isHitbox = auxCollision.isAttackHitbox;
 
 
-                            if (isHitbox){
-                                Mappers.b2dCom.get(collidedEntity).hp -= 25;
-                                if (Mappers.b2dCom.get(collidedEntity).hp <= 0){
-                                    Mappers.b2dCom.get(collidedEntity).isDead = true;
-                                }
+                TypeComponent thisType = Mappers.typeCom.get(entity);
+
+                if (thisType.type == TypeComponent.PLAYER) {
+                    if (collidedEntity != null) {
+                        TypeComponent type = Mappers.typeCom.get(collidedEntity);
+                        if (type != null) {
+                            switch (type.type) {
+                                case TypeComponent.ENEMY:
+                                    //do player hit enemy thing
+
+
+                                    if (isHitbox) {
+                                        Mappers.b2dCom.get(collidedEntity).hp -= 25;
+                                        if (Mappers.b2dCom.get(collidedEntity).hp <= 0) {
+                                            Mappers.b2dCom.get(collidedEntity).isDead = true;
+
+                                        }
+                                    }
+
+
+                                    break;
+                                case TypeComponent.SCENERY:
+                                    //do player hit scenery thing
+
+                                    renderingSystem.updateRoom(Mappers.b2dCom.get(collidedEntity).width, Mappers.b2dCom.get(collidedEntity).height, Mappers.b2dCom.get(collidedEntity).startX, Mappers.b2dCom.get(collidedEntity).startY);
+                                    break;
+                                case TypeComponent.EXIT:
+
+                                    if (!screen.change && screen.auxChangeMap == 0) {
+                                        ExitComponent exitComponent = Mappers.exitCom.get(collidedEntity);
+
+                                        screen.change = true;
+                                        screen.newMap = exitComponent.exitToRoom;
+
+
+                                    }
+
+                                    break;
+                                case TypeComponent.OTHER:
+                                    //do player hit other thing
+                                    break; //technically this isn't needed
                             }
+                            cc.collisionEntities.removeIndex(i); // collision handled reset component
 
-
-
-                            break;
-                        case TypeComponent.SCENERY:
-                            //do player hit scenery thing
-
-                            renderingSystem.updateRoom(Mappers.b2dCom.get(collidedEntity).width, Mappers.b2dCom.get(collidedEntity).height, Mappers.b2dCom.get(collidedEntity).startX, Mappers.b2dCom.get(collidedEntity).startY);
-                            break;
-                        case TypeComponent.EXIT:
-
-
-                            ExitComponent exitComponent = Mappers.exitCom.get(collidedEntity);
-                            screen.change = true;
-                            screen.newMap = (exitComponent.exitToRoom);
-                            break;
-                        case TypeComponent.OTHER:
-                            //do player hit other thing
-                            break; //technically this isn't needed
+                        }
                     }
-                    cc.collisionEntities.removeIndex(i); // collision handled reset component
-
-                }
-            }
-        } else if (thisType.type == TypeComponent.ENEMY) {
-            if (collidedEntity != null) {
-                TypeComponent type = Mappers.typeCom.get(collidedEntity);
-                if (type != null) {
-                    switch (type.type) {
-                        case TypeComponent.PLAYER:
-                            PlayerComponent player = Mappers.playerCom.get(collidedEntity);
-                            B2dBodyComponent bodyPlayer = Mappers.b2dCom.get(collidedEntity);
-                            B2dBodyComponent bodyEnemy = Mappers.b2dCom.get(entity);
+                } else if (thisType.type == TypeComponent.ENEMY) {
+                    if (collidedEntity != null) {
+                        TypeComponent type = Mappers.typeCom.get(collidedEntity);
+                        if (type != null) {
+                            switch (type.type) {
+                                case TypeComponent.PLAYER:
+                                    PlayerComponent player = Mappers.playerCom.get(collidedEntity);
+                                    B2dBodyComponent bodyPlayer = Mappers.b2dCom.get(collidedEntity);
+                                    B2dBodyComponent bodyEnemy = Mappers.b2dCom.get(entity);
 
 
-                            if (!isHitbox) {
-                                System.out.println("enemy hit player");
-                                float xForce = 1f;
-                                if (bodyPlayer.body.getPosition().x < bodyEnemy.body.getPosition().x) {
-                                    xForce = -1;
-                                }
-                                bodyPlayer.body.applyLinearImpulse(new Vector2(xForce, 0.5f), bodyPlayer.body.getWorldCenter(), true);
-                                player.knockback = true;
+                                    if (!isHitbox) {
+                                        System.out.println("enemy hit player");
+                                        float xForce = 2.5f;
+                                        if (bodyPlayer.body.getPosition().x < bodyEnemy.body.getPosition().x) {
+                                            xForce = -2.5f;
+                                        }
+                                        bodyPlayer.body.applyLinearImpulse(new Vector2(xForce, 0.5f), bodyPlayer.body.getWorldCenter(), true);
+                                        player.knockback = true;
+                                    }
+                                    break;
                             }
-                            break;
+                            cc.collisionEntities.removeIndex(i); // collision handled reset component
+                        }
                     }
-                    cc.collisionEntities.removeIndex(i); // collision handled reset component
                 }
-            }
-        }
+
+
 
         }
-
     }
 }

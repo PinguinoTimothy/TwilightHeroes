@@ -94,9 +94,10 @@ public class PlayerControlSystem extends IteratingSystem {
             public void clicked(InputEvent event, float x, float y) {
 
 
-                if (numAtaquesLimite<3 && !knockback){
+                if (numAtaquesLimite<3 && !knockback && attackCooldown <= 0f){
                     numAtaquesLimite++;
                     numAtaquesDeseados++;
+                    attacking = true;
                 }
 
 
@@ -106,7 +107,8 @@ public class PlayerControlSystem extends IteratingSystem {
     }
 
 
-
+    private boolean attacking = false;
+    private float attackCooldown = 0f;
     private float speed;
     @Override
     protected void processEntity(Entity entity, float deltaTime) {
@@ -122,9 +124,6 @@ public class PlayerControlSystem extends IteratingSystem {
 if (knockback){
 
     state.set(StateComponent.STATE_DAMAGED);
-    numAtaqueActual = 0;
-    numAtaquesLimite = 0;
-    numAtaquesDeseados = 0;
     if (b2body.body.getLinearVelocity().x == 0){
         playerComponent.knockback = false;
     }
@@ -155,6 +154,7 @@ if (knockback){
                     case 3:
                         state.set(StateComponent.STATE_ATTACK03);
                         createAttackFixture(texture, b2body, attackComponent);
+                        attackCooldown = 0.2f;
 
                         break;
                 }
@@ -166,11 +166,16 @@ if (knockback){
 
             }else{
 
-
+                if (numAtaqueActual > 0){
+                    attackCooldown = 0.2f;
+                }
+                if (attackCooldown > 0){
+                    attackCooldown -= deltaTime;
+                }
                 numAtaqueActual = 0;
                 numAtaquesLimite = 0;
                 numAtaquesDeseados = 0;
-
+                attacking = false;
                 if (b2body.body.getLinearVelocity().y < 0) {
                     coyoteTime += deltaTime;
                     state.set(StateComponent.STATE_FALLING);
@@ -224,7 +229,7 @@ if (knockback){
 if (!knockback) {
 
 
-    if (touchpad.isTouched()) {
+    if (touchpad.isTouched() && !attacking) {
 
 
         float knobPercentX = touchpad.getKnobPercentX();

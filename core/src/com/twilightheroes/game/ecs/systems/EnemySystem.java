@@ -83,7 +83,7 @@ public class EnemySystem extends IteratingSystem {
                 break;
 
             case StateComponent.STATE_CHASING:
-                if (distanceToPlayer.x > 0.001f) {
+                if (distanceToPlayer.x > 0.001f || distanceToPlayer.x < -0.001f) {
 
 
                     float speed = distanceToPlayer.x < 0 ? 0.5f : -0.5f;
