@@ -52,6 +52,7 @@ public class PlayerControlSystem extends IteratingSystem {
 
 
         // Initialize the button listeners here
+        /*
         btnSaltar.addListener(new InputListener(){
             @Override
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
@@ -64,7 +65,9 @@ public class PlayerControlSystem extends IteratingSystem {
                 b2body.body.setGravityScale(2f);
             }
         });
-        /*
+
+
+         */
         btnSaltar.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
@@ -72,7 +75,7 @@ public class PlayerControlSystem extends IteratingSystem {
 
 
 
-                /*
+
                 if ((b2body.body.getLinearVelocity().y == 0 || coyoteTime < 0.1f) && !knockback) {
                     coyoteTime += 1f;
                     b2body.body.setLinearVelocity(b2body.body.getLinearVelocity().x, 0);
@@ -84,7 +87,7 @@ public class PlayerControlSystem extends IteratingSystem {
             }
         });
 
-         */
+
 
         btnAtacar.addListener(new ClickListener() {
             @Override
@@ -178,6 +181,7 @@ if (knockback){
                     coyoteTime = 0f;
                     b2body.body.setGravityScale(1f);
 
+                    /*
                     if (!inputBuffer.isEmpty()) {
                         if (inputBuffer.first() == StateComponent.STATE_JUMPING) {
                             b2body.body.setLinearVelocity(b2body.body.getLinearVelocity().x, 0);
@@ -186,6 +190,8 @@ if (knockback){
                             state.set(StateComponent.STATE_JUMPING);
                         }
                     }
+
+                     */
                     if (b2body.body.getLinearVelocity().x != 0 && state.get() != StateComponent.STATE_JUMPING) {
                         state.set(StateComponent.STATE_MOVING);
 
