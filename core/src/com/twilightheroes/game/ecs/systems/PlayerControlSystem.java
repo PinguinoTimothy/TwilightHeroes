@@ -5,6 +5,7 @@ import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.systems.IteratingSystem;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.physics.box2d.Filter;
 import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
@@ -30,6 +31,8 @@ public class PlayerControlSystem extends IteratingSystem {
     Touchpad touchpad;
     Button btnSaltar;
     Button btnAtacar;
+    Button btnDodge;
+
     B2dBodyComponent b2body;
     StateComponent state;
     AttackComponent attackComponent;
@@ -44,11 +47,19 @@ public class PlayerControlSystem extends IteratingSystem {
     private float dequeueTime = 0f;
     private Queue<Integer> inputBuffer = new Queue<>();
     private boolean atacando = false;
-    public PlayerControlSystem(Touchpad touchpad, Button btnSaltar, Button btnAtacar) {
+    public boolean inmune = false;
+    public boolean dodging = false;
+    public boolean makeDodge = false;
+    public float inmuneTime = 0f;
+    private Filter dodgeFilter = new Filter();
+    private Filter playerFilter = new Filter();
+
+    public PlayerControlSystem(Touchpad touchpad, Button btnSaltar, Button btnAtacar,Button btnDodge) {
         super(Family.all(PlayerComponent.class).get());
         this.touchpad = touchpad;
         this.btnSaltar = btnSaltar;
         this.btnAtacar = btnAtacar;
+        this.btnDodge = btnDodge;
 
 
         // Initialize the button listeners here
@@ -104,12 +115,26 @@ public class PlayerControlSystem extends IteratingSystem {
 
             }
         });
+
+
+
+        btnDodge.addListener(new ClickListener(){
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+    makeDodge = true;
+
+            }
+        });
+
+        dodgeFilter.categoryBits = TwilightHeroes.DODGING_BIT;
+        playerFilter.categoryBits = TwilightHeroes.PLAYER_BIT;
     }
 
 
     private boolean attacking = false;
     private float attackCooldown = 0f;
     private float speed;
+
     @Override
     protected void processEntity(Entity entity, float deltaTime) {
         b2body = Mappers.b2dCom.get(entity);
@@ -121,70 +146,98 @@ public class PlayerControlSystem extends IteratingSystem {
         knockback = playerComponent.knockback;
         speed = playerComponent.speed;
 
-if (knockback){
 
-    state.set(StateComponent.STATE_DAMAGED);
-    if (b2body.body.getLinearVelocity().x == 0){
-        playerComponent.knockback = false;
-    }
-}else{
-        if ((state.get() == StateComponent.STATE_ATTACK01 || state.get() == StateComponent.STATE_ATTACK02 || state.get() == StateComponent.STATE_ATTACK03) && !animation.animations.get(state.get()).isAnimationFinished(state.time)) {
+if (makeDodge){
 
-        } else {
+    inmune = true;
+    dodging = true;
+    inmuneTime = 0.3f;
+    state.set(StateComponent.STATE_DODGING);
+    float dodgeForce = texture.runningRight ? 2.5f : -2.5f;
+    b2body.body.setLinearVelocity(0,b2body.body.getLinearVelocity().y);
+    b2body.body.applyLinearImpulse(new Vector2(dodgeForce, 0f), b2body.body.getWorldCenter(), true);
+    b2body.body.getFixtureList().get(0).setFilterData(dodgeFilter);
+    makeDodge = false;
 
-            if (attackComponent.attackFixture != null) {
-                // Si la fixture de ataque ya existe, la eliminamos antes de recrearla
-                b2body.body.destroyFixture(attackComponent.attackFixture);
-                attackComponent.attackFixture = null;
+}
+        if (inmune){
+
+            inmuneTime-= deltaTime;
+            if (inmuneTime <= 0){
+                inmuneTime = 0f;
+                inmune = false;
+                dodging = false;
+                state.set(StateComponent.STATE_IDLE);
+                b2body.body.getFixtureList().get(0).setFilterData(playerFilter);
             }
+        }
 
+        if (!dodging) {
+            if (knockback) {
 
-            // Crear una nueva fixture de ataque
-            if (numAtaquesDeseados > 0) {
-                numAtaqueActual++;
-                switch (numAtaqueActual) {
-                    case 1:
-                        state.set(StateComponent.STATE_ATTACK01);
-                        createAttackFixture(texture, b2body, attackComponent);
-                        break;
-                    case 2:
-                        state.set(StateComponent.STATE_ATTACK02);
-                        createAttackFixture(texture, b2body, attackComponent);
-                        break;
-                    case 3:
-                        state.set(StateComponent.STATE_ATTACK03);
-                        createAttackFixture(texture, b2body, attackComponent);
-                        attackCooldown = 0.2f;
+                state.set(StateComponent.STATE_DAMAGED);
 
-                        break;
+                if (b2body.body.getLinearVelocity().x == 0) {
+                    playerComponent.knockback = false;
                 }
-                state.time = 0f;
+            } else {
+                if ((state.get() == StateComponent.STATE_ATTACK01 || state.get() == StateComponent.STATE_ATTACK02 || state.get() == StateComponent.STATE_ATTACK03) && !animation.animations.get(state.get()).isAnimationFinished(state.time)) {
 
-                if (numAtaqueActual >= numAtaquesDeseados){
-                    numAtaquesDeseados = 0;
-                }
+                } else {
 
-            }else{
-
-                if (numAtaqueActual > 0){
-                    attackCooldown = 0.2f;
-                }
-                if (attackCooldown > 0){
-                    attackCooldown -= deltaTime;
-                }
-                numAtaqueActual = 0;
-                numAtaquesLimite = 0;
-                numAtaquesDeseados = 0;
-                attacking = false;
-                if (b2body.body.getLinearVelocity().y < 0) {
-                    coyoteTime += deltaTime;
-                    state.set(StateComponent.STATE_FALLING);
-                    if (state.previousState == StateComponent.STATE_JUMPING){
-                        b2body.body.setGravityScale(2f);
+                    if (attackComponent.attackFixture != null) {
+                        // Si la fixture de ataque ya existe, la eliminamos antes de recrearla
+                        b2body.body.destroyFixture(attackComponent.attackFixture);
+                        attackComponent.attackFixture = null;
                     }
-                } else if (b2body.body.getLinearVelocity().y == 0 && state.get() != StateComponent.STATE_JUMPING) {
-                    coyoteTime = 0f;
-                    b2body.body.setGravityScale(1f);
+
+
+                    // Crear una nueva fixture de ataque
+                    if (numAtaquesDeseados > 0) {
+                        numAtaqueActual++;
+                        switch (numAtaqueActual) {
+                            case 1:
+                                state.set(StateComponent.STATE_ATTACK01);
+                                createAttackFixture(texture, b2body, attackComponent);
+                                break;
+                            case 2:
+                                state.set(StateComponent.STATE_ATTACK02);
+                                createAttackFixture(texture, b2body, attackComponent);
+                                break;
+                            case 3:
+                                state.set(StateComponent.STATE_ATTACK03);
+                                createAttackFixture(texture, b2body, attackComponent);
+                                attackCooldown = 0.2f;
+
+                                break;
+                        }
+                        state.time = 0f;
+
+                        if (numAtaqueActual >= numAtaquesDeseados) {
+                            numAtaquesDeseados = 0;
+                        }
+
+                    } else {
+
+                        if (numAtaqueActual > 0) {
+                            attackCooldown = 0.2f;
+                        }
+                        if (attackCooldown > 0) {
+                            attackCooldown -= deltaTime;
+                        }
+                        numAtaqueActual = 0;
+                        numAtaquesLimite = 0;
+                        numAtaquesDeseados = 0;
+                        attacking = false;
+                        if (b2body.body.getLinearVelocity().y < 0) {
+                            coyoteTime += deltaTime;
+                            state.set(StateComponent.STATE_FALLING);
+                            if (state.previousState == StateComponent.STATE_JUMPING) {
+                                b2body.body.setGravityScale(2f);
+                            }
+                        } else if (b2body.body.getLinearVelocity().y == 0 && state.get() != StateComponent.STATE_JUMPING) {
+                            coyoteTime = 0f;
+                            b2body.body.setGravityScale(1f);
 
                     /*
                     if (!inputBuffer.isEmpty()) {
@@ -197,36 +250,36 @@ if (knockback){
                     }
 
                      */
-                    if (b2body.body.getLinearVelocity().x != 0 && state.get() != StateComponent.STATE_JUMPING) {
-                        state.set(StateComponent.STATE_MOVING);
+                            if (b2body.body.getLinearVelocity().x != 0 && state.get() != StateComponent.STATE_JUMPING) {
+                                state.set(StateComponent.STATE_MOVING);
 
 
-                    } else if (state.get() != StateComponent.STATE_JUMPING){
-                        state.set(StateComponent.STATE_IDLE);
+                            } else if (state.get() != StateComponent.STATE_JUMPING) {
+                                state.set(StateComponent.STATE_IDLE);
+                            }
+                        }
+
+
+                        // Actualiza la dirección del sprite según la velocidad
+                        if (!knockback) {
+                            if (b2body.body.getLinearVelocity().x > 0 && !texture.runningRight) {
+                                texture.runningRight = true;
+
+                            } else if (b2body.body.getLinearVelocity().x < 0 && texture.runningRight) {
+                                texture.runningRight = false;
+
+                            }
+                        }
+
+
                     }
                 }
-
-
-                // Actualiza la dirección del sprite según la velocidad
-                if (!knockback) {
-                    if (b2body.body.getLinearVelocity().x > 0 && !texture.runningRight ) {
-                        texture.runningRight = true;
-
-                    } else if (b2body.body.getLinearVelocity().x < 0 && texture.runningRight ) {
-                        texture.runningRight = false;
-
-                    }
-                }
-
-
             }
+
+
         }
-        }
 
-
-
-
-if (!knockback) {
+if (!knockback && !dodging) {
 
 
     if (touchpad.isTouched() && !attacking) {

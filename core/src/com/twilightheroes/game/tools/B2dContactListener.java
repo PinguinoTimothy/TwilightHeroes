@@ -22,19 +22,14 @@ public class B2dContactListener implements ContactListener {
         System.out.println(fa.getBody().getType()+" has hit "+ fb.getBody().getType());
 
         boolean isHitbox = false;
+        if ("playerAttackSensor".equals(fa.getUserData()) || "playerAttackSensor".equals(fb.getUserData())){
+            isHitbox = true;
+        }
         if(fa.getBody().getUserData() instanceof Entity){
             Entity ent = (Entity) fa.getBody().getUserData();
-            if ("playerAttackSensor".equals(fa.getUserData())){
-                isHitbox = true;
-            }
             entityCollision(ent,fb,true,isHitbox);
-
-        }
-        if(fb.getBody().getUserData() instanceof Entity && !"playerAttackSensor".equals(fa.getUserData()) ){
+        }else if(fb.getBody().getUserData() instanceof Entity){
             Entity ent = (Entity) fb.getBody().getUserData();
-            if ("playerAttackSensor".equals(fa.getUserData())){
-                isHitbox = true;
-            }
             entityCollision(ent,fa,true,isHitbox);
 
         }

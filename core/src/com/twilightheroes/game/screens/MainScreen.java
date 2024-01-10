@@ -94,6 +94,9 @@ private     float viewportWidth,viewportHeight;
 
     private  Skin btnAttackSkin;
     private Button btnAttack;
+
+    private Skin btnDodgeSkin;
+    private Button btnDodge;
     private B2WorldCreator b2WorldCreator;
 
     public MyInputProcessor myInputProcessor;
@@ -173,6 +176,14 @@ btnAttack.setScale(1.5f,1.5f);
         hud.stage.addActor(btnAttack);
 hud.stage.setDebugAll(true);
 
+        // Boton Dodge
+        btnDodgeSkin = new Skin();
+        btnDodgeSkin.add("dodge", new Texture("dodge.png"));
+        btnDodge = new ImageButton(btnDodgeSkin.getDrawable("dodge"));
+        btnDodge.setScale(1.5f,1.5f);
+        btnDodge.setBounds(350, 60, 30, 30);
+        hud.stage.addActor(btnDodge);
+
 
 
         // add all the relevant systems our engine should run
@@ -181,7 +192,7 @@ hud.stage.setDebugAll(true);
         engine.addSystem(new PhysicsSystem(world,engine,this));
         engine.addSystem(new PhysicsDebugSystem(world, renderingSystem.getCamera()));
         engine.addSystem(new CollisionSystem(renderingSystem,this));
-        engine.addSystem(new PlayerControlSystem(touchpad,btnJump,btnAttack));
+        engine.addSystem(new PlayerControlSystem(touchpad,btnJump,btnAttack,btnDodge));
         engine.addSystem(new EnemySystem(this));
 
         b2WorldCreator = new B2WorldCreator(world,engine,atlas,this);
