@@ -11,7 +11,6 @@ public class B2dBodyComponent implements Component , Pool.Poolable{
     public float startX;
     public float startY;
     public boolean isDead = false;
-    public int hp = 100;
     @Override
     public void reset() {
         body = null;

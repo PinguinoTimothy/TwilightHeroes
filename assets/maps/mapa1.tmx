@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.10.2" orientation="orthogonal" renderorder="right-down" width="60" height="20" tilewidth="16" tileheight="16" infinite="0" nextlayerid="6" nextobjectid="8">
+<map version="1.10" tiledversion="1.10.2" orientation="orthogonal" renderorder="right-down" width="60" height="20" tilewidth="16" tileheight="16" infinite="0" nextlayerid="7" nextobjectid="11">
  <tileset firstgid="1" source="Background.tsx"/>
  <tileset firstgid="511" source="Tiles.tsx"/>
  <layer id="1" name="background" width="60" height="20">
@@ -63,7 +63,21 @@
    </properties>
   </object>
  </objectgroup>
- <objectgroup id="5" name="spawn">
-  <object id="7" x="16" y="288" width="16" height="16"/>
+ <objectgroup id="6" name="enemigos">
+  <object id="8" x="384.875" y="274.167" width="16" height="16">
+   <properties>
+    <property name="enemigo" value="caballero"/>
+   </properties>
+  </object>
+  <object id="9" x="433.375" y="273.167" width="16" height="16">
+   <properties>
+    <property name="enemigo" value="caballero"/>
+   </properties>
+  </object>
+  <object id="10" x="497.125" y="273.667" width="16" height="16">
+   <properties>
+    <property name="enemigo" value="skeleton"/>
+   </properties>
+  </object>
  </objectgroup>
 </map>

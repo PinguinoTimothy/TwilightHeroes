@@ -18,6 +18,9 @@ import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.MassData;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
+import com.badlogic.gdx.utils.Json;
+import com.badlogic.gdx.utils.JsonReader;
+import com.badlogic.gdx.utils.JsonValue;
 import com.twilightheroes.game.TwilightHeroes;
 import com.twilightheroes.game.ecs.components.AnimationComponent;
 import com.twilightheroes.game.ecs.components.AttackComponent;
@@ -31,6 +34,9 @@ import com.twilightheroes.game.ecs.components.TextureComponent;
 import com.twilightheroes.game.ecs.components.TypeComponent;
 import com.twilightheroes.game.screens.MainScreen;
 
+import java.util.HashMap;
+import java.util.Objects;
+
 public class B2WorldCreator {
 
     private PooledEngine engine;
@@ -41,6 +47,9 @@ public class B2WorldCreator {
     private TextureAtlas playerAtlas;
     private TiledMap map;
 
+    private HashMap<String,EnemyPrototype> enemigos = new HashMap<String,EnemyPrototype>();
+
+
     public B2WorldCreator(World world, PooledEngine engine, TextureAtlas playerAtlas, MainScreen screen) {
 
         this.engine = engine;
@@ -49,6 +58,29 @@ public class B2WorldCreator {
         bodyFactory = BodyFactory.getInstance(world);
         this.screen = screen;
         this.playerAtlas = playerAtlas;
+
+
+        JsonValue json = new JsonReader().parse(Gdx.files.internal("configuraciones.json"));
+        JsonValue jsonEnemigos = json.get("enemigos");
+        for (int i = 0; i < jsonEnemigos.size; i++) {
+            JsonValue enemigoActual = jsonEnemigos.get(i);
+             TextureAtlas atlas = new TextureAtlas(Gdx.files.internal(enemigoActual.get("atlas").asString()));
+             int width = enemigoActual.get("width").asInt();
+             int height = enemigoActual.get("height").asInt();
+             int hitboxX = enemigoActual.get("hitboxX").asInt();
+             int hitboxY = enemigoActual.get("hitboxY").asInt();
+             int hp = enemigoActual.get("hp").asInt();
+             int idleFrames = enemigoActual.get("animaciones").get("IDLE").asInt();
+             int walkFrames = enemigoActual.get("animaciones").get("WALK").asInt();
+             int attackFrames =enemigoActual.get("animaciones").get("ATTACK").asInt();
+
+             float viewDistance = enemigoActual.get("viewDistance").asFloat();
+             float attackDistance = enemigoActual.get("attackDistance").asFloat();
+             float attackCooldown = enemigoActual.get("attackCooldown").asFloat();
+             float speed = enemigoActual.get("speed").asFloat();
+             int attackFrame = enemigoActual.get("attackFrame").asInt();
+        enemigos.put(enemigoActual.get("nombre").asString(),new EnemyPrototype(atlas,width,height,hitboxX,hitboxY,hp,idleFrames,walkFrames,attackFrames,viewDistance,attackDistance,attackCooldown,speed,attackFrame));
+        }
 
     }
 
@@ -82,9 +114,8 @@ public class B2WorldCreator {
         crearSalidas();
 
         createPlayer(playerAtlas);
-        TextureAtlas atlasEnemigo = new TextureAtlas(Gdx.files.internal("enemy.atlas"));
 
-        createEnemy(playerAtlas.findRegion("Idle-Sheet"), 4f, 1, 4, 8, atlasEnemigo);
+        createEnemy();
         // createEnemy(playerAtlas.findRegion("Idle-Sheet"),5f,1,4,8,atlasEnemigo);
         // createEnemy(playerAtlas.findRegion("Idle-Sheet"),6f,1,4,8,atlasEnemigo);
         //createEnemy(playerAtlas.findRegion("Idle-Sheet"),7f,1,4,8,atlasEnemigo);
@@ -246,10 +277,11 @@ public class B2WorldCreator {
         screen.playerEntity = entity;
     }
 
-    public void createEnemy(TextureRegion tex, float x, float y, float width, float height, TextureAtlas atlas) {
+    public void createEnemy() {
 
         for (MapObject object : map.getLayers().get(4).getObjects().getByType(RectangleMapObject.class)) {
             Rectangle rectangle = ((RectangleMapObject) object).getRectangle();
+            EnemyPrototype enemyPrototype = enemigos.get(object.getProperties().get("enemigo"));
             // Create the Entity and all the components that will go in the entity
             Entity entity = engine.createEntity();
             B2dBodyComponent b2dbody = engine.createComponent(B2dBodyComponent.class);
@@ -262,9 +294,9 @@ public class B2WorldCreator {
             AttackComponent attackComponent = engine.createComponent(AttackComponent.class);
 
             // create the data for the components and add them to the components
-            texture.sprite.setRegion(atlas.findRegion("IDLE"));
+            texture.sprite.setRegion(enemyPrototype.atlas.findRegion("IDLE"));
 
-            texture.sprite.setBounds(rectangle.getX()/TwilightHeroes.PPM,rectangle.getY()/TwilightHeroes.PPM, 35 / TwilightHeroes.PPM, 47 / TwilightHeroes.PPM);
+            texture.sprite.setBounds(rectangle.getX()/TwilightHeroes.PPM,rectangle.getY()/TwilightHeroes.PPM, enemyPrototype.width / TwilightHeroes.PPM, enemyPrototype.height / TwilightHeroes.PPM);
 
             type.type = TypeComponent.ENEMY;
             stateCom.set(StateComponent.STATE_IDLE);
@@ -278,7 +310,7 @@ public class B2WorldCreator {
             b2dbody.body.setFixedRotation(true);
             // Define la hitbox rectangular
             PolygonShape shape = new PolygonShape();
-            shape.setAsBox(4 / TwilightHeroes.PPM, 8 / TwilightHeroes.PPM); // Tamaño de la hitbox
+            shape.setAsBox(enemyPrototype.hitboxX / TwilightHeroes.PPM, enemyPrototype.hitboxY / TwilightHeroes.PPM); // Tamaño de la hitbox
 
             FixtureDef fixtureDef = new FixtureDef();
             fixtureDef.friction = 0;
@@ -308,10 +340,16 @@ public class B2WorldCreator {
             // Create the animation and add it to AnimationComponent
 
 
-            animCom.animations.put(StateComponent.STATE_IDLE, AnimationMaker.crearAnimacion(atlas, "IDLE", 3, 3));
-            animCom.animations.put(StateComponent.STATE_ENEMY_ATTACK, AnimationMaker.crearAnimacion(atlas, "ATTACK", 7, 7));
-            animCom.animations.put(StateComponent.STATE_CHASING, AnimationMaker.crearAnimacion(atlas, "WALK", 8, 8));
+            animCom.animations.put(StateComponent.STATE_IDLE, AnimationMaker.crearAnimacion(enemyPrototype.atlas, "IDLE", enemyPrototype.idleFrames, enemyPrototype.idleFrames));
+            animCom.animations.put(StateComponent.STATE_ENEMY_ATTACK, AnimationMaker.crearAnimacion(enemyPrototype.atlas, "ATTACK", enemyPrototype.attackFrames, enemyPrototype.attackFrames));
+            animCom.animations.put(StateComponent.STATE_CHASING, AnimationMaker.crearAnimacion(enemyPrototype.atlas, "WALK", enemyPrototype.walkFrames, enemyPrototype.walkFrames));
 
+            enemyComponent.attackCooldown = enemyPrototype.attackCooldown;
+            enemyComponent.attackDistance = enemyPrototype.attackDistance;
+            enemyComponent.attackFrame = enemyPrototype.attackFrame;
+            enemyComponent.viewDistance = enemyPrototype.viewDistance;
+            enemyComponent.speed = enemyPrototype.speed;
+            enemyComponent.hp = enemyPrototype.hp;
 
             entity.add(b2dbody);
             entity.add(texture);

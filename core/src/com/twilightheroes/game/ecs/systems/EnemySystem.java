@@ -76,6 +76,7 @@ public class EnemySystem extends IteratingSystem {
                 enemyStateComponent.set(StateComponent.STATE_IDLE);
             }
         }
+        //enemyStateComponent.set(StateComponent.STATE_IDLE);
         switch (enemyStateComponent.get()) {
 
             case StateComponent.STATE_IDLE:
@@ -86,7 +87,7 @@ public class EnemySystem extends IteratingSystem {
                 if (distanceToPlayer.x > 0.001f || distanceToPlayer.x < -0.001f) {
 
 
-                    float speed = distanceToPlayer.x < 0 ? 0.5f : -0.5f;
+                    float speed = distanceToPlayer.x < 0 ? enemyCom.speed : -enemyCom.speed;
                     bodyCom.body.setLinearVelocity(new Vector2(speed, bodyCom.body.getLinearVelocity().y));
                 }else{
                     enemyStateComponent.set(StateComponent.STATE_IDLE);
@@ -96,18 +97,18 @@ public class EnemySystem extends IteratingSystem {
 
             case StateComponent.STATE_ENEMY_ATTACK:
                 if (enemyStateComponent.get() == StateComponent.STATE_ENEMY_ATTACK && !animationComponent.animations.get(enemyStateComponent.get()).isAnimationFinished(enemyStateComponent.time)){
-                    if (animationComponent.currentFrame == attackComponent.attackFrame && attackComponent.performAttack){
+                    if (animationComponent.currentFrame == enemyCom.attackFrame && attackComponent.performAttack){
                         createAttackFixture(textureComponent, bodyCom,attackComponent);
                         attackComponent.performAttack = false;
                     }
                 }else {
 
-                    if (attackComponent.attackCooldown <= 0) {
-                        attackComponent.attackCooldown = 1.5f;
+                    if (enemyCom.attackCooldown <= 0) {
+                        enemyCom.attackCooldown = 1.5f;
                         enemyStateComponent.time = 0f;
                         attackComponent.performAttack = true;
                     } else {
-                        attackComponent.attackCooldown -= deltaTime;
+                        enemyCom.attackCooldown -= deltaTime;
                         enemyStateComponent.set(StateComponent.STATE_IDLE);
 
                     }

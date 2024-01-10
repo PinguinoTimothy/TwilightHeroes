@@ -6,14 +6,12 @@ import com.badlogic.gdx.utils.Pool;
 
 public class AttackComponent implements Component, Pool.Poolable {
     public Fixture attackFixture;
-    public float attackCooldown = 0f;
 
-    public int attackFrame = 5;
     public boolean performAttack = false;
 
     @Override
     public void reset() {
-
+    attackFixture = null;
 
     }
 }

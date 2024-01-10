@@ -29,7 +29,8 @@ public class B2dContactListener implements ContactListener {
             }
             entityCollision(ent,fb,true,isHitbox);
 
-        }else if(fb.getBody().getUserData() instanceof Entity){
+        }
+        if(fb.getBody().getUserData() instanceof Entity && !"playerAttackSensor".equals(fa.getUserData()) ){
             Entity ent = (Entity) fb.getBody().getUserData();
             if ("playerAttackSensor".equals(fa.getUserData())){
                 isHitbox = true;

@@ -1,0 +1,15 @@
+skeleton.png
+size:2048,512
+repeat:none
+ATTACK
+bounds:2,306,1200,150
+Death
+bounds:604,154,600,150
+IDLE
+bounds:2,154,600,150
+Shield
+bounds:1204,306,600,150
+Take Hit
+bounds:2,2,600,150
+WALK
+bounds:604,2,600,150

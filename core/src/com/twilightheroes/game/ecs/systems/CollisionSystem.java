@@ -59,8 +59,8 @@ public class CollisionSystem extends IteratingSystem {
 
 
                                     if (isHitbox) {
-                                        Mappers.b2dCom.get(collidedEntity).hp -= 25;
-                                        if (Mappers.b2dCom.get(collidedEntity).hp <= 0) {
+                                        Mappers.enemyCom.get(collidedEntity).hp -= 25;
+                                        if (Mappers.enemyCom.get(collidedEntity).hp <= 0) {
                                             Mappers.b2dCom.get(collidedEntity).isDead = true;
 
                                         }
