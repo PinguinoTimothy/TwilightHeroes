@@ -66,63 +66,70 @@ public class EnemySystem extends IteratingSystem {
             attackComponent.attackFixture = null;
         }
 
-        float auxDistance = Math.abs(distanceToPlayer.x*10);
-        if (Math.abs(distanceToPlayer.y) < 10) {
-            if (auxDistance >= 0 && auxDistance <= enemyCom.attackDistance && Math.abs(distanceToPlayer.y) < 0.5) {
-                enemyStateComponent.set(StateComponent.STATE_ENEMY_ATTACK);
-            } else if (auxDistance > 0 && auxDistance <= enemyCom.viewDistance) {
-                enemyStateComponent.set(StateComponent.STATE_CHASING);
-            } else {
-                enemyStateComponent.set(StateComponent.STATE_IDLE);
+        if (enemyStateComponent.get() == StateComponent.STATE_ENEMY_ATTACK && !animationComponent.animations.get(enemyStateComponent.get()).isAnimationFinished(enemyStateComponent.time)){
+            if (animationComponent.currentFrame == enemyCom.attackFrame && attackComponent.performAttack){
+                createAttackFixture(textureComponent, bodyCom,attackComponent);
+                attackComponent.performAttack = false;
             }
-        }
-        //enemyStateComponent.set(StateComponent.STATE_IDLE);
-        switch (enemyStateComponent.get()) {
-
-            case StateComponent.STATE_IDLE:
-
-                break;
-
-            case StateComponent.STATE_CHASING:
-                if (distanceToPlayer.x > 0.001f || distanceToPlayer.x < -0.001f) {
-
-
-                    float speed = distanceToPlayer.x < 0 ? enemyCom.speed : -enemyCom.speed;
-                    bodyCom.body.setLinearVelocity(new Vector2(speed, bodyCom.body.getLinearVelocity().y));
-                }else{
+        }else {
+            float auxDistance = Math.abs(distanceToPlayer.x * 10);
+            if (Math.abs(distanceToPlayer.y) < 10) {
+                if (auxDistance >= 0 && auxDistance <= enemyCom.attackDistance && Math.abs(distanceToPlayer.y) < 0.5) {
+                    enemyStateComponent.set(StateComponent.STATE_ENEMY_ATTACK);
+                } else if (auxDistance > 0 && auxDistance <= enemyCom.viewDistance) {
+                    enemyStateComponent.set(StateComponent.STATE_CHASING);
+                } else {
                     enemyStateComponent.set(StateComponent.STATE_IDLE);
-
                 }
-                break;
+            }
+            //enemyStateComponent.set(StateComponent.STATE_IDLE);
+            switch (enemyStateComponent.get()) {
 
-            case StateComponent.STATE_ENEMY_ATTACK:
-                if (enemyStateComponent.get() == StateComponent.STATE_ENEMY_ATTACK && !animationComponent.animations.get(enemyStateComponent.get()).isAnimationFinished(enemyStateComponent.time)){
-                    if (animationComponent.currentFrame == enemyCom.attackFrame && attackComponent.performAttack){
-                        createAttackFixture(textureComponent, bodyCom,attackComponent);
-                        attackComponent.performAttack = false;
-                    }
-                }else {
+                case StateComponent.STATE_IDLE:
 
-                    if (enemyCom.attackCooldown <= 0) {
-                        enemyCom.attackCooldown = 1.5f;
-                        enemyStateComponent.time = 0f;
-                        attackComponent.performAttack = true;
+                    break;
+
+                case StateComponent.STATE_CHASING:
+                    if (distanceToPlayer.x > 0.001f || distanceToPlayer.x < -0.001f) {
+
+
+                        float speed = distanceToPlayer.x < 0 ? enemyCom.speed : -enemyCom.speed;
+                        bodyCom.body.setLinearVelocity(new Vector2(speed, bodyCom.body.getLinearVelocity().y));
                     } else {
-                        enemyCom.attackCooldown -= deltaTime;
                         enemyStateComponent.set(StateComponent.STATE_IDLE);
 
                     }
-                }
+                    break;
 
-                break;
-        }
+                case StateComponent.STATE_ENEMY_ATTACK:
+                    if (enemyStateComponent.get() == StateComponent.STATE_ENEMY_ATTACK && !animationComponent.animations.get(enemyStateComponent.get()).isAnimationFinished(enemyStateComponent.time)) {
+                        if (animationComponent.currentFrame == enemyCom.attackFrame && attackComponent.performAttack) {
+                            createAttackFixture(textureComponent, bodyCom, attackComponent);
+                            attackComponent.performAttack = false;
+                        }
+                    } else {
 
-        if (distanceToPlayer.x < 0 && !textureComponent.runningRight) {
-            textureComponent.runningRight = true;
+                        if (enemyCom.attackCooldown <= 0) {
+                            enemyCom.attackCooldown = 1.5f;
+                            enemyStateComponent.time = 0f;
+                            attackComponent.performAttack = true;
+                        } else {
+                            enemyCom.attackCooldown -= deltaTime;
+                            enemyStateComponent.set(StateComponent.STATE_IDLE);
 
-        } else if (distanceToPlayer.x > 0 && textureComponent.runningRight) {
-            textureComponent.runningRight = false;
+                        }
+                    }
 
+                    break;
+            }
+
+            if (distanceToPlayer.x < 0 && !textureComponent.runningRight) {
+                textureComponent.runningRight = true;
+
+            } else if (distanceToPlayer.x > 0 && textureComponent.runningRight) {
+                textureComponent.runningRight = false;
+
+            }
         }
 
     }
@@ -131,7 +138,7 @@ public class EnemySystem extends IteratingSystem {
     private void createAttackFixture(TextureComponent texture, B2dBodyComponent b2dbody,AttackComponent attackComponent) {
         PolygonShape attackShape = new PolygonShape();
         float offsetX = texture.runningRight ? 16 / TwilightHeroes.PPM : -16 / TwilightHeroes.PPM;
-        attackShape.setAsBox(12 / TwilightHeroes.PPM, 8 / TwilightHeroes.PPM, new Vector2(offsetX, 0), 0);
+        attackShape.setAsBox( 16 / TwilightHeroes.PPM, 8 / TwilightHeroes.PPM, new Vector2(offsetX, 0), 0);
         FixtureDef attackFixtureDef = new FixtureDef();
         attackFixtureDef.shape = attackShape;
         attackFixtureDef.isSensor = true; // Configurar la fixture como un sensor

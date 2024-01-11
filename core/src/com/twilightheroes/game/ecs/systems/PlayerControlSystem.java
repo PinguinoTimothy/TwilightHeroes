@@ -3,6 +3,7 @@ package com.twilightheroes.game.ecs.systems;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.systems.IteratingSystem;
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Filter;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
@@ -50,6 +51,7 @@ public class PlayerControlSystem extends IteratingSystem {
     public float dodgeCooldown = 0f;
     private Filter inmuneFilter = new Filter();
     private Filter playerFilter = new Filter();
+    private float accelY;
 
     public PlayerControlSystem(Touchpad touchpad, Button btnSaltar, Button btnAtacar,Button btnDodge) {
         super(Family.all(PlayerComponent.class).get());
@@ -82,13 +84,9 @@ public class PlayerControlSystem extends IteratingSystem {
                 // Lógica para el salto aquí
 
 
+saltar();
 
 
-                if ((b2body.body.getLinearVelocity().y == 0 || coyoteTime < 0.1f) && !knockback) {
-                    coyoteTime += 1f;
-                    b2body.body.setLinearVelocity(b2body.body.getLinearVelocity().x, 0);
-                    b2body.body.applyLinearImpulse(new Vector2(0, 3f), b2body.body.getWorldCenter(), true);
-                }
 
 
 
@@ -129,6 +127,18 @@ public class PlayerControlSystem extends IteratingSystem {
 
         inmuneFilter.categoryBits = TwilightHeroes.INMUNE_BIT;
         playerFilter.categoryBits = TwilightHeroes.PLAYER_BIT;
+
+
+
+
+    }
+
+    public void saltar(){
+        if ((b2body.body.getLinearVelocity().y == 0 || coyoteTime < 0.1f) && !knockback) {
+            coyoteTime += 1f;
+            b2body.body.setLinearVelocity(b2body.body.getLinearVelocity().x, 0);
+            b2body.body.applyLinearImpulse(new Vector2(0, 3f), b2body.body.getWorldCenter(), true);
+        }
     }
 
 
@@ -147,6 +157,10 @@ public class PlayerControlSystem extends IteratingSystem {
         knockback = playerComponent.knockback;
         speed = playerComponent.speed;
 
+        accelY = Gdx.input.getAccelerometerZ();
+        if (accelY > 20){
+            saltar();
+        }
 
 if (makeDodge){
 

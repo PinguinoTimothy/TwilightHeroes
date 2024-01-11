@@ -3,6 +3,7 @@ package com.twilightheroes.game.ecs.systems;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.systems.IteratingSystem;
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Filter;
 import com.twilightheroes.game.TwilightHeroes;
@@ -118,6 +119,7 @@ public class CollisionSystem extends IteratingSystem {
                                         bodyPlayer.body.setLinearVelocity(new Vector2(xForce, 0f));
                                         player.knockback = true;
                                         player.knockBackTime = 0.5f;
+                                        Gdx.input.vibrate(500);
                                     }
                                     break;
                             }
