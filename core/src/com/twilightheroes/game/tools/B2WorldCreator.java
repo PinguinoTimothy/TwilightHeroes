@@ -4,7 +4,6 @@ import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.PooledEngine;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.maps.MapObject;
 import com.badlogic.gdx.maps.objects.RectangleMapObject;
 import com.badlogic.gdx.maps.tiled.TiledMap;
@@ -15,10 +14,8 @@ import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.EdgeShape;
 import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
-import com.badlogic.gdx.physics.box2d.MassData;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
-import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonReader;
 import com.badlogic.gdx.utils.JsonValue;
 import com.twilightheroes.game.TwilightHeroes;
@@ -35,7 +32,6 @@ import com.twilightheroes.game.ecs.components.TypeComponent;
 import com.twilightheroes.game.screens.MainScreen;
 
 import java.util.HashMap;
-import java.util.Objects;
 
 public class B2WorldCreator {
 
@@ -155,7 +151,7 @@ public class B2WorldCreator {
             fixtureDef.shape = shape;
             fixtureDef.isSensor = true;
             fixtureDef.filter.categoryBits = TwilightHeroes.EXIT_BIT;
-            fixtureDef.filter.maskBits = TwilightHeroes.PLAYER_BIT;
+            fixtureDef.filter.maskBits = TwilightHeroes.PLAYER_BIT | TwilightHeroes.INMUNE_BIT;
             b2dbody.body.createFixture(fixtureDef);
             b2dbody.body.setUserData(entity);
             b2dbody.width = rectangle.getWidth();

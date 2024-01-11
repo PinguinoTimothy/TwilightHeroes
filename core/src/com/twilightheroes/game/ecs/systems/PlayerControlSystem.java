@@ -1,16 +1,13 @@
 package com.twilightheroes.game.ecs.systems;
 
-import com.badlogic.ashley.core.ComponentMapper;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.systems.IteratingSystem;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Filter;
-import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
-import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.Touchpad;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
@@ -47,11 +44,11 @@ public class PlayerControlSystem extends IteratingSystem {
     private float dequeueTime = 0f;
     private Queue<Integer> inputBuffer = new Queue<>();
     private boolean atacando = false;
-    public boolean inmune = false;
     public boolean dodging = false;
     public boolean makeDodge = false;
-    public float inmuneTime = 0f;
-    private Filter dodgeFilter = new Filter();
+    public boolean canDodge = true;
+    public float dodgeCooldown = 0f;
+    private Filter inmuneFilter = new Filter();
     private Filter playerFilter = new Filter();
 
     public PlayerControlSystem(Touchpad touchpad, Button btnSaltar, Button btnAtacar,Button btnDodge) {
@@ -121,12 +118,16 @@ public class PlayerControlSystem extends IteratingSystem {
         btnDodge.addListener(new ClickListener(){
             @Override
             public void clicked(InputEvent event, float x, float y) {
-    makeDodge = true;
+                if (dodgeCooldown <= 0 && !knockback){
+                    makeDodge = true;
+
+                    dodgeCooldown = 0.5f;
+                }
 
             }
         });
 
-        dodgeFilter.categoryBits = TwilightHeroes.DODGING_BIT;
+        inmuneFilter.categoryBits = TwilightHeroes.INMUNE_BIT;
         playerFilter.categoryBits = TwilightHeroes.PLAYER_BIT;
     }
 
@@ -149,23 +150,24 @@ public class PlayerControlSystem extends IteratingSystem {
 
 if (makeDodge){
 
-    inmune = true;
+    playerComponent.inmune = true;
     dodging = true;
-    inmuneTime = 0.3f;
+    playerComponent.inmuneTime = 0.3f;
     state.set(StateComponent.STATE_DODGING);
-    float dodgeForce = texture.runningRight ? 2.5f : -2.5f;
-    b2body.body.setLinearVelocity(0,b2body.body.getLinearVelocity().y);
+    float dodgeForce = texture.runningRight ? 3f : -3f;
+    b2body.body.setLinearVelocity(0,0);
+    b2body.body.setGravityScale(0f);
     b2body.body.applyLinearImpulse(new Vector2(dodgeForce, 0f), b2body.body.getWorldCenter(), true);
-    b2body.body.getFixtureList().get(0).setFilterData(dodgeFilter);
+    b2body.body.getFixtureList().get(0).setFilterData(inmuneFilter);
     makeDodge = false;
 
 }
-        if (inmune){
+        if (playerComponent.inmune){
 
-            inmuneTime-= deltaTime;
-            if (inmuneTime <= 0){
-                inmuneTime = 0f;
-                inmune = false;
+            playerComponent.inmuneTime-= deltaTime;
+            if ( playerComponent.inmuneTime <= 0){
+                playerComponent.inmuneTime = 0f;
+                playerComponent.inmune = false;
                 dodging = false;
                 state.set(StateComponent.STATE_IDLE);
                 b2body.body.getFixtureList().get(0).setFilterData(playerFilter);
@@ -173,11 +175,15 @@ if (makeDodge){
         }
 
         if (!dodging) {
+            b2body.body.setGravityScale(1f);
+            dodgeCooldown -= deltaTime;
             if (knockback) {
 
                 state.set(StateComponent.STATE_DAMAGED);
 
-                if (b2body.body.getLinearVelocity().x == 0) {
+                playerComponent.knockBackTime -= deltaTime;
+                if (playerComponent.knockBackTime <= 0) {
+                    b2body.body.setLinearVelocity(new Vector2(0,0));
                     playerComponent.knockback = false;
                 }
             } else {

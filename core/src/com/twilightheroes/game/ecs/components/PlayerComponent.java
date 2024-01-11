@@ -11,6 +11,9 @@ public class PlayerComponent implements Component,Pool.Poolable {
     public float jumpPower = 200;
 
     public boolean knockback = false;
+    public float knockBackTime;
+    public boolean inmune = false;
+    public float inmuneTime;
 
     @Override
     public void reset() {
