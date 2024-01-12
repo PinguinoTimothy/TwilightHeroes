@@ -21,6 +21,7 @@ public class EnemyComponent implements Component, Pool.Poolable {
     public float speed;
     public float hp;
     public int attackFrame;
+    public float damage;
 
     @Override
     public void reset() {

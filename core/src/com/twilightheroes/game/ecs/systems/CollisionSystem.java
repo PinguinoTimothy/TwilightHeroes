@@ -9,6 +9,7 @@ import com.badlogic.gdx.physics.box2d.Filter;
 import com.twilightheroes.game.TwilightHeroes;
 import com.twilightheroes.game.ecs.components.B2dBodyComponent;
 import com.twilightheroes.game.ecs.components.CollisionComponent;
+import com.twilightheroes.game.ecs.components.EnemyComponent;
 import com.twilightheroes.game.ecs.components.ExitComponent;
 import com.twilightheroes.game.ecs.components.PlayerComponent;
 import com.twilightheroes.game.ecs.components.TypeComponent;
@@ -47,7 +48,7 @@ public class CollisionSystem extends IteratingSystem {
                 //get collided entity
                 Entity collidedEntity = auxCollision.collisionEntity;
                 boolean isHitbox = auxCollision.isAttackHitbox;
-
+            boolean isEnemyHitbox = auxCollision.isEnemyHitbox;
 
                 TypeComponent thisType = Mappers.typeCom.get(entity);
 
@@ -60,7 +61,7 @@ public class CollisionSystem extends IteratingSystem {
                                     //do player hit enemy thing
 
 
-                                    if (isHitbox) {
+                                    if (isHitbox && !isEnemyHitbox) {
                                         Mappers.enemyCom.get(collidedEntity).hp -= 25;
                                         if (Mappers.enemyCom.get(collidedEntity).hp <= 0) {
                                             Mappers.b2dCom.get(collidedEntity).isDead = true;
@@ -104,7 +105,7 @@ public class CollisionSystem extends IteratingSystem {
                                     PlayerComponent player = Mappers.playerCom.get(collidedEntity);
                                     B2dBodyComponent bodyPlayer = Mappers.b2dCom.get(collidedEntity);
                                     B2dBodyComponent bodyEnemy = Mappers.b2dCom.get(entity);
-
+                                    EnemyComponent enemyComponent = Mappers.enemyCom.get(entity);
 
                                     if (!isHitbox && !player.inmune) {
                                         System.out.println("enemy hit player");
@@ -112,13 +113,18 @@ public class CollisionSystem extends IteratingSystem {
                                         if (bodyPlayer.body.getPosition().x < bodyEnemy.body.getPosition().x) {
                                             xForce = -2.5f;
                                         }
+                                        player.hp -= enemyComponent.damage;
+                                        if (player.hp <= 0){
+                                            player.isDead = true;
+                                        }
+
                                         bodyPlayer.body.getFixtureList().get(0).setFilterData(inmuneFilter);
                                         player.inmune = true;
-                                        player.inmuneTime = 0.3f;
+                                        player.inmuneTime = 0.5f;
                                         bodyPlayer.body.setLinearVelocity(new Vector2(0f,0f));
                                         bodyPlayer.body.setLinearVelocity(new Vector2(xForce, 0f));
                                         player.knockback = true;
-                                        player.knockBackTime = 0.5f;
+                                        player.knockBackTime = 0.3f;
                                         Gdx.input.vibrate(500);
                                     }
                                     break;

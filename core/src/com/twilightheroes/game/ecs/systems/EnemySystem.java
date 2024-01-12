@@ -143,6 +143,7 @@ public class EnemySystem extends IteratingSystem {
         attackFixtureDef.shape = attackShape;
         attackFixtureDef.isSensor = true; // Configurar la fixture como un sensor
         attackComponent.attackFixture = b2dbody.body.createFixture(attackFixtureDef);
+        attackComponent.attackFixture.setUserData("enemyAttackSensor");
         // Liberar los recursos del shape
         attackShape.dispose();
         b2dbody.body.applyForce(new Vector2((texture.runningRight ? 1f : -1f),0f),b2dbody.body.getWorldCenter(),true);

@@ -48,6 +48,7 @@ public class PlayerControlSystem extends IteratingSystem {
     public boolean dodging = false;
     public boolean makeDodge = false;
     public boolean canDodge = true;
+    public float dodgeTime = 0f;
     public float dodgeCooldown = 0f;
     private Filter inmuneFilter = new Filter();
     private Filter playerFilter = new Filter();
@@ -166,12 +167,20 @@ if (makeDodge){
 
     playerComponent.inmune = true;
     dodging = true;
-    playerComponent.inmuneTime = 0.3f;
+    playerComponent.inmuneTime = 0.4f;
+    dodgeTime = 0.3f;
     state.set(StateComponent.STATE_DODGING);
-    float dodgeForce = texture.runningRight ? 3f : -3f;
+    float dodgeForceX;
+    if (touchpad.getKnobPercentX() > 0){
+        dodgeForceX = 3f;
+    } else if (touchpad.getKnobPercentX() < 0) {
+        dodgeForceX = -3f;
+    } else{
+        dodgeForceX = texture.runningRight ? 3f : -3f;
+    }
     b2body.body.setLinearVelocity(0,0);
     b2body.body.setGravityScale(0f);
-    b2body.body.applyLinearImpulse(new Vector2(dodgeForce, 0f), b2body.body.getWorldCenter(), true);
+    b2body.body.applyLinearImpulse(new Vector2(dodgeForceX, 0f), b2body.body.getWorldCenter(), true);
     b2body.body.getFixtureList().get(0).setFilterData(inmuneFilter);
     makeDodge = false;
 
@@ -183,12 +192,17 @@ if (makeDodge){
                 playerComponent.inmuneTime = 0f;
                 playerComponent.inmune = false;
                 dodging = false;
-                state.set(StateComponent.STATE_IDLE);
                 b2body.body.getFixtureList().get(0).setFilterData(playerFilter);
             }
         }
 
-        if (!dodging) {
+        if (dodging){
+            dodgeTime -= deltaTime;
+            if (dodgeTime<= 0){
+                dodging = false;
+
+            }
+        }else{
             b2body.body.setGravityScale(1f);
             dodgeCooldown -= deltaTime;
             if (knockback) {
@@ -199,6 +213,7 @@ if (makeDodge){
                 if (playerComponent.knockBackTime <= 0) {
                     b2body.body.setLinearVelocity(new Vector2(0,0));
                     playerComponent.knockback = false;
+                    state.set(StateComponent.STATE_IDLE);
                 }
             } else {
                 if ((state.get() == StateComponent.STATE_ATTACK01 || state.get() == StateComponent.STATE_ATTACK02 || state.get() == StateComponent.STATE_ATTACK03) && !animation.animations.get(state.get()).isAnimationFinished(state.time)) {
@@ -335,8 +350,17 @@ if (!knockback && !dodging) {
 
     private void createAttackFixture(TextureComponent texture, B2dBodyComponent b2dbody,AttackComponent attackComponent) {
         PolygonShape attackShape = new PolygonShape();
-        float offsetX = texture.runningRight ? 16 / TwilightHeroes.PPM : -16 / TwilightHeroes.PPM;
-        attackShape.setAsBox(12 / TwilightHeroes.PPM, 8 / TwilightHeroes.PPM, new Vector2(offsetX, 0), 0);
+        float offsetX;
+        if (touchpad.getKnobPercentX() > 0){
+            texture.runningRight = true;
+            offsetX = 16f;
+        } else if (touchpad.getKnobPercentX() < 0) {
+            texture.runningRight = false;
+            offsetX = -16f;
+        } else{
+            offsetX = texture.runningRight ? 16f : -16f;
+        }
+        attackShape.setAsBox(12 / TwilightHeroes.PPM, 8 / TwilightHeroes.PPM, new Vector2(offsetX/TwilightHeroes.PPM, 0), 0);
         FixtureDef attackFixtureDef = new FixtureDef();
         attackFixtureDef.shape = attackShape;
 attackFixtureDef.filter.categoryBits = TwilightHeroes.HITBOX_BIT;
@@ -345,10 +369,9 @@ attackFixtureDef.filter.categoryBits = TwilightHeroes.HITBOX_BIT;
         attackComponent.attackFixture.setUserData("playerAttackSensor");
         // Liberar los recursos del shape
         attackShape.dispose();
-        b2body.body.applyForce(new Vector2((texture.runningRight ? 100f : -100f),0f),b2body.body.getWorldCenter(),true);
+        b2body.body.applyForce(new Vector2((texture.runningRight ? 1f : -1f),0f),b2body.body.getWorldCenter(),true);
 
 
         }
 
     }
-

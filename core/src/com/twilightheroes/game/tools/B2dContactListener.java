@@ -22,20 +22,24 @@ public class B2dContactListener implements ContactListener {
         System.out.println(fa.getBody().getType()+" has hit "+ fb.getBody().getType());
 
         boolean isHitbox = false;
+        boolean isEnemyHitbox = false;
         if ("playerAttackSensor".equals(fa.getUserData()) || "playerAttackSensor".equals(fb.getUserData())){
             isHitbox = true;
         }
+        if ("enemyAttackSensor".equals(fa.getUserData()) || "enemyAttackSensor".equals(fb.getUserData())){
+            isEnemyHitbox = true;
+        }
         if(fa.getBody().getUserData() instanceof Entity){
             Entity ent = (Entity) fa.getBody().getUserData();
-            entityCollision(ent,fb,true,isHitbox);
+            entityCollision(ent,fb,true,isHitbox,isEnemyHitbox);
         }else if(fb.getBody().getUserData() instanceof Entity){
             Entity ent = (Entity) fb.getBody().getUserData();
-            entityCollision(ent,fa,true,isHitbox);
+            entityCollision(ent,fa,true,isHitbox,isEnemyHitbox);
 
         }
     }
 
-    private void entityCollision(Entity ent, Fixture fb, boolean touching, boolean hitbox) {
+    private void entityCollision(Entity ent, Fixture fb, boolean touching, boolean isHitbox, boolean isEnemyHitbox) {
         if (fb.getBody().getUserData() instanceof Entity) {
             Entity colEnt = (Entity) fb.getBody().getUserData();
 
@@ -45,7 +49,8 @@ public class B2dContactListener implements ContactListener {
             if (col != null) {
                 Collisions collisionsAux = new Collisions();  // Nueva instancia para cada colisión
                 collisionsAux.collisionEntity = colEnt;
-                collisionsAux.isAttackHitbox = hitbox;
+                collisionsAux.isAttackHitbox = isHitbox;
+                collisionsAux.isEnemyHitbox = isEnemyHitbox;
 
                 if (touching) {
                     // Si las entidades están en contacto, añade la entidad a la lista de colisiones
@@ -54,27 +59,26 @@ public class B2dContactListener implements ContactListener {
                     // Si las entidades ya no están en contacto, elimina la entidad de la lista de colisiones
                     col.collisionEntities.removeValue(collisionsAux, true);
                 }
-                col.isTouching = !col.collisionEntities.isEmpty();
-                col.isAttackHitbox = hitbox;
+
+
             }
             if (colb != null) {
                 Collisions collisionsAux = new Collisions();  // Nueva instancia para cada colisión
                 collisionsAux.collisionEntity = ent;
-                collisionsAux.isAttackHitbox = hitbox;
+                collisionsAux.isAttackHitbox = isHitbox;
+                collisionsAux.isEnemyHitbox = isEnemyHitbox;
 
                 if (touching) {
                     colb.collisionEntities.add(collisionsAux);
                 } else {
                     colb.collisionEntities.removeValue(collisionsAux, true);
                 }
-                colb.isTouching = !colb.collisionEntities.isEmpty();
-                colb.isAttackHitbox = hitbox;
             }
         }
     }
     @Override
     public void endContact(Contact contact) {
-
+/*
         System.out.println("Contact end");
         Fixture fa = contact.getFixtureA();
         Fixture fb = contact.getFixtureB();
@@ -85,7 +89,7 @@ public class B2dContactListener implements ContactListener {
             if ("playerAttackSensor".equals(fa.getUserData())){
                 isHitbox = true;
             }
-            entityCollision(ent,fb,false,isHitbox);
+            entityCollision(ent,fb,false,isHitbox,);
 
         }else if(fb.getBody().getUserData() instanceof Entity){
             Entity ent = (Entity) fb.getBody().getUserData();
@@ -95,6 +99,8 @@ public class B2dContactListener implements ContactListener {
             entityCollision(ent,fa,false,isHitbox);
 
         }
+
+ */
     }
     @Override
     public void preSolve(Contact contact, Manifold oldManifold) {

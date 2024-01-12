@@ -8,15 +8,12 @@ import com.twilightheroes.game.tools.Collisions;
 
 public class CollisionComponent implements Component, Pool.Poolable {
     public Entity collisionEntity;
-    public boolean isTouching;
-    public boolean isAttackHitbox;
 
    public Array<Collisions> collisionEntities = new Array<>();
 
     @Override
     public void reset() {
         collisionEntity = null;
-        isTouching = false;
-        isAttackHitbox = false;
+
     }
     }
