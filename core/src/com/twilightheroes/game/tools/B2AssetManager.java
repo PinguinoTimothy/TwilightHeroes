@@ -28,6 +28,8 @@ public class B2AssetManager {
 
         manager.load("background.png",Texture.class);
         manager.load("hud/play01.png",Texture.class);
+        manager.load("hud/healthBar.png",Texture.class);
+        manager.load("hud/knob.png",Texture.class);
 
 
 

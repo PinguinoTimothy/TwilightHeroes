@@ -48,9 +48,6 @@ public class EndScreen implements Screen {
         background = parent.assMan.manager.get("background.png");
 
 
-
-
-
         // create stage and set it as input processor
         stage = new Stage(new ScreenViewport());
         Gdx.input.setInputProcessor(stage);
@@ -78,7 +75,7 @@ public class EndScreen implements Screen {
 
         Button btn1 = new Button();
 
-// Create a ButtonStyle and set its 'up' field with a Drawable
+        // Create a ButtonStyle and set its 'up' field with a Drawable
         Button.ButtonStyle btnStyle = new Button.ButtonStyle();
         btnStyle.up = new TextureRegionDrawable(new TextureRegion(parent.assMan.manager.get("hud/play01.png",Texture.class)));
         btn1.setStyle(btnStyle);

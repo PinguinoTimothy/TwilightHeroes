@@ -1,5 +1,6 @@
 package com.twilightheroes.game.scenes;
 
+import com.badlogic.ashley.core.Entity;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.Color;
@@ -17,6 +18,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.Touchpad;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
+import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
@@ -34,12 +36,13 @@ public class Hud implements Disposable {
     Label scoreLabel;
 
 
-    Image healthBar;
+    ProgressBar healthBar;
 
     Texture hbTexture;
     private static final int FRAME_COLS = 3, FRAME_ROWS = 2;
     TextureRegion[] healthBarImages = new TextureRegion[FRAME_COLS * FRAME_ROWS];
     private AssetManager manager;
+    private int vidas;
 
 
     public Hud(SpriteBatch sb,AssetManager manager){
@@ -48,7 +51,6 @@ public class Hud implements Disposable {
     score = 0;
 
     this.manager = manager;
-
     viewport = new FitViewport(TwilightHeroes.V_WIDTH,TwilightHeroes.V_HEIGHT,new OrthographicCamera());
     stage = new Stage(viewport,sb);
 
@@ -83,11 +85,14 @@ public class Hud implements Disposable {
 
             }
         }
-
-        ProgressBar.ProgressBarStyle pb = new ProgressBar.ProgressBarStyle();
-        healthBar = new Image(healthBarImages[0]);
-
-
+ProgressBar.ProgressBarStyle progressBarStyle = new ProgressBar.ProgressBarStyle();
+        progressBarStyle.background = new TextureRegionDrawable(new TextureRegion(manager.get("hud/healthBar.png",Texture.class)));
+        progressBarStyle.knobBefore = new TextureRegionDrawable(new TextureRegion(manager.get("hud/knob.png",Texture.class)));
+        progressBarStyle.knobBefore.setMinHeight(10f);
+        progressBarStyle.knobBefore.setLeftWidth(10f);
+        progressBarStyle.knobBefore.setRightWidth(10f);
+        healthBar = new ProgressBar(0,100,.1f,false,progressBarStyle);
+        healthBar.setValue(100);
         table.add(healthBar).expandX().padTop(10);
         table.add(scoreLabel).expandX().padTop(10);
 
@@ -101,28 +106,12 @@ public class Hud implements Disposable {
 
         }
 
+int vidasActuales;
 
-int vidas = 5;
-        public void update(float dt){
-        timeCount += dt;
-        if (timeCount >= 1){
-            worldTimer--;
-            countdownLabel.setText(String.format("%03d",worldTimer));
-            timeCount = 0f;
-        }
+        public void update(Entity playerEntity){
 
 
-        //Creo que al actualizarse demasiado rapido, peta
-            if (worldTimer == 295){
-                vidas--;
 
-                Skin skin2 = new Skin();
-                skin2.add("logo", healthBarImages[vidas]);
-
-
-                Drawable vid = skin2.getDrawable("logo");
-                healthBar.setDrawable(vid);
-            }
 
 
         }
