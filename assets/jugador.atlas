@@ -1,9 +1,0 @@
-jugador.png
-size:2048,128
-repeat:none
-Idle-Sheet
-bounds:1038,2,256,80
-Run-Sheet
-bounds:2,2,640,80
-ataque1
-bounds:644,2,392,80

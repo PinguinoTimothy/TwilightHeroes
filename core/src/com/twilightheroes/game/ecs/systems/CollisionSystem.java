@@ -115,6 +115,7 @@ public class CollisionSystem extends IteratingSystem {
                                         }
                                         player.hp -= enemyComponent.damage;
                                         if (player.hp <= 0){
+                                            bodyPlayer.isDead = true;
                                             player.isDead = true;
                                         }
 

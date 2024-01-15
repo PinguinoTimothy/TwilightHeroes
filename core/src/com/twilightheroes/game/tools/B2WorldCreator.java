@@ -3,6 +3,7 @@ package com.twilightheroes.game.tools;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.PooledEngine;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.maps.MapObject;
 import com.badlogic.gdx.maps.objects.RectangleMapObject;
@@ -40,27 +41,25 @@ public class B2WorldCreator {
 
     private BodyFactory bodyFactory;
     private MainScreen screen;
-    private TextureAtlas playerAtlas;
     private TiledMap map;
 
     private HashMap<String,EnemyPrototype> enemigos = new HashMap<String,EnemyPrototype>();
+    private AssetManager manager;
 
-
-    public B2WorldCreator(World world, PooledEngine engine, TextureAtlas playerAtlas, MainScreen screen) {
+    public B2WorldCreator(World world, PooledEngine engine, MainScreen screen, AssetManager manager) {
 
         this.engine = engine;
         this.world = world;
 
         bodyFactory = BodyFactory.getInstance(world);
         this.screen = screen;
-        this.playerAtlas = playerAtlas;
-
+        this.manager = manager;
 
         JsonValue json = new JsonReader().parse(Gdx.files.internal("configuraciones.json"));
         JsonValue jsonEnemigos = json.get("enemigos");
         for (int i = 0; i < jsonEnemigos.size; i++) {
             JsonValue enemigoActual = jsonEnemigos.get(i);
-             TextureAtlas atlas = new TextureAtlas(Gdx.files.internal(enemigoActual.get("atlas").asString()));
+             TextureAtlas atlas = manager.get("enemies/"+enemigoActual.get("atlas").asString());
              int width = enemigoActual.get("width").asInt();
              int height = enemigoActual.get("height").asInt();
              int hitboxX = enemigoActual.get("hitboxX").asInt();
@@ -75,7 +74,9 @@ public class B2WorldCreator {
              float attackCooldown = enemigoActual.get("attackCooldown").asFloat();
              float speed = enemigoActual.get("speed").asFloat();
              int attackFrame = enemigoActual.get("attackFrame").asInt();
-        enemigos.put(enemigoActual.get("nombre").asString(),new EnemyPrototype(atlas,width,height,hitboxX,hitboxY,hp,idleFrames,walkFrames,attackFrames,viewDistance,attackDistance,attackCooldown,speed,attackFrame));
+            int attackDamage = enemigoActual.get("attackDamage").asInt();
+
+        enemigos.put(enemigoActual.get("nombre").asString(),new EnemyPrototype(atlas,width,height,hitboxX,hitboxY,hp,idleFrames,walkFrames,attackFrames,viewDistance,attackDistance,attackCooldown,speed,attackFrame,attackDamage));
         }
 
     }
@@ -109,7 +110,7 @@ public class B2WorldCreator {
         shape.dispose();
         crearSalidas();
 
-        createPlayer(playerAtlas);
+        createPlayer(manager.get("player/player.atlas",TextureAtlas.class));
 
         createEnemy();
         // createEnemy(playerAtlas.findRegion("Idle-Sheet"),5f,1,4,8,atlasEnemigo);
@@ -340,6 +341,7 @@ public class B2WorldCreator {
             animCom.animations.put(StateComponent.STATE_ENEMY_ATTACK, AnimationMaker.crearAnimacion(enemyPrototype.atlas, "ATTACK", enemyPrototype.attackFrames, enemyPrototype.attackFrames));
             animCom.animations.put(StateComponent.STATE_CHASING, AnimationMaker.crearAnimacion(enemyPrototype.atlas, "WALK", enemyPrototype.walkFrames, enemyPrototype.walkFrames));
 
+            enemyComponent.damage = enemyPrototype.attackDamage;
             enemyComponent.attackCooldown = enemyPrototype.attackCooldown;
             enemyComponent.attackDistance = enemyPrototype.attackDistance;
             enemyComponent.attackFrame = enemyPrototype.attackFrame;

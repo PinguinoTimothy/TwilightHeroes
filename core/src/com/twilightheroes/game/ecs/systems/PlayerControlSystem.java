@@ -83,14 +83,7 @@ public class PlayerControlSystem extends IteratingSystem {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 // Lógica para el salto aquí
-
-
 saltar();
-
-
-
-
-
             }
         });
 

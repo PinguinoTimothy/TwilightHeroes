@@ -1,6 +1,7 @@
 package com.twilightheroes.game.scenes;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
@@ -38,12 +39,15 @@ public class Hud implements Disposable {
     Texture hbTexture;
     private static final int FRAME_COLS = 3, FRAME_ROWS = 2;
     TextureRegion[] healthBarImages = new TextureRegion[FRAME_COLS * FRAME_ROWS];
+    private AssetManager manager;
 
 
-    public Hud(SpriteBatch sb){
+    public Hud(SpriteBatch sb,AssetManager manager){
     worldTimer = 300;
     timeCount = 0f;
     score = 0;
+
+    this.manager = manager;
 
     viewport = new FitViewport(TwilightHeroes.V_WIDTH,TwilightHeroes.V_HEIGHT,new OrthographicCamera());
     stage = new Stage(viewport,sb);
@@ -57,14 +61,7 @@ public class Hud implements Disposable {
 
 
 
-
-        Skin skin = new Skin();
-        skin.add("logo", new Texture("prueba1.png"));
-
-        Texture logo = skin.get("logo", Texture.class);
-
-        Drawable D_background = skin.getDrawable("logo");
-        hbTexture = new Texture("healthBar.png");
+        hbTexture = manager.get("hud/healthBar.png", Texture.class);
 
         // Use the split utility method to create a 2D array of TextureRegions. This is
         // possible because this sprite sheet contains frames of equal size and they are
@@ -88,7 +85,6 @@ public class Hud implements Disposable {
         }
 
         ProgressBar.ProgressBarStyle pb = new ProgressBar.ProgressBarStyle();
-        pb.background = D_background;
         healthBar = new Image(healthBarImages[0]);
 
 
@@ -105,8 +101,7 @@ public class Hud implements Disposable {
 
         }
 
-        public void crearBotones(Touchpad touchpad, ImageButton btnSalto, ImageButton btnAtaque, ImageButton btnDash, ImageButton btnHabilidad1, ImageButton btnHabilidad2) {
-        }
+
 int vidas = 5;
         public void update(float dt){
         timeCount += dt;

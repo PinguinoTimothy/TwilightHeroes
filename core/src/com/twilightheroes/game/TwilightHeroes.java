@@ -9,7 +9,10 @@ import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Touchpad;
+import com.twilightheroes.game.screens.EndScreen;
 import com.twilightheroes.game.screens.MainScreen;
+import com.twilightheroes.game.tools.B2AssetManager;
+import com.twilightheroes.game.tools.B2WorldCreator;
 
 public class TwilightHeroes extends Game {
 
@@ -39,12 +42,49 @@ public class TwilightHeroes extends Game {
 	private float velocidade = 5;
 	private World world;
 
+	public final static int MENU = 0;
+	public final static int PREFERENCES = 1;
+	public final static int APPLICATION = 2;
+	public final static int ENDGAME = 3;
+	private MainScreen mainScreen;
+	private EndScreen endScreen;
+	public B2AssetManager assMan = new B2AssetManager();
+
 	@Override
 	public void create () {
 		batch = new SpriteBatch();
 		world = new World(new Vector2(0,0f),true);
+		assMan.loadImages();
+		assMan.manager.finishLoading();
 		setScreen(new MainScreen(this));
 
+	}
+
+	public void changeScreen(int screen){
+		switch(screen){
+			/*
+			case MENU:
+				if(menuScreen == null) menuScreen = new MenuScreen(this);
+				this.setScreen(menuScreen);
+				break;
+
+
+			case PREFERENCES:
+				if(preferencesScreen == null) preferencesScreen = new PreferencesScreen(this);
+				this.setScreen(preferencesScreen);
+				break;
+
+				 */
+			case APPLICATION:
+				// always make new game screen so game can't start midway
+				mainScreen = new MainScreen(this);
+				this.setScreen(mainScreen);
+				break;
+			case ENDGAME:
+				if(endScreen == null) endScreen = new EndScreen(this);
+				this.setScreen(endScreen);
+				break;
+		}
 	}
 
 
@@ -54,5 +94,9 @@ public class TwilightHeroes extends Game {
 
 	}
 
-
+	@Override
+	public void dispose() {
+		super.dispose();
+		assMan.manager.dispose();
+	}
 }

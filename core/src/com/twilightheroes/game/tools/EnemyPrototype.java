@@ -18,9 +18,10 @@ public class EnemyPrototype {
     public float attackCooldown;
     public float speed;
     public int attackFrame;
+    public int attackDamage;
 
 
-    public EnemyPrototype(TextureAtlas atlas, int width, int height, int hitboxX, int hitboxY, int hp, int idleFrames, int walkFrames, int attackFrames, float viewDistance, float attackDistance, float attackCooldown, float speed, int attackFrame) {
+    public EnemyPrototype(TextureAtlas atlas, int width, int height, int hitboxX, int hitboxY, int hp, int idleFrames, int walkFrames, int attackFrames, float viewDistance, float attackDistance, float attackCooldown, float speed, int attackFrame,int attackDamage) {
         this.atlas = atlas;
         this.width = width;
         this.height = height;
@@ -35,5 +36,6 @@ public class EnemyPrototype {
         this.attackCooldown = attackCooldown;
         this.speed = speed;
         this.attackFrame = attackFrame;
+        this.attackDamage = attackDamage;
     }
 }
