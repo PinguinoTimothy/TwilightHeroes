@@ -43,7 +43,7 @@
   }
   
 ],
-  //TODO
+
   "personaje":{
   "nombre": "Therion Leywin",
     "atlas": "player.atlas",
@@ -51,17 +51,52 @@
     "height": 47,
     "hitboxX": 4,
     "hitboxY": 8,
-    "animaciones":{
-      "IDLE":3,
-      "ATTACK":7,
-      "WALK":8
-    },
     "hp":100,
-    "viewDistance":12.5,
     "attackDistance":2.5,
     "attackCooldown":1.5,
     "speed":0.5,
-    "attackFrame":5,
-    "attackDamage": 25
+    "attackDamage": 25,
+    "spells":[
+      {
+        "nombre":"Shocking Grasp",
+        "types": [
+          "damage"
+        ],
+        "damage": 75,
+        "spellRange":4,
+        "manaCost":25
+      },
+      {
+        "nombre":"Cure Wounds",
+        "types" : [
+          "heal"
+        ],
+        "healing": 25,
+        "manaCost":30
+      },
+      {
+        "nombre":"Fury",
+        "types" : [
+          "attackBoost"
+        ],
+        "attackBoost": 25,
+        "duration": 10,
+        "manaCost":50
+      },
+      {
+        "nombre": "Freddy Five Bear",
+        "types" : [
+          "damage",
+          "heal",
+          "attackBoost"
+        ],
+        "damage": 100,
+        "spellRange": 3,
+        "healing": 75,
+        "attackBoost": 50,
+        "duration": 10,
+        "manaCost":100
+      }
+    ]
 }
 }

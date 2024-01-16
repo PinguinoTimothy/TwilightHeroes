@@ -13,6 +13,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.Touchpad;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Queue;
+import com.twilightheroes.game.Spells;
 import com.twilightheroes.game.TwilightHeroes;
 import com.twilightheroes.game.ecs.components.AnimationComponent;
 import com.twilightheroes.game.ecs.components.AttackComponent;
@@ -41,7 +42,6 @@ public class PlayerControlSystem extends IteratingSystem {
     private int numAtaquesDeseados = 0;
     private int numAtaquesLimite = 0;
     private boolean knockback;
-    private float coyoteTime = 0f;
     private float dequeueTime = 0f;
     private Queue<Integer> inputBuffer = new Queue<>();
     private boolean atacando = false;
@@ -54,6 +54,7 @@ public class PlayerControlSystem extends IteratingSystem {
     private float accelY;
     private PlayerComponent playerComponent;
     private TextureComponent texture;
+    private Spells spells;
 
     public PlayerControlSystem(Touchpad touchpad, Button btnSaltar, Button btnAtacar,Button btnDodge, Button btnHabilidad1) {
         super(Family.all(PlayerComponent.class).get());
@@ -116,6 +117,7 @@ saltar();
                     makeDodge = true;
                     playerComponent.canDodge = false;
                     dodgeCooldown = 0.7f;
+
                 }
 
             }
@@ -132,9 +134,10 @@ saltar();
             public void clicked(InputEvent event, float x, float y) {
             if (playerComponent.mana >= 25){
                 playerComponent.mana -= 25;
-                playerComponent.damage = 100;
-                createAttackFixture(texture, b2body, attackComponent);
-                state.set(StateComponent.STATE_HABILIDAD1);
+                state.set(StateComponent.STATE_ATTACK01);
+                state.time = 0f;
+                castSpell(Spells.SHOCKING_GRASP);
+                attacking = true;
             }
             }
         });
@@ -144,8 +147,9 @@ saltar();
     }
 
     public void saltar(){
-        if ((b2body.body.getLinearVelocity().y == 0 || coyoteTime < 0.1f) && !knockback) {
-            coyoteTime += 1f;
+        if ((playerComponent.canJump || playerComponent.coyoteTime < 0.1f) && !knockback) {
+            playerComponent.canJump = false;
+            playerComponent.coyoteTime += 1f;
             b2body.body.setLinearVelocity(b2body.body.getLinearVelocity().x, 0);
             b2body.body.applyLinearImpulse(new Vector2(0, 3f), b2body.body.getWorldCenter(), true);
         }
@@ -243,17 +247,16 @@ if (makeDodge){
                         switch (numAtaqueActual) {
                             case 1:
                                 state.set(StateComponent.STATE_ATTACK01);
-                                createAttackFixture(texture, b2body, attackComponent);
+                                createAttackFixture(texture, b2body, attackComponent,12f,8,16f,0f,25f);
                                 break;
                             case 2:
                                 state.set(StateComponent.STATE_ATTACK02);
-                                createAttackFixture(texture, b2body, attackComponent);
+                                createAttackFixture(texture, b2body, attackComponent,12f,8,16f,0f,25f);
                                 break;
                             case 3:
                                 state.set(StateComponent.STATE_ATTACK03);
-                                createAttackFixture(texture, b2body, attackComponent);
+                                createAttackFixture(texture, b2body, attackComponent,12f,8,16f,0f,25f);
                                 attackCooldown = 0.2f;
-
                                 break;
                         }
                         state.time = 0f;
@@ -276,12 +279,11 @@ if (makeDodge){
                         attacking = false;
 
                         if (b2body.body.getLinearVelocity().y < 0) {
-                            coyoteTime += deltaTime;
+                            playerComponent.coyoteTime += deltaTime;
                             state.set(StateComponent.STATE_FALLING);
 
 
                         } else if (b2body.body.getLinearVelocity().y == 0 && state.get() != StateComponent.STATE_JUMPING) {
-                            coyoteTime = 0f;
 
 
                     /*
@@ -357,47 +359,66 @@ if (!knockback && !dodging) {
             }
         }
     }
-
-    private void createAttackFixture(TextureComponent texture, B2dBodyComponent b2dbody,AttackComponent attackComponent) {
+    PolygonShape attackShape = new PolygonShape();
+    float offsetX = 16;
+    float offsetY = 0f;
+    float hx = 12f;
+    float hy = 8f;
+    private void createAttackFixture(TextureComponent texture, B2dBodyComponent b2dbody, AttackComponent attackComponent, float hx, float hy, float offsetX, float offsetY, float attackDamage) {
         PolygonShape attackShape = new PolygonShape();
-        float offsetX;
-        float offsetY = 0f;
-        float hx = 12f;
-        float hy = 8f;
-        if (touchpad.getKnobPercentY() < -0.3f){
-            hx = 8f;
-            hy = 12f;
-            offsetX = 0f;
-            offsetY = -20f;
-        }else if (touchpad.getKnobPercentY() > 0.3f) {
-            hx = 8f;
-            hy = 12f;
-            offsetX = 0f;
-            offsetY = 20f;
-        }else{
+        float auxOffsetX = offsetX;
+        float auxOffsetY = offsetY;
+        float auxHx = hx;
+        float auxHy = hy;
+        if (touchpad.getKnobPercentY() < -0.3f) {
+            auxHx = hy;
+            auxHy = hx;
+            auxOffsetX = offsetY;
+            auxOffsetY = -offsetX;
+        } else if (touchpad.getKnobPercentY() > 0.3f) {
+            auxHx = hy;
+            auxHy = hx;
+            auxOffsetX = offsetY;
+            auxOffsetY = offsetX;
+        } else {
             if (touchpad.getKnobPercentX() > 0) {
                 texture.runningRight = true;
-                offsetX = 16f;
+                auxOffsetX = offsetX;
             } else if (touchpad.getKnobPercentX() < 0) {
                 texture.runningRight = false;
-                offsetX = -16f;
+                auxOffsetX = -offsetX;
             } else {
-                offsetX = texture.runningRight ? 16f : -16f;
+                auxOffsetX = texture.runningRight ? offsetX : -offsetX;
             }
         }
-        attackShape.setAsBox(hx / TwilightHeroes.PPM, hy / TwilightHeroes.PPM, new Vector2(offsetX/TwilightHeroes.PPM, offsetY / TwilightHeroes.PPM), 0);
+        attackShape.setAsBox(auxHx / TwilightHeroes.PPM, auxHy / TwilightHeroes.PPM, new Vector2(auxOffsetX / TwilightHeroes.PPM, auxOffsetY / TwilightHeroes.PPM), 0);
         FixtureDef attackFixtureDef = new FixtureDef();
         attackFixtureDef.shape = attackShape;
         attackFixtureDef.filter.categoryBits = TwilightHeroes.HITBOX_BIT;
         attackFixtureDef.isSensor = true; // Configurar la fixture como un sensor
         attackComponent.attackFixture = b2dbody.body.createFixture(attackFixtureDef);
         attackComponent.attackFixture.setUserData("playerAttackSensor");
+        playerComponent.damage = attackDamage;
         // Liberar los recursos del shape
         attackShape.dispose();
 
 
-        b2body.body.setLinearVelocity(new Vector2((texture.runningRight ? 1f : -1f),0f));
+        b2dbody.body.setLinearVelocity(new Vector2((texture.runningRight ? 1f : -1f), 0f));
 
+    }
+
+    public void castSpell(int spell){
+        switch (spell){
+            case Spells.SHOCKING_GRASP:
+                 createAttackFixture(texture,b2body,attackComponent,20f,6f,16f, 0f,75f);
+                break;
+            case  Spells.HEAL:
+                playerComponent.hp  += 40;
+                break;
+                case Spells.FURY:
+
+                    break;
         }
+    }
 
     }
