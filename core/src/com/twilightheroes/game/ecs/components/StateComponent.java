@@ -18,6 +18,8 @@ public class StateComponent implements Component , Pool.Poolable{
     public static final int STATE_ENEMY_ATTACK = 9;
     public static final int STATE_CHASING = 10;
     public static final int STATE_DODGING = 11;
+    public static final int STATE_HABILIDAD1 = 12;
+
 
 
 

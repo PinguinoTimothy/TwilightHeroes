@@ -54,6 +54,7 @@ public class CollisionSystem extends IteratingSystem {
 
                 if (thisType.type == TypeComponent.PLAYER) {
                     if (collidedEntity != null) {
+                        PlayerComponent player = Mappers.playerCom.get(entity);
                         TypeComponent type = Mappers.typeCom.get(collidedEntity);
                         if (type != null) {
                             switch (type.type) {
@@ -62,7 +63,9 @@ public class CollisionSystem extends IteratingSystem {
 
 
                                     if (isHitbox && !isEnemyHitbox) {
-                                        Mappers.enemyCom.get(collidedEntity).hp -= 25;
+                                        Mappers.enemyCom.get(collidedEntity).hp -= player.damage;
+                                        player.canDodge = true;
+                                        player.mana += 10;
                                         if (Mappers.enemyCom.get(collidedEntity).hp <= 0) {
                                             Mappers.b2dCom.get(collidedEntity).isDead = true;
 
@@ -71,10 +74,9 @@ public class CollisionSystem extends IteratingSystem {
 
 
                                     break;
-                                case TypeComponent.SCENERY:
+                                case TypeComponent.FLOOR:
                                     //do player hit scenery thing
-
-                                    renderingSystem.updateRoom(Mappers.b2dCom.get(collidedEntity).width, Mappers.b2dCom.get(collidedEntity).height, Mappers.b2dCom.get(collidedEntity).startX, Mappers.b2dCom.get(collidedEntity).startY);
+        player.canDodge = true;
                                     break;
                                 case TypeComponent.EXIT:
 
@@ -88,7 +90,7 @@ public class CollisionSystem extends IteratingSystem {
                                     }
 
                                     break;
-                                case TypeComponent.OTHER:
+                                case TypeComponent.WALL:
                                     //do player hit other thing
                                     break; //technically this isn't needed
                             }

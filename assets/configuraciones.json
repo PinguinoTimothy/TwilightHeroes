@@ -42,5 +42,26 @@
     "attackDamage": 50
   }
   
-] 
+],
+  //TODO
+  "personaje":{
+  "nombre": "Therion Leywin",
+    "atlas": "player.atlas",
+    "width": 35,
+    "height": 47,
+    "hitboxX": 4,
+    "hitboxY": 8,
+    "animaciones":{
+      "IDLE":3,
+      "ATTACK":7,
+      "WALK":8
+    },
+    "hp":100,
+    "viewDistance":12.5,
+    "attackDistance":2.5,
+    "attackCooldown":1.5,
+    "speed":0.5,
+    "attackFrame":5,
+    "attackDamage": 25
+}
 }

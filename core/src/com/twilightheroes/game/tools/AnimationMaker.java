@@ -11,10 +11,7 @@ public class AnimationMaker {
         TextureAtlas.AtlasRegion atlasRegion = atlas.findRegion(regionName);
 
         TextureRegion[][] tmpIdle = atlasRegion.split(atlasRegion.getRegionWidth()/nFrames,atlasRegion.getRegionHeight());
-        TextureRegion[] idleFrames = new TextureRegion[nFrames];
-        for (int i = 0; i < nFrames; i++) {
-            idleFrames[i] = tmpIdle[0][i];
-        }
-        return new Animation<>(1f / frameDuration, idleFrames);
+
+        return new Animation<>(1f / frameDuration, tmpIdle[0]);
     }
 }
