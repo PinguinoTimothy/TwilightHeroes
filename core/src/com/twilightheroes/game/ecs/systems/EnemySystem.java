@@ -12,9 +12,12 @@ import com.twilightheroes.game.ecs.components.AttackComponent;
 import com.twilightheroes.game.ecs.components.B2dBodyComponent;
 import com.twilightheroes.game.ecs.components.EnemyComponent;
 import com.twilightheroes.game.ecs.components.StateComponent;
+import com.twilightheroes.game.ecs.components.StatsComponent;
 import com.twilightheroes.game.ecs.components.TextureComponent;
 import com.twilightheroes.game.screens.MainScreen;
 import com.twilightheroes.game.tools.Mappers;
+
+import java.util.Map;
 
 public class EnemySystem extends IteratingSystem {
 
@@ -57,6 +60,7 @@ public class EnemySystem extends IteratingSystem {
         TextureComponent textureComponent =  Mappers.texCom.get(entity);
         AttackComponent attackComponent = Mappers.atkCom.get(entity);
         AnimationComponent animationComponent = Mappers.animCom.get(entity);
+        StatsComponent statsComponent = Mappers.statsCom.get(entity);
 
         Vector2 distanceToPlayer = calculateDistance(entity);
 
@@ -93,7 +97,7 @@ public class EnemySystem extends IteratingSystem {
                     if (distanceToPlayer.x > 0.001f || distanceToPlayer.x < -0.001f) {
 
 
-                        float speed = distanceToPlayer.x < 0 ? enemyCom.speed : -enemyCom.speed;
+                        float speed = distanceToPlayer.x < 0 ? statsComponent.speed : -statsComponent.speed;
                         bodyCom.body.setLinearVelocity(new Vector2(speed, bodyCom.body.getLinearVelocity().y));
                     } else {
                         enemyStateComponent.set(StateComponent.STATE_IDLE);

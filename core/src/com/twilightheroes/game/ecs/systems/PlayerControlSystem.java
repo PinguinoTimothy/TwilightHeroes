@@ -20,8 +20,12 @@ import com.twilightheroes.game.ecs.components.AttackComponent;
 import com.twilightheroes.game.ecs.components.B2dBodyComponent;
 import com.twilightheroes.game.ecs.components.PlayerComponent;
 import com.twilightheroes.game.ecs.components.StateComponent;
+import com.twilightheroes.game.ecs.components.StatsComponent;
 import com.twilightheroes.game.ecs.components.TextureComponent;
-import com.twilightheroes.game.ecs.components.effectComponents.DamageBuffComponent;
+import com.twilightheroes.game.ecs.components.effectComponents.StatusComponent;
+import com.twilightheroes.game.ecs.components.effectComponents.StatusEffect;
+import com.twilightheroes.game.ecs.components.effectComponents.StatusType;
+import com.twilightheroes.game.screens.MainScreen;
 import com.twilightheroes.game.tools.Mappers;
 
 public class PlayerControlSystem extends IteratingSystem {
@@ -55,14 +59,19 @@ public class PlayerControlSystem extends IteratingSystem {
     private float accelY;
     private PlayerComponent playerComponent;
     private TextureComponent texture;
-    private Spells spells;
+    private StatsComponent stats;
+    private StatusComponent status;
 
-    public PlayerControlSystem(Touchpad touchpad, Button btnSaltar, Button btnAtacar,Button btnDodge, Button btnHabilidad1) {
+    private Spells spells;
+    private MainScreen screen;
+
+    public PlayerControlSystem(Touchpad touchpad, Button btnSaltar, Button btnAtacar,Button btnDodge, Button btnHabilidad1, MainScreen screen) {
         super(Family.all(PlayerComponent.class).get());
         this.touchpad = touchpad;
         this.btnSaltar = btnSaltar;
         this.btnAtacar = btnAtacar;
         this.btnDodge = btnDodge;
+        this.screen = screen;
 
 
         // Initialize the button listeners here
@@ -135,10 +144,10 @@ saltar();
             public void clicked(InputEvent event, float x, float y) {
             if (playerComponent.mana >= 25){
                 playerComponent.mana -= 25;
-                state.set(StateComponent.STATE_ATTACK01);
-                state.time = 0f;
-                castSpell(Spells.SHOCKING_GRASP);
-                attacking = true;
+
+
+                castSpell(Spells.FURY);
+
             }
             }
         });
@@ -169,8 +178,11 @@ saltar();
         animation = Mappers.animCom.get(entity);
         attackComponent = Mappers.atkCom.get(entity);
          playerComponent = Mappers.playerCom.get(entity);
+         stats = Mappers.statsCom.get(entity);
+         status = Mappers.statusCom.get(entity);
+
         knockback = playerComponent.knockback;
-        speed = playerComponent.speed;
+        speed = stats.speed;
 
         accelY = Gdx.input.getAccelerometerZ();
         if (accelY > 20){
@@ -411,14 +423,12 @@ if (!knockback && !dodging) {
         switch (spell){
             case Spells.SHOCKING_GRASP:
                  createAttackFixture(texture,b2body,attackComponent,20f,6f,16f, 0f);
-                playerComponent.damage = 1000;
                 break;
             case  Spells.HEAL:
-                playerComponent.hp  += 40;
+                stats.hp  += 40;
                 break;
                 case Spells.FURY:
-                    DamageBuffComponent damageBuffComponent = new DamageBuffComponent(10,100);
-
+                    status.effects.add(new StatusEffect(StatusType.DAMAGE,true,10,25));
                     break;
         }
     }

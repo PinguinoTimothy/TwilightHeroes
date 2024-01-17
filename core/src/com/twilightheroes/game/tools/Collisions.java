@@ -6,6 +6,7 @@ public class Collisions {
     public Entity collisionEntity;
     public boolean isAttackHitbox;
     public boolean isEnemyHitbox;
+    public boolean canBeReduced;
 
 
 }

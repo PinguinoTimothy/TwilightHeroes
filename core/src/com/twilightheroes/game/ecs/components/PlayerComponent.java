@@ -8,11 +8,9 @@ import com.badlogic.gdx.utils.Pool;
 import java.util.HashMap;
 
 public class PlayerComponent implements Component,Pool.Poolable {
-    public float speed = 100;
-    public float jumpPower = 200;
-    public float hp = 100;
+
     public float mana = 100;
-    public float damage;
+
 
     public boolean knockback = false;
     public float knockBackTime;
@@ -23,8 +21,6 @@ public class PlayerComponent implements Component,Pool.Poolable {
     public boolean canJump = true;
     public float coyoteTime;
 
-    public float attackBuff = 0f;
-    public HashMap<Float,Float> damageBuffs = new HashMap<>();
 
     @Override
     public void reset() {

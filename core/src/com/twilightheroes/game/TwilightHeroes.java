@@ -31,7 +31,7 @@ public class TwilightHeroes extends Game {
 	public static final short EXIT_BIT = 32;
 	public static final short INMUNE_BIT = 64;
 
-	public SpriteBatch batch;
+
 
 	private Skin touchpadSkin;
 	private Touchpad.TouchpadStyle touchpadStyle;
@@ -54,7 +54,7 @@ public class TwilightHeroes extends Game {
 
 	@Override
 	public void create () {
-		batch = new SpriteBatch();
+
 		world = new World(new Vector2(0,0f),true);
 		assMan.loadImages();
 		assMan.manager.finishLoading();

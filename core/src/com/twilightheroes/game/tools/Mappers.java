@@ -9,8 +9,11 @@ import com.twilightheroes.game.ecs.components.EnemyComponent;
 import com.twilightheroes.game.ecs.components.ExitComponent;
 import com.twilightheroes.game.ecs.components.PlayerComponent;
 import com.twilightheroes.game.ecs.components.StateComponent;
+import com.twilightheroes.game.ecs.components.StatsComponent;
 import com.twilightheroes.game.ecs.components.TextureComponent;
 import com.twilightheroes.game.ecs.components.TypeComponent;
+import com.twilightheroes.game.ecs.components.effectComponents.StatusComponent;
+import com.twilightheroes.game.ecs.components.effectComponents.StatusType;
 
 public class Mappers {
 
@@ -27,4 +30,7 @@ public class Mappers {
     public static final ComponentMapper<StateComponent> stateCom = ComponentMapper.getFor(StateComponent.class);
     public static final ComponentMapper<TextureComponent> texCom = ComponentMapper.getFor(TextureComponent.class);
     public static final ComponentMapper<TypeComponent> typeCom = ComponentMapper.getFor(TypeComponent.class);
+    public static final ComponentMapper<StatusComponent> statusCom = ComponentMapper.getFor(StatusComponent.class);
+    public static final ComponentMapper<StatsComponent> statsCom = ComponentMapper.getFor(StatsComponent.class);
+
 }

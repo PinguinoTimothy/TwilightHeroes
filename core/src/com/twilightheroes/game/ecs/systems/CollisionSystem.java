@@ -12,7 +12,9 @@ import com.twilightheroes.game.ecs.components.CollisionComponent;
 import com.twilightheroes.game.ecs.components.EnemyComponent;
 import com.twilightheroes.game.ecs.components.ExitComponent;
 import com.twilightheroes.game.ecs.components.PlayerComponent;
+import com.twilightheroes.game.ecs.components.StatsComponent;
 import com.twilightheroes.game.ecs.components.TypeComponent;
+import com.twilightheroes.game.ecs.components.effectComponents.StatusComponent;
 import com.twilightheroes.game.screens.MainScreen;
 import com.twilightheroes.game.tools.Collisions;
 import com.twilightheroes.game.tools.Mappers;
@@ -49,12 +51,15 @@ public class CollisionSystem extends IteratingSystem {
             Entity collidedEntity = auxCollision.collisionEntity;
             boolean isHitbox = auxCollision.isAttackHitbox;
             boolean isEnemyHitbox = auxCollision.isEnemyHitbox;
+            boolean canBeReduced = auxCollision.canBeReduced;
 
             TypeComponent thisType = Mappers.typeCom.get(entity);
 
             if (thisType.type == TypeComponent.PLAYER) {
                 if (collidedEntity != null) {
                     PlayerComponent player = Mappers.playerCom.get(entity);
+                    StatsComponent playerStats = Mappers.statsCom.get(entity);
+                    StatsComponent enemyStats = Mappers.statsCom.get(collidedEntity);
                     TypeComponent type = Mappers.typeCom.get(collidedEntity);
                     if (type != null) {
                         switch (type.type) {
@@ -63,10 +68,15 @@ public class CollisionSystem extends IteratingSystem {
 
 
                                 if (isHitbox && !isEnemyHitbox) {
-                                    Mappers.enemyCom.get(collidedEntity).hp -= player.damage;
+                                    if (canBeReduced){
+                                        enemyStats.hp -= playerStats.damage - enemyStats.damageReduction;
+                                    }else{
+                                        enemyStats.hp -= playerStats.damage;
+                                    }
                                     player.canDodge = true;
+                                    playerStats.hp += playerStats.lifeSteal;
                                     player.mana += 10;
-                                    if (Mappers.enemyCom.get(collidedEntity).hp <= 0) {
+                                    if (enemyStats.hp <= 0) {
                                         Mappers.b2dCom.get(collidedEntity).isDead = true;
 
                                     }
@@ -110,15 +120,16 @@ public class CollisionSystem extends IteratingSystem {
                                 B2dBodyComponent bodyPlayer = Mappers.b2dCom.get(collidedEntity);
                                 B2dBodyComponent bodyEnemy = Mappers.b2dCom.get(entity);
                                 EnemyComponent enemyComponent = Mappers.enemyCom.get(entity);
-
+                                StatsComponent playerStats = Mappers.statsCom.get(entity);
+                                StatsComponent enemyStats = Mappers.statsCom.get(collidedEntity);
                                 if (!isHitbox && !player.inmune) {
                                     System.out.println("enemy hit player");
                                     float xForce = 2.5f;
                                     if (bodyPlayer.body.getPosition().x < bodyEnemy.body.getPosition().x) {
                                         xForce = -2.5f;
                                     }
-                                    player.hp -= enemyComponent.damage;
-                                    if (player.hp <= 0) {
+                                    playerStats.hp -= enemyStats.damage;
+                                    if (playerStats.hp <= 0) {
                                         bodyPlayer.isDead = true;
                                         player.isDead = true;
                                     }

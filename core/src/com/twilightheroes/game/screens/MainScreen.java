@@ -26,6 +26,7 @@ import com.twilightheroes.game.TwilightHeroes;
 import com.twilightheroes.game.ecs.components.PlayerComponent;
 import com.twilightheroes.game.ecs.systems.AnimationSystem;
 import com.twilightheroes.game.ecs.systems.CollisionSystem;
+import com.twilightheroes.game.ecs.systems.EffectSystem;
 import com.twilightheroes.game.ecs.systems.EnemySystem;
 import com.twilightheroes.game.ecs.systems.PhysicsDebugSystem;
 import com.twilightheroes.game.ecs.systems.PhysicsSystem;
@@ -178,9 +179,9 @@ hud.stage.setDebugAll(true);
         engine.addSystem(new PhysicsSystem(world,engine,this));
         engine.addSystem(new PhysicsDebugSystem(world, renderingSystem.getCamera()));
         engine.addSystem(new CollisionSystem(renderingSystem,this));
-        engine.addSystem(new PlayerControlSystem(touchpad,btnJump,btnAttack,btnDodge,btnHabilidad1));
+        engine.addSystem(new PlayerControlSystem(touchpad,btnJump,btnAttack,btnDodge,btnHabilidad1,this));
         engine.addSystem(new EnemySystem(this));
-
+        engine.addSystem(new EffectSystem());
         b2WorldCreator = new B2WorldCreator(world,engine,this,manager);
         // create some game objects
 changeMap();

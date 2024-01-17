@@ -28,8 +28,10 @@ import com.twilightheroes.game.ecs.components.EnemyComponent;
 import com.twilightheroes.game.ecs.components.ExitComponent;
 import com.twilightheroes.game.ecs.components.PlayerComponent;
 import com.twilightheroes.game.ecs.components.StateComponent;
+import com.twilightheroes.game.ecs.components.StatsComponent;
 import com.twilightheroes.game.ecs.components.TextureComponent;
 import com.twilightheroes.game.ecs.components.TypeComponent;
+import com.twilightheroes.game.ecs.components.effectComponents.StatusComponent;
 import com.twilightheroes.game.screens.MainScreen;
 
 import java.util.HashMap;
@@ -186,6 +188,8 @@ public class B2WorldCreator {
             StateComponent stateCom = engine.createComponent(StateComponent.class);
             AnimationComponent animCom = engine.createComponent(AnimationComponent.class);
             AttackComponent attackComponent = engine.createComponent(AttackComponent.class);
+            StatsComponent statsComponent = engine.createComponent(StatsComponent.class);
+            StatusComponent statusComponent = engine.createComponent(StatusComponent.class);
 
             // create the data for the components and add them to the components
             texture.sprite.setRegion(atlas.findRegion("Idle-Sheet"));
@@ -257,6 +261,11 @@ public class B2WorldCreator {
             animCom.animations.put(StateComponent.STATE_ATTACK02, AnimationMaker.crearAnimacion(atlas, "ataque2", 4, 16));
             animCom.animations.put(StateComponent.STATE_ATTACK03, AnimationMaker.crearAnimacion(atlas, "ataque3", 4, 16));
 
+            statsComponent.speed = 100;
+            statsComponent.hp = 100;
+            statsComponent.damage = 25;
+
+
             entity.add(b2dbody);
             entity.add(texture);
             entity.add(player);  // Add PlayerComponent to the entity
@@ -265,7 +274,8 @@ public class B2WorldCreator {
             entity.add(stateCom);
             entity.add(animCom);
             entity.add(attackComponent);
-
+            entity.add(statsComponent);
+            entity.add(statusComponent);
 
 // add the entity to the engine
 
@@ -323,6 +333,8 @@ public class B2WorldCreator {
             StateComponent stateCom = engine.createComponent(StateComponent.class);
             AnimationComponent animCom = engine.createComponent(AnimationComponent.class);
             AttackComponent attackComponent = engine.createComponent(AttackComponent.class);
+            StatsComponent statsComponent = engine.createComponent(StatsComponent.class);
+            StatusComponent statusComponent = engine.createComponent(StatusComponent.class);
 
             // create the data for the components and add them to the components
             texture.sprite.setRegion(enemyPrototype.atlas.findRegion("IDLE"));
@@ -374,13 +386,13 @@ public class B2WorldCreator {
             animCom.animations.put(StateComponent.STATE_ENEMY_ATTACK, AnimationMaker.crearAnimacion(enemyPrototype.atlas, "ATTACK", enemyPrototype.attackFrames, enemyPrototype.attackFrames));
             animCom.animations.put(StateComponent.STATE_CHASING, AnimationMaker.crearAnimacion(enemyPrototype.atlas, "WALK", enemyPrototype.walkFrames, enemyPrototype.walkFrames));
 
-            enemyComponent.damage = enemyPrototype.attackDamage;
+            statsComponent.damage = enemyPrototype.attackDamage;
             enemyComponent.attackCooldown = enemyPrototype.attackCooldown;
             enemyComponent.attackDistance = enemyPrototype.attackDistance;
             enemyComponent.attackFrame = enemyPrototype.attackFrame;
             enemyComponent.viewDistance = enemyPrototype.viewDistance;
-            enemyComponent.speed = enemyPrototype.speed;
-            enemyComponent.hp = enemyPrototype.hp;
+            statsComponent.speed = enemyPrototype.speed;
+            statsComponent.hp = enemyPrototype.hp;
 
             entity.add(b2dbody);
             entity.add(texture);
@@ -390,6 +402,8 @@ public class B2WorldCreator {
             entity.add(stateCom);
             entity.add(animCom);
             entity.add(attackComponent);
+            entity.add(statsComponent);
+            entity.add(statusComponent);
 
 // add the entity to the engine
             engine.addEntity(entity);

@@ -8,7 +8,6 @@ public class AttackComponent implements Component, Pool.Poolable {
     public Fixture attackFixture;
 
     public boolean performAttack = false;
-
     @Override
     public void reset() {
     attackFixture = null;

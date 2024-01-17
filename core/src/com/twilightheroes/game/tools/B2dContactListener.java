@@ -23,23 +23,27 @@ public class B2dContactListener implements ContactListener {
 
         boolean isHitbox = false;
         boolean isEnemyHitbox = false;
-        if ("playerAttackSensor".equals(fa.getUserData()) || "playerAttackSensor".equals(fb.getUserData())){
+        boolean canBeReduced = false;
+        if ("playerAttackSensor".contains(fa.getUserData().toString()) || "playerAttackSensor".contains(fb.getUserData().toString())){
             isHitbox = true;
         }
-        if ("enemyAttackSensor".equals(fa.getUserData()) || "enemyAttackSensor".equals(fb.getUserData())){
+        if ("enemyAttackSensor".contains(fa.getUserData().toString())|| "enemyAttackSensor".contains(fa.getUserData().toString())){
             isEnemyHitbox = true;
+        }
+        if ("canBeReduced".contains(fa.getUserData().toString())|| "canBeReduced".contains(fa.getUserData().toString())){
+            canBeReduced = true;
         }
         if(fa.getBody().getUserData() instanceof Entity){
             Entity ent = (Entity) fa.getBody().getUserData();
-            entityCollision(ent,fb,true,isHitbox,isEnemyHitbox);
+            entityCollision(ent,fb,true,isHitbox,isEnemyHitbox,canBeReduced);
         }else if(fb.getBody().getUserData() instanceof Entity){
             Entity ent = (Entity) fb.getBody().getUserData();
-            entityCollision(ent,fa,true,isHitbox,isEnemyHitbox);
+            entityCollision(ent,fa,true,isHitbox,isEnemyHitbox,canBeReduced);
 
         }
     }
 
-    private void entityCollision(Entity ent, Fixture fb, boolean touching, boolean isHitbox, boolean isEnemyHitbox) {
+    private void entityCollision(Entity ent, Fixture fb, boolean touching, boolean isHitbox, boolean isEnemyHitbox,boolean canBeReduced) {
         if (fb.getBody().getUserData() instanceof Entity) {
             Entity colEnt = (Entity) fb.getBody().getUserData();
 
@@ -51,6 +55,7 @@ public class B2dContactListener implements ContactListener {
                 collisionsAux.collisionEntity = colEnt;
                 collisionsAux.isAttackHitbox = isHitbox;
                 collisionsAux.isEnemyHitbox = isEnemyHitbox;
+                collisionsAux.canBeReduced = canBeReduced;
 
                 if (touching) {
                     // Si las entidades están en contacto, añade la entidad a la lista de colisiones
@@ -67,7 +72,7 @@ public class B2dContactListener implements ContactListener {
                 collisionsAux.collisionEntity = ent;
                 collisionsAux.isAttackHitbox = isHitbox;
                 collisionsAux.isEnemyHitbox = isEnemyHitbox;
-
+            collisionsAux.canBeReduced = canBeReduced;
                 if (touching) {
                     colb.collisionEntities.add(collisionsAux);
                 } else {
