@@ -21,6 +21,7 @@ import com.twilightheroes.game.ecs.components.B2dBodyComponent;
 import com.twilightheroes.game.ecs.components.PlayerComponent;
 import com.twilightheroes.game.ecs.components.StateComponent;
 import com.twilightheroes.game.ecs.components.TextureComponent;
+import com.twilightheroes.game.ecs.components.effectComponents.DamageBuffComponent;
 import com.twilightheroes.game.tools.Mappers;
 
 public class PlayerControlSystem extends IteratingSystem {
@@ -97,7 +98,7 @@ saltar();
 
 
                 if (numAtaquesLimite<3 && !knockback && attackCooldown <= 0f){
-                    playerComponent.damage = 25;
+
                     numAtaquesLimite++;
                     numAtaquesDeseados++;
                     attacking = true;
@@ -247,15 +248,15 @@ if (makeDodge){
                         switch (numAtaqueActual) {
                             case 1:
                                 state.set(StateComponent.STATE_ATTACK01);
-                                createAttackFixture(texture, b2body, attackComponent,12f,8,16f,0f,25f);
+                                createAttackFixture(texture, b2body, attackComponent,12f,8,16f,0f);
                                 break;
                             case 2:
                                 state.set(StateComponent.STATE_ATTACK02);
-                                createAttackFixture(texture, b2body, attackComponent,12f,8,16f,0f,25f);
+                                createAttackFixture(texture, b2body, attackComponent,12f,8,16f,0f);
                                 break;
                             case 3:
                                 state.set(StateComponent.STATE_ATTACK03);
-                                createAttackFixture(texture, b2body, attackComponent,12f,8,16f,0f,25f);
+                                createAttackFixture(texture, b2body, attackComponent,12f,8,16f,0f);
                                 attackCooldown = 0.2f;
                                 break;
                         }
@@ -364,7 +365,7 @@ if (!knockback && !dodging) {
     float offsetY = 0f;
     float hx = 12f;
     float hy = 8f;
-    private void createAttackFixture(TextureComponent texture, B2dBodyComponent b2dbody, AttackComponent attackComponent, float hx, float hy, float offsetX, float offsetY, float attackDamage) {
+    private void createAttackFixture(TextureComponent texture, B2dBodyComponent b2dbody, AttackComponent attackComponent, float hx, float hy, float offsetX, float offsetY) {
         PolygonShape attackShape = new PolygonShape();
         float auxOffsetX = offsetX;
         float auxOffsetY = offsetY;
@@ -398,7 +399,6 @@ if (!knockback && !dodging) {
         attackFixtureDef.isSensor = true; // Configurar la fixture como un sensor
         attackComponent.attackFixture = b2dbody.body.createFixture(attackFixtureDef);
         attackComponent.attackFixture.setUserData("playerAttackSensor");
-        playerComponent.damage = attackDamage;
         // Liberar los recursos del shape
         attackShape.dispose();
 
@@ -410,12 +410,14 @@ if (!knockback && !dodging) {
     public void castSpell(int spell){
         switch (spell){
             case Spells.SHOCKING_GRASP:
-                 createAttackFixture(texture,b2body,attackComponent,20f,6f,16f, 0f,75f);
+                 createAttackFixture(texture,b2body,attackComponent,20f,6f,16f, 0f);
+                playerComponent.damage = 1000;
                 break;
             case  Spells.HEAL:
                 playerComponent.hp  += 40;
                 break;
                 case Spells.FURY:
+                    DamageBuffComponent damageBuffComponent = new DamageBuffComponent(10,100);
 
                     break;
         }

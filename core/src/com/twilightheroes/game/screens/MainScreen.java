@@ -211,12 +211,16 @@ changeMap();
         }
 
 
-        engine.removeAllEntities();
+        for (Entity entity : engine.getEntities()) {
+            if (entity != playerEntity){
+                engine.removeEntity(entity);
+            }
+        }
         bodies.clear();
 
 
         map = mapLoader.load(new String("maps/"+maps[newMap] + ".tmx"));
-       b2WorldCreator.generateLevel(map);
+       b2WorldCreator.generateLevel(map,playerEntity);
         mapRenderer.setMap(map);
 
     }
