@@ -79,6 +79,9 @@ private     float viewportWidth,viewportHeight;
 
     private Skin btnHabilidad1Skin;
     private Button btnHabilidad1;
+
+    private Skin btnHabilidad2Skin;
+    private Button btnHabilidad2;
     private B2WorldCreator b2WorldCreator;
 
     public Entity playerEntity;
@@ -171,6 +174,14 @@ hud.stage.setDebugAll(true);
         btnHabilidad1.setBounds(350, 120, 30, 30);
         hud.stage.addActor(btnHabilidad1);
 
+        // Boton Habilidad 2
+        btnHabilidad2Skin = new Skin();
+        btnHabilidad2Skin.add("habilidad1",manager.get("hud/habilidad1.png"));
+        btnHabilidad2 = new ImageButton(btnHabilidad2Skin.getDrawable("habilidad1"));
+        btnHabilidad2.setScale(1.5f,1.5f);
+        btnHabilidad2.setBounds(300, 120, 30, 30);
+        hud.stage.addActor(btnHabilidad2);
+
 
 
         // add all the relevant systems our engine should run
@@ -179,7 +190,7 @@ hud.stage.setDebugAll(true);
         engine.addSystem(new PhysicsSystem(world,engine,this));
         engine.addSystem(new PhysicsDebugSystem(world, renderingSystem.getCamera()));
         engine.addSystem(new CollisionSystem(renderingSystem,this));
-        engine.addSystem(new PlayerControlSystem(touchpad,btnJump,btnAttack,btnDodge,btnHabilidad1,this));
+        engine.addSystem(new PlayerControlSystem(touchpad,btnJump,btnAttack,btnDodge,btnHabilidad1,btnHabilidad2,this));
         engine.addSystem(new EnemySystem(this));
         engine.addSystem(new EffectSystem());
         b2WorldCreator = new B2WorldCreator(world,engine,this,manager);

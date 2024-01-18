@@ -58,7 +58,8 @@ public class TwilightHeroes extends Game {
 		world = new World(new Vector2(0,0f),true);
 		assMan.loadImages();
 		assMan.manager.finishLoading();
-		setScreen(new MainScreen(this));
+		mainScreen = new MainScreen(this);
+		changeScreen(APPLICATION);
 
 	}
 
@@ -79,7 +80,7 @@ public class TwilightHeroes extends Game {
 				 */
 			case APPLICATION:
 				// always make new game screen so game can't start midway
-				mainScreen = new MainScreen(this);
+
 				this.setScreen(mainScreen);
 				break;
 			case ENDGAME:

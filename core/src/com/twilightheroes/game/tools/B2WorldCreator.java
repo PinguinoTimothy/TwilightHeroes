@@ -27,6 +27,7 @@ import com.twilightheroes.game.ecs.components.CollisionComponent;
 import com.twilightheroes.game.ecs.components.EnemyComponent;
 import com.twilightheroes.game.ecs.components.ExitComponent;
 import com.twilightheroes.game.ecs.components.PlayerComponent;
+import com.twilightheroes.game.ecs.components.SpellComponent;
 import com.twilightheroes.game.ecs.components.StateComponent;
 import com.twilightheroes.game.ecs.components.StatsComponent;
 import com.twilightheroes.game.ecs.components.TextureComponent;
@@ -190,6 +191,7 @@ public class B2WorldCreator {
             AttackComponent attackComponent = engine.createComponent(AttackComponent.class);
             StatsComponent statsComponent = engine.createComponent(StatsComponent.class);
             StatusComponent statusComponent = engine.createComponent(StatusComponent.class);
+            SpellComponent spellComponent = engine.createComponent(SpellComponent.class);
 
             // create the data for the components and add them to the components
             texture.sprite.setRegion(atlas.findRegion("Idle-Sheet"));
@@ -276,6 +278,7 @@ public class B2WorldCreator {
             entity.add(attackComponent);
             entity.add(statsComponent);
             entity.add(statusComponent);
+            entity.add(spellComponent);
 
 // add the entity to the engine
 

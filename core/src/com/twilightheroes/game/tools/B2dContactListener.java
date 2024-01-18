@@ -24,15 +24,17 @@ public class B2dContactListener implements ContactListener {
         boolean isHitbox = false;
         boolean isEnemyHitbox = false;
         boolean canBeReduced = false;
-        if ("playerAttackSensor".contains(fa.getUserData().toString()) || "playerAttackSensor".contains(fb.getUserData().toString())){
-            isHitbox = true;
-        }
-        if ("enemyAttackSensor".contains(fa.getUserData().toString())|| "enemyAttackSensor".contains(fa.getUserData().toString())){
-            isEnemyHitbox = true;
-        }
-        if ("canBeReduced".contains(fa.getUserData().toString())|| "canBeReduced".contains(fa.getUserData().toString())){
-            canBeReduced = true;
-        }
+
+            if ("playerAttackSensor".contains(fa.getUserData() == null ? "null":fa.getUserData().toString()) || "playerAttackSensor".contains(fb.getUserData() == null ? "null":fb.getUserData().toString())) {
+                isHitbox = true;
+            }
+            if ("enemyAttackSensor".contains(fa.getUserData() == null ? "null":fa.getUserData().toString()) || "enemyAttackSensor".contains(fb.getUserData() == null ? "null":fb.getUserData().toString())) {
+                isEnemyHitbox = true;
+            }
+            if ("canBeReduced".contains(fa.getUserData() == null ? "null":fa.getUserData().toString()) || "canBeReduced".contains(fb.getUserData() == null ? "null":fb.getUserData().toString())) {
+                canBeReduced = true;
+            }
+
         if(fa.getBody().getUserData() instanceof Entity){
             Entity ent = (Entity) fa.getBody().getUserData();
             entityCollision(ent,fb,true,isHitbox,isEnemyHitbox,canBeReduced);

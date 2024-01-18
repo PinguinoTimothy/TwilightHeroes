@@ -13,12 +13,13 @@ import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.Touchpad;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Queue;
-import com.twilightheroes.game.Spells;
 import com.twilightheroes.game.TwilightHeroes;
 import com.twilightheroes.game.ecs.components.AnimationComponent;
 import com.twilightheroes.game.ecs.components.AttackComponent;
 import com.twilightheroes.game.ecs.components.B2dBodyComponent;
 import com.twilightheroes.game.ecs.components.PlayerComponent;
+import com.twilightheroes.game.ecs.components.SpellComponent;
+import com.twilightheroes.game.ecs.components.SpellList;
 import com.twilightheroes.game.ecs.components.StateComponent;
 import com.twilightheroes.game.ecs.components.StatsComponent;
 import com.twilightheroes.game.ecs.components.TextureComponent;
@@ -61,11 +62,11 @@ public class PlayerControlSystem extends IteratingSystem {
     private TextureComponent texture;
     private StatsComponent stats;
     private StatusComponent status;
+    private SpellComponent spellComponent;
 
-    private Spells spells;
     private MainScreen screen;
 
-    public PlayerControlSystem(Touchpad touchpad, Button btnSaltar, Button btnAtacar,Button btnDodge, Button btnHabilidad1, MainScreen screen) {
+    public PlayerControlSystem(Touchpad touchpad, Button btnSaltar, Button btnAtacar,Button btnDodge, Button btnHabilidad1,Button btnHabilidad2, MainScreen screen) {
         super(Family.all(PlayerComponent.class).get());
         this.touchpad = touchpad;
         this.btnSaltar = btnSaltar;
@@ -142,13 +143,26 @@ saltar();
         btnHabilidad1.addListener(new ClickListener(){
             @Override
             public void clicked(InputEvent event, float x, float y) {
-            if (playerComponent.mana >= 25){
-                playerComponent.mana -= 25;
+            if (playerComponent.mana >= spellComponent.spell1.manaCost){
+                playerComponent.mana -= spellComponent.spell1.manaCost;
 
 
-                castSpell(Spells.FURY);
+                castSpell(spellComponent.spell1.id);
 
             }
+            }
+        });
+
+        btnHabilidad2.addListener(new ClickListener(){
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                if (playerComponent.mana >= spellComponent.spell2.manaCost){
+                    playerComponent.mana -= spellComponent.spell2.manaCost;
+
+
+                    castSpell(spellComponent.spell2.id);
+
+                }
             }
         });
 
@@ -180,6 +194,7 @@ saltar();
          playerComponent = Mappers.playerCom.get(entity);
          stats = Mappers.statsCom.get(entity);
          status = Mappers.statusCom.get(entity);
+        spellComponent = Mappers.spellCom.get(entity);
 
         knockback = playerComponent.knockback;
         speed = stats.speed;
@@ -421,13 +436,14 @@ if (!knockback && !dodging) {
 
     public void castSpell(int spell){
         switch (spell){
-            case Spells.SHOCKING_GRASP:
+            case SpellList.SHOCKING_GRASP:
+
                  createAttackFixture(texture,b2body,attackComponent,20f,6f,16f, 0f);
                 break;
-            case  Spells.HEAL:
-                stats.hp  += 40;
+            case  SpellList.HEAL:
+                stats.hp  -= 100;
                 break;
-                case Spells.FURY:
+                case SpellList.FURY:
                     status.effects.add(new StatusEffect(StatusType.DAMAGE,true,10,25));
                     break;
         }
