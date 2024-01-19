@@ -1,0 +1,20 @@
+
+prueba.png
+size: 2048, 2048
+format: RGBA8888
+filter: Linear, Linear
+repeat: none
+KarmaFuture
+  rotate: false
+  xy: 1, 521
+  size: 506, 72
+  orig: 506, 72
+  offset: 0, 0
+  index: -1
+mapa
+  rotate: false
+  xy: 1, 595
+  size: 1240, 644
+  orig: 1240, 644
+  offset: 0, 0
+  index: -1

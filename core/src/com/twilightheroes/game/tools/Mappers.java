@@ -4,17 +4,17 @@ import com.badlogic.ashley.core.ComponentMapper;
 import com.twilightheroes.game.ecs.components.AnimationComponent;
 import com.twilightheroes.game.ecs.components.AttackComponent;
 import com.twilightheroes.game.ecs.components.B2dBodyComponent;
+import com.twilightheroes.game.ecs.components.BulletComponent;
 import com.twilightheroes.game.ecs.components.CollisionComponent;
 import com.twilightheroes.game.ecs.components.EnemyComponent;
 import com.twilightheroes.game.ecs.components.ExitComponent;
 import com.twilightheroes.game.ecs.components.PlayerComponent;
-import com.twilightheroes.game.ecs.components.SpellComponent;
+import com.twilightheroes.game.ecs.components.spells.SpellComponent;
 import com.twilightheroes.game.ecs.components.StateComponent;
 import com.twilightheroes.game.ecs.components.StatsComponent;
 import com.twilightheroes.game.ecs.components.TextureComponent;
 import com.twilightheroes.game.ecs.components.TypeComponent;
 import com.twilightheroes.game.ecs.components.effectComponents.StatusComponent;
-import com.twilightheroes.game.ecs.components.effectComponents.StatusType;
 
 public class Mappers {
 
@@ -35,6 +35,7 @@ public class Mappers {
     public static final ComponentMapper<StatsComponent> statsCom = ComponentMapper.getFor(StatsComponent.class);
 
     public static final ComponentMapper<SpellComponent> spellCom = ComponentMapper.getFor(SpellComponent.class);
+    public static final ComponentMapper<BulletComponent> bullCom = ComponentMapper.getFor(BulletComponent.class);
 
 
 }

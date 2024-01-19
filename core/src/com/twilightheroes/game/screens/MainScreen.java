@@ -36,13 +36,11 @@ import com.twilightheroes.game.scenes.Hud;
 import com.twilightheroes.game.tools.B2WorldCreator;
 import com.twilightheroes.game.tools.B2dContactListener;
 import com.twilightheroes.game.tools.BodyFactory;
-import com.twilightheroes.game.tools.KeyboardController;
 
 
 public class MainScreen implements Screen {
 
     private TwilightHeroes parent;
-    private KeyboardController controller;
     private World world;
     private BodyFactory bodyFactory;
     private SpriteBatch sb;
@@ -82,6 +80,8 @@ private     float viewportWidth,viewportHeight;
 
     private Skin btnHabilidad2Skin;
     private Button btnHabilidad2;
+    private Button btnPause;
+
     private B2WorldCreator b2WorldCreator;
 
     public Entity playerEntity;
@@ -89,7 +89,6 @@ private     float viewportWidth,viewportHeight;
 
     public MainScreen(TwilightHeroes twilightHeroes){
         parent = twilightHeroes;
-        controller = new KeyboardController();
         world = new World(new Vector2(0,-9.8f), true);
         world.setContactListener(new B2dContactListener());
         bodyFactory = BodyFactory.getInstance(world);
@@ -182,6 +181,14 @@ hud.stage.setDebugAll(true);
         btnHabilidad2.setBounds(300, 120, 30, 30);
         hud.stage.addActor(btnHabilidad2);
 
+        // Boton Pause 2
+
+        btnPause = new ImageButton(btnHabilidad2Skin.getDrawable("habilidad1"));
+        btnPause.setScale(1.5f,1.5f);
+        btnPause.setBounds(300, 60, 30, 30);
+        hud.stage.addActor(btnPause);
+
+
 
 
         // add all the relevant systems our engine should run
@@ -195,7 +202,7 @@ hud.stage.setDebugAll(true);
         engine.addSystem(new EffectSystem());
         b2WorldCreator = new B2WorldCreator(world,engine,this,manager);
         // create some game objects
-changeMap();
+        changeMap();
 
     }
 

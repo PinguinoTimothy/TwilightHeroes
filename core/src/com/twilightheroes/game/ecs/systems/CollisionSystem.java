@@ -129,10 +129,7 @@ public class CollisionSystem extends IteratingSystem {
                                         xForce = -2.5f;
                                     }
                                     playerStats.hp -= enemyStats.damage;
-                                    if (playerStats.hp <= 0) {
-                                        bodyPlayer.isDead = true;
-                                        player.isDead = true;
-                                    }
+
 
                                     bodyPlayer.body.getFixtureList().get(0).setFilterData(inmuneFilter);
                                     player.inmune = true;

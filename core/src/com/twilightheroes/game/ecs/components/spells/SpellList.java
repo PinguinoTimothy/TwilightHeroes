@@ -1,4 +1,4 @@
-package com.twilightheroes.game.ecs.components;
+package com.twilightheroes.game.ecs.components.spells;
 
 public class SpellList {
 

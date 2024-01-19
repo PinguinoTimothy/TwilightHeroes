@@ -17,9 +17,10 @@ import com.twilightheroes.game.TwilightHeroes;
 import com.twilightheroes.game.ecs.components.AnimationComponent;
 import com.twilightheroes.game.ecs.components.AttackComponent;
 import com.twilightheroes.game.ecs.components.B2dBodyComponent;
+import com.twilightheroes.game.ecs.components.BulletComponent;
 import com.twilightheroes.game.ecs.components.PlayerComponent;
-import com.twilightheroes.game.ecs.components.SpellComponent;
-import com.twilightheroes.game.ecs.components.SpellList;
+import com.twilightheroes.game.ecs.components.spells.SpellComponent;
+import com.twilightheroes.game.ecs.components.spells.SpellList;
 import com.twilightheroes.game.ecs.components.StateComponent;
 import com.twilightheroes.game.ecs.components.StatsComponent;
 import com.twilightheroes.game.ecs.components.TextureComponent;
@@ -195,6 +196,10 @@ saltar();
          stats = Mappers.statsCom.get(entity);
          status = Mappers.statusCom.get(entity);
         spellComponent = Mappers.spellCom.get(entity);
+
+        if (stats.hp <= 0) {
+            playerComponent.isDead = true;
+        }
 
         knockback = playerComponent.knockback;
         speed = stats.speed;
@@ -448,5 +453,8 @@ if (!knockback && !dodging) {
                     break;
         }
     }
+
+
+
 
     }

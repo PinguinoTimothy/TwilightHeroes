@@ -1,4 +1,4 @@
-package com.twilightheroes.game.ecs.components;
+package com.twilightheroes.game.ecs.components.spells;
 
 import com.badlogic.ashley.core.Component;
 
