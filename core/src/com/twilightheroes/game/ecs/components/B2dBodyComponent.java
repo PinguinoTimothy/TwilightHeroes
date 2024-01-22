@@ -10,6 +10,7 @@ public class B2dBodyComponent implements Component , Pool.Poolable{
     public float height;
     public float startX;
     public float startY;
+
     public boolean isDead = false;
     @Override
     public void reset() {

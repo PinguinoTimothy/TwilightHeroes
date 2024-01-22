@@ -5,13 +5,15 @@ import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.systems.IteratingSystem;
 import com.twilightheroes.game.ecs.components.B2dBodyComponent;
 import com.twilightheroes.game.ecs.components.BulletComponent;
+import com.twilightheroes.game.screens.MainScreen;
+import com.twilightheroes.game.tools.B2WorldCreator;
 import com.twilightheroes.game.tools.Mappers;
 
 public class BulletSystem extends IteratingSystem {
-    private Entity shooter;
-    public BulletSystem(Entity shooter) {
+    private MainScreen parent;
+    public BulletSystem(MainScreen parent) {
         super(Family.all(BulletComponent.class).get());
-        this.shooter = shooter;
+        this.parent =  parent;
     }
 
     @Override
@@ -21,10 +23,10 @@ public class BulletSystem extends IteratingSystem {
         BulletComponent bullet = Mappers.bullCom.get(entity);
 
         // apply bullet velocity to bullet body
-        b2body.body.setLinearVelocity(bullet.xVel, bullet.yVel);
+        b2body.body.setLinearVelocity(bullet.xVel,0f);
 
         // get player pos
-        B2dBodyComponent playerBodyComp = Mappers.b2dCom.get(shooter);
+        B2dBodyComponent playerBodyComp = Mappers.b2dCom.get(parent.playerEntity);
         float px = playerBodyComp.body.getPosition().x;
         float py = playerBodyComp.body.getPosition().y;
 
@@ -33,7 +35,7 @@ public class BulletSystem extends IteratingSystem {
         float by = b2body.body.getPosition().y;
 
         // if bullet is 20 units away from player on any axis then it is probably off screen
-        if(bx - px > 20 || by - py > 20){
+        if(bx - px > 3 || by - py > 5){
             bullet.isDead = true;
         }
 

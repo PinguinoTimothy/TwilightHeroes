@@ -17,6 +17,7 @@ public class StatsComponent implements Component, Pool.Poolable {
 
     @Override
     public void reset() {
-        hp = 100;
+
+
     }
 }

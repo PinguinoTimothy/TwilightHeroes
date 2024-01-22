@@ -13,6 +13,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Touchpad;
 import com.twilightheroes.game.screens.EndScreen;
 import com.twilightheroes.game.screens.MainScreen;
+import com.twilightheroes.game.screens.MenuScreen;
 import com.twilightheroes.game.tools.B2AssetManager;
 import com.twilightheroes.game.tools.B2WorldCreator;
 
@@ -30,6 +31,7 @@ public class TwilightHeroes extends Game {
 
 	public static final short EXIT_BIT = 32;
 	public static final short INMUNE_BIT = 64;
+	public static final short BULLET_BIT = 128;
 
 
 
@@ -49,6 +51,7 @@ public class TwilightHeroes extends Game {
 	public final static int APPLICATION = 2;
 	public final static int ENDGAME = 3;
 	private MainScreen mainScreen;
+	private com.twilightheroes.game.screens.MenuScreen menuScreen;
 	private EndScreen endScreen;
 	public B2AssetManager assMan = new B2AssetManager();
 
@@ -59,19 +62,19 @@ public class TwilightHeroes extends Game {
 		assMan.loadImages();
 		assMan.manager.finishLoading();
 		mainScreen = new MainScreen(this);
-		changeScreen(APPLICATION);
+		changeScreen(MENU);
 
 	}
 
 	public void changeScreen(int screen){
 		switch(screen){
-			/*
+
 			case MENU:
-				if(menuScreen == null) menuScreen = new MenuScreen(this);
+				if(menuScreen == null) menuScreen = new com.twilightheroes.game.screens.MenuScreen(this);
 				this.setScreen(menuScreen);
 				break;
 
-
+/*
 			case PREFERENCES:
 				if(preferencesScreen == null) preferencesScreen = new PreferencesScreen(this);
 				this.setScreen(preferencesScreen);
@@ -88,6 +91,11 @@ public class TwilightHeroes extends Game {
 				this.setScreen(endScreen);
 				break;
 		}
+	}
+
+	public void restart(){
+		mainScreen = new MainScreen(this);
+		changeScreen(APPLICATION);
 	}
 
 

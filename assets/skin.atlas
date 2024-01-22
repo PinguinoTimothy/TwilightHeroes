@@ -1,0 +1,27 @@
+
+skin.png
+size: 2048, 2048
+format: RGBA8888
+filter: Linear, Linear
+repeat: none
+KarmaFuture
+  rotate: false
+  xy: 1, 625
+  size: 506, 72
+  orig: 506, 72
+  offset: 0, 0
+  index: -1
+aa
+  rotate: false
+  xy: 1, 523
+  size: 300, 100
+  orig: 300, 100
+  offset: 0, 0
+  index: -1
+background
+  rotate: false
+  xy: 1, 699
+  size: 1860, 1160
+  orig: 1860, 1160
+  offset: 0, 0
+  index: -1

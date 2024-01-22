@@ -201,6 +201,12 @@ saltar();
             playerComponent.isDead = true;
         }
 
+        if (stats.hp > 100){
+            stats.hp = 100;
+        }
+        if (playerComponent.mana > 100){
+            playerComponent.mana = 100;
+        }
         knockback = playerComponent.knockback;
         speed = stats.speed;
 
@@ -443,7 +449,19 @@ if (!knockback && !dodging) {
         switch (spell){
             case SpellList.SHOCKING_GRASP:
 
-                 createAttackFixture(texture,b2body,attackComponent,20f,6f,16f, 0f);
+
+
+                    float xVel = texture.runningRight ? 0.5f : -0.5f;  // set the speed of the bullet
+                    float shooterX = b2body.body.getPosition().x; // get player location
+                    float shooterY = b2body.body.getPosition().y; // get player location
+
+
+
+                    // create a bullet
+                    screen.b2WorldCreator.createBullet(shooterX, shooterY, xVel, BulletComponent.Owner.PLAYER,texture.runningRight,25);
+
+
+                //createAttackFixture(texture,b2body,attackComponent,20f,6f,16f, 0f);
                 break;
             case  SpellList.HEAL:
                 stats.hp  -= 100;

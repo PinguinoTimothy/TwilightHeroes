@@ -10,6 +10,7 @@ import com.twilightheroes.game.TwilightHeroes;
 import com.twilightheroes.game.ecs.components.AnimationComponent;
 import com.twilightheroes.game.ecs.components.AttackComponent;
 import com.twilightheroes.game.ecs.components.B2dBodyComponent;
+import com.twilightheroes.game.ecs.components.BulletComponent;
 import com.twilightheroes.game.ecs.components.EnemyComponent;
 import com.twilightheroes.game.ecs.components.StateComponent;
 import com.twilightheroes.game.ecs.components.StatsComponent;
@@ -55,87 +56,101 @@ public class EnemySystem extends IteratingSystem {
     @Override
     protected void processEntity(Entity entity, float deltaTime) {
         EnemyComponent enemyCom = Mappers.enemyCom.get(entity);        // get EnemyComponent
-        B2dBodyComponent bodyCom =  Mappers.b2dCom.get(entity);    // get B2dBodyComponent
-        StateComponent enemyStateComponent =  Mappers.stateCom.get(entity);
-        TextureComponent textureComponent =  Mappers.texCom.get(entity);
+        B2dBodyComponent bodyCom = Mappers.b2dCom.get(entity);    // get B2dBodyComponent
+        StateComponent enemyStateComponent = Mappers.stateCom.get(entity);
+        TextureComponent textureComponent = Mappers.texCom.get(entity);
         AttackComponent attackComponent = Mappers.atkCom.get(entity);
         AnimationComponent animationComponent = Mappers.animCom.get(entity);
         StatsComponent statsComponent = Mappers.statsCom.get(entity);
 
-        Vector2 distanceToPlayer = calculateDistance(entity);
+        if (statsComponent.hp <= 0) {
+            bodyCom.isDead = true;
 
-        if (attackComponent.attackFixture != null) {
-            // Si la fixture de ataque ya existe, la eliminamos antes de recrearla
-            bodyCom.body.destroyFixture(attackComponent.attackFixture);
-            attackComponent.attackFixture = null;
-        }
+        } else {
 
-        if (enemyStateComponent.get() == StateComponent.STATE_ENEMY_ATTACK && !animationComponent.animations.get(enemyStateComponent.get()).isAnimationFinished(enemyStateComponent.time)){
-            if (animationComponent.currentFrame == enemyCom.attackFrame && attackComponent.performAttack){
-                createAttackFixture(textureComponent, bodyCom,attackComponent);
-                attackComponent.performAttack = false;
+
+            Vector2 distanceToPlayer = calculateDistance(entity);
+
+            if (attackComponent.attackFixture != null) {
+                // Si la fixture de ataque ya existe, la eliminamos antes de recrearla
+                bodyCom.body.destroyFixture(attackComponent.attackFixture);
+                attackComponent.attackFixture = null;
             }
-        }else {
-            float auxDistance = Math.abs(distanceToPlayer.x * 10);
-            if (Math.abs(distanceToPlayer.y) < 10) {
-                if (auxDistance >= 0 && auxDistance <= enemyCom.attackDistance && Math.abs(distanceToPlayer.y) < 0.5) {
-                    enemyStateComponent.set(StateComponent.STATE_ENEMY_ATTACK);
-                } else if (auxDistance > 0 && auxDistance <= enemyCom.viewDistance) {
-                    enemyStateComponent.set(StateComponent.STATE_CHASING);
-                } else {
-                    enemyStateComponent.set(StateComponent.STATE_IDLE);
+
+            if (enemyStateComponent.get() == StateComponent.STATE_ENEMY_ATTACK && !animationComponent.animations.get(enemyStateComponent.get()).isAnimationFinished(enemyStateComponent.time)) {
+                if (animationComponent.currentFrame == enemyCom.attackFrame && attackComponent.performAttack) {
+                    if (enemyCom.attackMethod.equals("melee")) {
+                        createAttackFixture(textureComponent, bodyCom, attackComponent);
+                    } else if (enemyCom.attackMethod.equals("range")) {
+                        float xVel = textureComponent.runningRight ? 1f : -1f;
+                        screen.b2WorldCreator.createBullet(bodyCom.body.getPosition().x, bodyCom.body.getPosition().y, xVel, BulletComponent.Owner.ENEMY, textureComponent.runningRight, statsComponent.damage);
+                    }
+                    attackComponent.performAttack = false;
+
                 }
-            }
-            //enemyStateComponent.set(StateComponent.STATE_IDLE);
-            switch (enemyStateComponent.get()) {
-
-                case StateComponent.STATE_IDLE:
-
-                    break;
-
-                case StateComponent.STATE_CHASING:
-                    if (distanceToPlayer.x > 0.001f || distanceToPlayer.x < -0.001f) {
-
-
-                        float speed = distanceToPlayer.x < 0 ? statsComponent.speed : -statsComponent.speed;
-                        bodyCom.body.setLinearVelocity(new Vector2(speed, bodyCom.body.getLinearVelocity().y));
+            } else {
+                float auxDistance = Math.abs(distanceToPlayer.x * 10);
+                if (Math.abs(distanceToPlayer.y) < 10) {
+                    if (auxDistance >= 0 && auxDistance <= enemyCom.attackDistance && Math.abs(distanceToPlayer.y) < 0.5) {
+                        enemyStateComponent.set(StateComponent.STATE_ENEMY_ATTACK);
+                    } else if (auxDistance > 0 && auxDistance <= enemyCom.viewDistance) {
+                        enemyStateComponent.set(StateComponent.STATE_CHASING);
                     } else {
                         enemyStateComponent.set(StateComponent.STATE_IDLE);
-
                     }
-                    break;
+                }
+                //enemyStateComponent.set(StateComponent.STATE_IDLE);
+                switch (enemyStateComponent.get()) {
 
-                case StateComponent.STATE_ENEMY_ATTACK:
-                    if (enemyStateComponent.get() == StateComponent.STATE_ENEMY_ATTACK && !animationComponent.animations.get(enemyStateComponent.get()).isAnimationFinished(enemyStateComponent.time)) {
-                        if (animationComponent.currentFrame == enemyCom.attackFrame && attackComponent.performAttack) {
-                            createAttackFixture(textureComponent, bodyCom, attackComponent);
-                            attackComponent.performAttack = false;
-                        }
-                    } else {
+                    case StateComponent.STATE_IDLE:
 
-                        if (enemyCom.attackCooldown <= 0) {
-                            enemyCom.attackCooldown = 1.5f;
-                            enemyStateComponent.time = 0f;
-                            attackComponent.performAttack = true;
+                        break;
+
+                    case StateComponent.STATE_CHASING:
+                        if (distanceToPlayer.x > 0.001f || distanceToPlayer.x < -0.001f) {
+
+
+                            float speed = distanceToPlayer.x < 0 ? statsComponent.speed : -statsComponent.speed;
+                            bodyCom.body.setLinearVelocity(new Vector2(speed, bodyCom.body.getLinearVelocity().y));
                         } else {
-                            enemyCom.attackCooldown -= deltaTime;
                             enemyStateComponent.set(StateComponent.STATE_IDLE);
 
                         }
-                    }
+                        break;
 
-                    break;
+                    case StateComponent.STATE_ENEMY_ATTACK:
+                        if (enemyStateComponent.get() == StateComponent.STATE_ENEMY_ATTACK && !animationComponent.animations.get(enemyStateComponent.get()).isAnimationFinished(enemyStateComponent.time)) {
+                            if (animationComponent.currentFrame == enemyCom.attackFrame && attackComponent.performAttack) {
+
+                                createAttackFixture(textureComponent, bodyCom, attackComponent);
+                                attackComponent.performAttack = false;
+                            }
+                        } else {
+
+                            if (enemyCom.attackCooldown <= 0) {
+                                enemyCom.attackCooldown = 1.5f;
+                                enemyStateComponent.time = 0f;
+                                attackComponent.performAttack = true;
+                            } else {
+                                enemyCom.attackCooldown -= deltaTime;
+                                enemyStateComponent.set(StateComponent.STATE_IDLE);
+
+                            }
+                        }
+
+                        break;
+                }
+
+                if (distanceToPlayer.x < 0 && !textureComponent.runningRight) {
+                    textureComponent.runningRight = true;
+
+                } else if (distanceToPlayer.x > 0 && textureComponent.runningRight) {
+                    textureComponent.runningRight = false;
+
+                }
             }
 
-            if (distanceToPlayer.x < 0 && !textureComponent.runningRight) {
-                textureComponent.runningRight = true;
-
-            } else if (distanceToPlayer.x > 0 && textureComponent.runningRight) {
-                textureComponent.runningRight = false;
-
-            }
         }
-
     }
 
 

@@ -1,6 +1,7 @@
 package com.twilightheroes.game.tools;
 
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
+import com.twilightheroes.game.ecs.components.EnemyComponent;
 
 public class EnemyPrototype {
     public TextureAtlas atlas;
@@ -19,9 +20,10 @@ public class EnemyPrototype {
     public float speed;
     public int attackFrame;
     public int attackDamage;
+    public String attackMethod;
 
 
-    public EnemyPrototype(TextureAtlas atlas, int width, int height, int hitboxX, int hitboxY, int hp, int idleFrames, int walkFrames, int attackFrames, float viewDistance, float attackDistance, float attackCooldown, float speed, int attackFrame,int attackDamage) {
+    public EnemyPrototype(TextureAtlas atlas, int width, int height, int hitboxX, int hitboxY, int hp, int idleFrames, int walkFrames, int attackFrames, float viewDistance, float attackDistance, float attackCooldown, float speed, int attackFrame,int attackDamage, String attackMethod) {
         this.atlas = atlas;
         this.width = width;
         this.height = height;
@@ -37,5 +39,6 @@ public class EnemyPrototype {
         this.speed = speed;
         this.attackFrame = attackFrame;
         this.attackDamage = attackDamage;
+        this.attackMethod = attackMethod;
     }
 }

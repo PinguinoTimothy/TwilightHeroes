@@ -8,6 +8,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Filter;
 import com.twilightheroes.game.TwilightHeroes;
 import com.twilightheroes.game.ecs.components.B2dBodyComponent;
+import com.twilightheroes.game.ecs.components.BulletComponent;
 import com.twilightheroes.game.ecs.components.CollisionComponent;
 import com.twilightheroes.game.ecs.components.EnemyComponent;
 import com.twilightheroes.game.ecs.components.ExitComponent;
@@ -59,12 +60,12 @@ public class CollisionSystem extends IteratingSystem {
                 if (collidedEntity != null) {
                     PlayerComponent player = Mappers.playerCom.get(entity);
                     StatsComponent playerStats = Mappers.statsCom.get(entity);
-                    StatsComponent enemyStats = Mappers.statsCom.get(collidedEntity);
                     TypeComponent type = Mappers.typeCom.get(collidedEntity);
                     if (type != null) {
                         switch (type.type) {
                             case TypeComponent.ENEMY:
                                 //do player hit enemy thing
+                                StatsComponent enemyStats = Mappers.statsCom.get(collidedEntity);
 
 
                                 if (isHitbox && !isEnemyHitbox) {
@@ -76,10 +77,7 @@ public class CollisionSystem extends IteratingSystem {
                                     player.canDodge = true;
                                     playerStats.hp += playerStats.lifeSteal;
                                     player.mana += 10;
-                                    if (enemyStats.hp <= 0) {
-                                        Mappers.b2dCom.get(collidedEntity).isDead = true;
 
-                                    }
                                 }
 
 
@@ -120,8 +118,8 @@ public class CollisionSystem extends IteratingSystem {
                                 B2dBodyComponent bodyPlayer = Mappers.b2dCom.get(collidedEntity);
                                 B2dBodyComponent bodyEnemy = Mappers.b2dCom.get(entity);
                                 EnemyComponent enemyComponent = Mappers.enemyCom.get(entity);
-                                StatsComponent playerStats = Mappers.statsCom.get(entity);
-                                StatsComponent enemyStats = Mappers.statsCom.get(collidedEntity);
+                                StatsComponent playerStats = Mappers.statsCom.get(collidedEntity);
+                                StatsComponent enemyStats = Mappers.statsCom.get(entity);
                                 if (!isHitbox && !player.inmune) {
                                     System.out.println("enemy hit player");
                                     float xForce = 2.5f;
@@ -145,7 +143,67 @@ public class CollisionSystem extends IteratingSystem {
                         cc.collisionEntities.removeIndex(i); // collision handled reset component
                     }
                 }
-            }
+            } else if (thisType.type == TypeComponent.BULLET) {
+                if (collidedEntity != null) {
+                    TypeComponent type = Mappers.typeCom.get(collidedEntity);
+                    BulletComponent bullet = Mappers.bullCom.get(entity);
+                    if (type != null) {
+                        switch (type.type) {
+                            case TypeComponent.PLAYER:
+                                if (bullet.owner != BulletComponent.Owner.PLAYER) {
+
+                                    PlayerComponent player = Mappers.playerCom.get(collidedEntity);
+                                    B2dBodyComponent bodyPlayer = Mappers.b2dCom.get(collidedEntity);
+                                    StatsComponent playerStats = Mappers.statsCom.get(collidedEntity);
+
+                                    if (!player.inmune) {
+                                        System.out.println("enemy hit player");
+                                        /*
+                                        float xForce = 2.5f;
+                                        if (bodyPlayer.body.getPosition().x < bodyEnemy.body.getPosition().x) {
+                                            xForce = -2.5f;
+                                        }
+
+                                         */
+                                        playerStats.hp -= bullet.damage;
+                                        bullet.isDead = true;
+
+                                        bodyPlayer.body.getFixtureList().get(0).setFilterData(inmuneFilter);
+                                        player.inmune = true;
+                                        player.inmuneTime = 0.5f;
+                                        // bodyPlayer.body.setLinearVelocity(new Vector2(0f, 0f));
+                                        // bodyPlayer.body.setLinearVelocity(new Vector2(xForce, 0f));
+                                        // player.knockback = true;
+                                        // player.knockBackTime = 0.3f;
+                                        Gdx.input.vibrate(500);
+                                    }
+                                }
+                                break;
+                            case TypeComponent.ENEMY:
+                                if (bullet.owner != BulletComponent.Owner.ENEMY) {
+                                    //do player hit enemy thing
+                                    StatsComponent enemyStats = Mappers.statsCom.get(collidedEntity);
+
+
+                                    if (!isEnemyHitbox) {
+                                        if (canBeReduced) {
+                                            enemyStats.hp -= bullet.damage - enemyStats.damageReduction;
+                                        } else {
+                                            enemyStats.hp -= bullet.damage;
+                                        }
+                                        bullet.isDead = true;
+
+                                    }
+                                }
+
+
+                                break;
+
+                        }
+                    }
+                        cc.collisionEntities.removeIndex(i); // collision handled reset component
+                    }
+                }
 
 
         }

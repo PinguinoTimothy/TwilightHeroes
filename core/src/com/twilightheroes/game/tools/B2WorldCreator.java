@@ -4,7 +4,10 @@ import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.PooledEngine;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.assets.AssetManager;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.maps.MapObject;
 import com.badlogic.gdx.maps.objects.RectangleMapObject;
 import com.badlogic.gdx.maps.tiled.TiledMap;
@@ -12,6 +15,7 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
+import com.badlogic.gdx.physics.box2d.CircleShape;
 import com.badlogic.gdx.physics.box2d.EdgeShape;
 import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
@@ -23,6 +27,7 @@ import com.twilightheroes.game.TwilightHeroes;
 import com.twilightheroes.game.ecs.components.AnimationComponent;
 import com.twilightheroes.game.ecs.components.AttackComponent;
 import com.twilightheroes.game.ecs.components.B2dBodyComponent;
+import com.twilightheroes.game.ecs.components.BulletComponent;
 import com.twilightheroes.game.ecs.components.CollisionComponent;
 import com.twilightheroes.game.ecs.components.EnemyComponent;
 import com.twilightheroes.game.ecs.components.ExitComponent;
@@ -78,8 +83,8 @@ public class B2WorldCreator {
              float speed = enemigoActual.get("speed").asFloat();
              int attackFrame = enemigoActual.get("attackFrame").asInt();
             int attackDamage = enemigoActual.get("attackDamage").asInt();
-
-        enemigos.put(enemigoActual.get("nombre").asString(),new EnemyPrototype(atlas,width,height,hitboxX,hitboxY,hp,idleFrames,walkFrames,attackFrames,viewDistance,attackDistance,attackCooldown,speed,attackFrame,attackDamage));
+            String attackMethod = enemigoActual.get("attackMethod").asString();
+        enemigos.put(enemigoActual.get("nombre").asString(),new EnemyPrototype(atlas,width,height,hitboxX,hitboxY,hp,idleFrames,walkFrames,attackFrames,viewDistance,attackDistance,attackCooldown,speed,attackFrame,attackDamage,attackMethod));
         }
 
     }
@@ -177,6 +182,7 @@ public class B2WorldCreator {
         }
     }
 
+    public TextureRegion aux;
     public void createPlayer(TextureAtlas atlas, Entity playerEntity) {
         if (playerEntity == null) {
             // Create the Entity and all the components that will go in the entity
@@ -194,7 +200,8 @@ public class B2WorldCreator {
             SpellComponent spellComponent = engine.createComponent(SpellComponent.class);
 
             // create the data for the components and add them to the components
-            texture.sprite.setRegion(atlas.findRegion("Idle-Sheet"));
+           aux = atlas.findRegion("Idle-Sheet");
+            texture.sprite.setRegion(aux);
 
             texture.sprite.setBounds(2, 1, 35 / TwilightHeroes.PPM, 47 / TwilightHeroes.PPM);
 
@@ -361,7 +368,7 @@ public class B2WorldCreator {
             fixtureDef.friction = 0;
             fixtureDef.shape = shape;
             fixtureDef.filter.categoryBits = TwilightHeroes.ENEMY_BIT;
-            fixtureDef.filter.maskBits = TwilightHeroes.SOLID_BIT | TwilightHeroes.HITBOX_BIT | TwilightHeroes.PLAYER_BIT;
+            fixtureDef.filter.maskBits = TwilightHeroes.SOLID_BIT | TwilightHeroes.HITBOX_BIT | TwilightHeroes.PLAYER_BIT | TwilightHeroes.BULLET_BIT;
             b2dbody.body.createFixture(fixtureDef);
 
             FixtureDef fdef2 = new FixtureDef();
@@ -394,6 +401,8 @@ public class B2WorldCreator {
             enemyComponent.attackDistance = enemyPrototype.attackDistance;
             enemyComponent.attackFrame = enemyPrototype.attackFrame;
             enemyComponent.viewDistance = enemyPrototype.viewDistance;
+            enemyComponent.attackMethod = enemyPrototype.attackMethod;
+
             statsComponent.speed = enemyPrototype.speed;
             statsComponent.hp = enemyPrototype.hp;
 
@@ -411,5 +420,54 @@ public class B2WorldCreator {
 // add the entity to the engine
             engine.addEntity(entity);
         }
+    }
+
+
+
+    public Entity createBullet(float x, float y, float xVel, BulletComponent.Owner own, boolean runningRight, float damage) {
+        Entity entity = engine.createEntity();
+        B2dBodyComponent b2dbody = engine.createComponent(B2dBodyComponent.class);
+        TextureComponent texture = engine.createComponent(TextureComponent.class);
+        TypeComponent type = engine.createComponent(TypeComponent.class);
+        CollisionComponent colComp = engine.createComponent(CollisionComponent.class);
+        BulletComponent bul = engine.createComponent(BulletComponent.class);
+
+        bul.owner = own;
+        bul.damage = damage;
+
+        BodyDef bodyDef = new BodyDef();
+        bodyDef.position.set(x,y);
+        bodyDef.type = BodyDef.BodyType.KinematicBody;
+        b2dbody.body = world.createBody(bodyDef);
+        b2dbody.body.setFixedRotation(true);
+
+        // Define la hitbox rectangular
+        CircleShape shape = new CircleShape();
+        shape.setRadius(4f/TwilightHeroes.PPM); // Tamaño de la hitbox
+
+        FixtureDef fixtureDef = new FixtureDef();
+        fixtureDef.friction = 0;
+        fixtureDef.shape = shape;
+        fixtureDef.filter.categoryBits = TwilightHeroes.BULLET_BIT;
+        fixtureDef.isSensor = true;
+        b2dbody.body.createFixture(fixtureDef);
+        shape.dispose();
+
+        texture.sprite.setRegion(manager.get("arrow.png",Texture.class));
+        texture.sprite.setBounds(x,y,10/TwilightHeroes.PPM,10/TwilightHeroes.PPM);
+        texture.runningRight = runningRight;
+
+        type.type = TypeComponent.BULLET;
+        b2dbody.body.setUserData(entity);
+        bul.xVel = xVel;
+
+        entity.add(bul);
+        entity.add(colComp);
+        entity.add(b2dbody);
+        entity.add(texture);
+        entity.add(type);
+
+        engine.addEntity(entity);
+        return entity;
     }
 }

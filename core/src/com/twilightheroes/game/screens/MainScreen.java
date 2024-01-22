@@ -25,6 +25,7 @@ import com.badlogic.gdx.utils.viewport.Viewport;
 import com.twilightheroes.game.TwilightHeroes;
 import com.twilightheroes.game.ecs.components.PlayerComponent;
 import com.twilightheroes.game.ecs.systems.AnimationSystem;
+import com.twilightheroes.game.ecs.systems.BulletSystem;
 import com.twilightheroes.game.ecs.systems.CollisionSystem;
 import com.twilightheroes.game.ecs.systems.EffectSystem;
 import com.twilightheroes.game.ecs.systems.EnemySystem;
@@ -82,7 +83,7 @@ private     float viewportWidth,viewportHeight;
     private Button btnHabilidad2;
     private Button btnPause;
 
-    private B2WorldCreator b2WorldCreator;
+    public B2WorldCreator b2WorldCreator;
 
     public Entity playerEntity;
     private AssetManager manager;
@@ -200,6 +201,7 @@ hud.stage.setDebugAll(true);
         engine.addSystem(new PlayerControlSystem(touchpad,btnJump,btnAttack,btnDodge,btnHabilidad1,btnHabilidad2,this));
         engine.addSystem(new EnemySystem(this));
         engine.addSystem(new EffectSystem());
+        engine.addSystem(new BulletSystem(this));
         b2WorldCreator = new B2WorldCreator(world,engine,this,manager);
         // create some game objects
         changeMap();

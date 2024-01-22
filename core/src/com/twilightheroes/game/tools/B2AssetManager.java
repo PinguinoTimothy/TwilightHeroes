@@ -33,7 +33,8 @@ public class B2AssetManager {
         manager.load("hud/healthBar.png",Texture.class);
         manager.load("hud/knob.png",Texture.class);
 
-
+        manager.load("arrow.atlas", TextureAtlas.class);
+        manager.load("arrow.png", Texture.class);
 
     }
 

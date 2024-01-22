@@ -10,6 +10,7 @@ public class EnemyComponent implements Component, Pool.Poolable {
         Goblin,
         Nightborne
     }
+
     public boolean isDead = false;
     public float xPosCenter = -1;
     public boolean playerGoingLeft = false;
@@ -19,6 +20,7 @@ public class EnemyComponent implements Component, Pool.Poolable {
     public float attackDistance;
     public float attackCooldown;
     public int attackFrame;
+    public String attackMethod;
 
     @Override
     public void reset() {
