@@ -7,17 +7,24 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.World;
+import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
+import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Touchpad;
+import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
+import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
@@ -87,6 +94,7 @@ private     float viewportWidth,viewportHeight;
 
     public Entity playerEntity;
     private AssetManager manager;
+    Image pantallaNegro;
 
     public MainScreen(TwilightHeroes twilightHeroes){
         parent = twilightHeroes;
@@ -156,6 +164,7 @@ private     float viewportWidth,viewportHeight;
 btnAttack.setScale(1.5f,1.5f);
         btnAttack.setBounds(300, 15, 30, 30);
         hud.stage.addActor(btnAttack);
+
 hud.stage.setDebugAll(true);
 
         // Boton Dodge
@@ -204,6 +213,13 @@ hud.stage.setDebugAll(true);
         engine.addSystem(new BulletSystem(this));
         b2WorldCreator = new B2WorldCreator(world,engine,this,manager);
         // create some game objects
+        Drawable drawable = new TextureRegionDrawable(new TextureRegion(manager.get("pantallaNegra.jpg", Texture.class)));
+        pantallaNegro = new Image();
+        pantallaNegro.setDrawable(drawable);
+        pantallaNegro.setBounds(0,0, viewportWidth*TwilightHeroes.PPM,viewportHeight*TwilightHeroes.PPM);
+        pantallaNegro.setColor(0,0,0,0f);
+        pantallaNegro.setVisible(false);
+        hud.stage.addActor(pantallaNegro);
         changeMap();
 
     }
@@ -220,6 +236,10 @@ hud.stage.setDebugAll(true);
     public Array<Body> bodies = new Array<>();
     public boolean change = false;
     public int newMap;
+    // Once this reaches 1.0f the next scene is shown
+    private float alpha = 0;
+    // true if fade in, false if fade out
+    private boolean fadeDirection = true;
 
     private void changeMap(){
         auxChangeMap = 5;
@@ -240,9 +260,13 @@ hud.stage.setDebugAll(true);
         bodies.clear();
 
 
-        map = mapLoader.load(new String("maps/"+maps[newMap] + ".tmx"));
-       b2WorldCreator.generateLevel(map,playerEntity);
-        mapRenderer.setMap(map);
+
+            map = mapLoader.load(new String("maps/"+maps[newMap] + ".tmx"));
+            b2WorldCreator.generateLevel(map,playerEntity);
+            mapRenderer.setMap(map);
+
+
+
 
     }
 
@@ -278,9 +302,19 @@ hud.stage.setDebugAll(true);
 
         if (change){
             changeMap();
+            transitionTime = 1f;
+        }
+        if (transitionTime>0f){
+            pantallaNegro.setColor(0,0,0,transitionTime);
+            transitionTime -= delta;
+            pantallaNegro.setVisible(true);
+
+        }else{
+            pantallaNegro.setVisible(false);
 
         }
     }
+    private float transitionTime = 0f;
 
     @Override
     public void resize(int width, int height) {

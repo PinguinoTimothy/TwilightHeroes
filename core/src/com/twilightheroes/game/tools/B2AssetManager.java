@@ -20,11 +20,14 @@ public class B2AssetManager {
         manager.load("player/player.png", Texture.class);
 
         manager.load("hud/attack.png",Texture.class);
+        manager.load("hud/attackchecked.png",Texture.class);
+
         manager.load("hud/dodge.png",Texture.class);
         manager.load("hud/healthBar.png",Texture.class);
         manager.load("hud/Joystick.png",Texture.class);
         manager.load("hud/SmallHandleFilled.png",Texture.class);
         manager.load("hud/jump.png",Texture.class);
+
         manager.load("hud/habilidad1.png",Texture.class);
 
 
@@ -35,6 +38,9 @@ public class B2AssetManager {
 
         manager.load("arrow.atlas", TextureAtlas.class);
         manager.load("arrow.png", Texture.class);
+        manager.load("pantallaNegra.jpg", Texture.class);
+        manager.load("scrollbar-vertical.png", Texture.class);
+
 
     }
 

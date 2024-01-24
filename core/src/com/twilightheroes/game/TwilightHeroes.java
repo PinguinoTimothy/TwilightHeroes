@@ -1,21 +1,18 @@
 package com.twilightheroes.game;
 
 import com.badlogic.gdx.Game;
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Graphics;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.Sprite;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Touchpad;
 import com.twilightheroes.game.screens.EndScreen;
+import com.twilightheroes.game.screens.MagicScreen;
 import com.twilightheroes.game.screens.MainScreen;
-import com.twilightheroes.game.screens.MenuScreen;
 import com.twilightheroes.game.tools.B2AssetManager;
-import com.twilightheroes.game.tools.B2WorldCreator;
 
 public class TwilightHeroes extends Game {
 
@@ -33,6 +30,7 @@ public class TwilightHeroes extends Game {
 	public static final short INMUNE_BIT = 64;
 	public static final short BULLET_BIT = 128;
 
+	public ShapeRenderer shapeRenderer;
 
 
 	private Skin touchpadSkin;
@@ -59,11 +57,12 @@ public class TwilightHeroes extends Game {
 	public void create () {
 
 		world = new World(new Vector2(0,0f),true);
+
 		assMan.loadImages();
 		assMan.manager.finishLoading();
 		mainScreen = new MainScreen(this);
 		changeScreen(MENU);
-
+setScreen(new MagicScreen(this));
 	}
 
 	public void changeScreen(int screen){
@@ -71,6 +70,7 @@ public class TwilightHeroes extends Game {
 
 			case MENU:
 				if(menuScreen == null) menuScreen = new com.twilightheroes.game.screens.MenuScreen(this);
+
 				this.setScreen(menuScreen);
 				break;
 
