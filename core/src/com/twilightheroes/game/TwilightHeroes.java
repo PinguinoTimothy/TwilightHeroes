@@ -62,7 +62,7 @@ public class TwilightHeroes extends Game {
 		assMan.manager.finishLoading();
 		mainScreen = new MainScreen(this);
 		changeScreen(MENU);
-setScreen(new MagicScreen(this));
+//setScreen(new MagicScreen(this));
 	}
 
 	public void changeScreen(int screen){

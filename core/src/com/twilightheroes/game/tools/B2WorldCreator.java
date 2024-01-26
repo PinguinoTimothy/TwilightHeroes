@@ -200,7 +200,7 @@ public class B2WorldCreator {
             SpellComponent spellComponent = engine.createComponent(SpellComponent.class);
 
             // create the data for the components and add them to the components
-           aux = atlas.findRegion("Idle-Sheet");
+           aux = atlas.findRegion("Idle");
             texture.sprite.setRegion(aux);
 
             texture.sprite.setBounds(2, 1, 35 / TwilightHeroes.PPM, 47 / TwilightHeroes.PPM);
@@ -264,11 +264,14 @@ public class B2WorldCreator {
             // Create the animation and add it to AnimationComponent
 
 
-            animCom.animations.put(StateComponent.STATE_IDLE, AnimationMaker.crearAnimacion(atlas, "Idle-Sheet", 4, 4));
-            animCom.animations.put(StateComponent.STATE_MOVING, AnimationMaker.crearAnimacion(atlas, "Run-Sheet", 8, 8));
-            animCom.animations.put(StateComponent.STATE_ATTACK01, AnimationMaker.crearAnimacion(atlas, "ataque1", 4, 16));
-            animCom.animations.put(StateComponent.STATE_ATTACK02, AnimationMaker.crearAnimacion(atlas, "ataque2", 4, 16));
-            animCom.animations.put(StateComponent.STATE_ATTACK03, AnimationMaker.crearAnimacion(atlas, "ataque3", 4, 16));
+            animCom.animations.put(StateComponent.STATE_IDLE, AnimationMaker.crearAnimacion(atlas, "Idle", 8, 8));
+            animCom.animations.put(StateComponent.STATE_MOVING, AnimationMaker.crearAnimacion(atlas, "Run", 8, 8));
+            animCom.animations.put(StateComponent.STATE_ATTACK01, AnimationMaker.crearAnimacion(atlas, "Attack_1", 6, 18));
+            animCom.animations.put(StateComponent.STATE_ATTACK02, AnimationMaker.crearAnimacion(atlas, "Attack_2", 4, 16));
+            animCom.animations.put(StateComponent.STATE_ATTACK03, AnimationMaker.crearAnimacion(atlas, "Attack_3", 3, 14));
+            animCom.animations.put(StateComponent.STATE_DAMAGED, AnimationMaker.crearAnimacion(atlas, "Hurt", 4, 4));
+            animCom.animations.put(StateComponent.STATE_DODGING, AnimationMaker.crearAnimacion(atlas, "Roll", 7, 14));
+            animCom.animations.put(StateComponent.STATE_JUMPING, AnimationMaker.crearAnimacion(atlas, "Jump", 7, 14));
 
             statsComponent.speed = 100;
             statsComponent.hp = 100;
