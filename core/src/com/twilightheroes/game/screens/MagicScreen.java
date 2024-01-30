@@ -26,7 +26,7 @@ public class MagicScreen implements Screen {
 
     private Skin skin;
     private Stage stage;
-    TwilightHeroes parent;
+    private TwilightHeroes parent;
 
     public ImageButton selectedSpell;
     public Label name;
@@ -40,8 +40,8 @@ public class MagicScreen implements Screen {
     public void show() {
         stage = new Stage(new ScreenViewport());
         skin = new Skin(Gdx.files.internal("skin.json"));
-
         Gdx.input.setInputProcessor(stage);
+
 
         final Table table = new Table();
         table.setFillParent(true);
@@ -70,8 +70,26 @@ public class MagicScreen implements Screen {
         textButtonStyle.font = font12;
 
         // Adding Hechizos and Opciones buttons to the top
-        mainTable.add(createTextButton("Hechizos", textButtonStyle)).padBottom(50.0f).align(Align.topLeft).padLeft(200f);
-        mainTable.add(createTextButton("Opciones", textButtonStyle)).padBottom(50.0f).row();
+        TextButton btnMenuHechizos = createTextButton("Hechizos", textButtonStyle);
+        btnMenuHechizos.addListener(new ClickListener(){
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                super.clicked(event, x, y);
+            parent.changeScreen(TwilightHeroes.APPLICATION);
+            }
+        });
+
+        TextButton btnMenuOpciones = createTextButton("Opciones", textButtonStyle);
+        btnMenuOpciones.addListener(new ClickListener(){
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                super.clicked(event, x, y);
+                parent.changeScreen(TwilightHeroes.OPTIONS);
+            }
+        });
+
+        mainTable.add(btnMenuHechizos).padBottom(50.0f).align(Align.left).padLeft(200f);
+        mainTable.add(btnMenuOpciones).padBottom(50.0f).align(Align.left).row();
 
         // Adding two buttons in the middle
         Skin skin3 = new Skin();
@@ -199,13 +217,14 @@ public class MagicScreen implements Screen {
         Gdx.gl.glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         stage.act();
-
         stage.draw();
     }
 
     @Override
     public void resize(int width, int height) {
         // Se puede implementar si es necesario
+        Gdx.input.setInputProcessor(stage);
+
     }
 
     @Override
@@ -216,6 +235,8 @@ public class MagicScreen implements Screen {
     @Override
     public void resume() {
         // Se puede implementar si es necesario
+        Gdx.input.setInputProcessor(stage);
+
     }
 
     @Override

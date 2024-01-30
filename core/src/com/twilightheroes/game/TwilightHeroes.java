@@ -12,8 +12,10 @@ import com.badlogic.gdx.scenes.scene2d.ui.Touchpad;
 import com.twilightheroes.game.screens.EndScreen;
 import com.twilightheroes.game.screens.MagicScreen;
 import com.twilightheroes.game.screens.MainScreen;
+import com.twilightheroes.game.screens.OptionScreen;
 import com.twilightheroes.game.tools.B2AssetManager;
 
+public enum languag
 public class TwilightHeroes extends Game {
 
 	public static final int V_WIDTH = 400;
@@ -45,13 +47,24 @@ public class TwilightHeroes extends Game {
 	private World world;
 
 	public final static int MENU = 0;
-	public final static int PREFERENCES = 1;
+	public final static int OPTIONS = 1;
 	public final static int APPLICATION = 2;
-	public final static int ENDGAME = 3;
+	public final static int MAGIC = 3;
+	public final static int ENDGAME = 4;
+
 	private MainScreen mainScreen;
 	private com.twilightheroes.game.screens.MenuScreen menuScreen;
+	private MagicScreen magicScreen;
 	private EndScreen endScreen;
+	private OptionScreen optionScreen;
 	public B2AssetManager assMan = new B2AssetManager();
+
+	public boolean accelerometerOn = true;
+	public boolean vibratorOn = true;
+
+	public int musicVolume = 100;
+
+	public
 
 	@Override
 	public void create () {
@@ -61,7 +74,7 @@ public class TwilightHeroes extends Game {
 		assMan.loadImages();
 		assMan.manager.finishLoading();
 		mainScreen = new MainScreen(this);
-		changeScreen(MENU);
+		changeScreen(OPTIONS);
 //setScreen(new MagicScreen(this));
 	}
 
@@ -74,17 +87,24 @@ public class TwilightHeroes extends Game {
 				this.setScreen(menuScreen);
 				break;
 
-/*
-			case PREFERENCES:
-				if(preferencesScreen == null) preferencesScreen = new PreferencesScreen(this);
-				this.setScreen(preferencesScreen);
+
+			case OPTIONS:
+				if(optionScreen == null) optionScreen = new OptionScreen(this);
+				this.setScreen(optionScreen);
 				break;
 
-				 */
+
 			case APPLICATION:
 				// always make new game screen so game can't start midway
 
+				mainScreen.resume();
 				this.setScreen(mainScreen);
+				break;
+			case MAGIC:
+				// always make new game screen so game can't start midway
+				if(magicScreen == null) magicScreen = new MagicScreen(this);
+
+				this.setScreen(magicScreen);
 				break;
 			case ENDGAME:
 				if(endScreen == null) endScreen = new EndScreen(this);

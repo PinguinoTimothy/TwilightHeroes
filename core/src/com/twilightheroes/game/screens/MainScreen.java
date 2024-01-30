@@ -44,11 +44,12 @@ import com.twilightheroes.game.scenes.Hud;
 import com.twilightheroes.game.tools.B2WorldCreator;
 import com.twilightheroes.game.tools.B2dContactListener;
 import com.twilightheroes.game.tools.BodyFactory;
+import com.twilightheroes.game.tools.Mappers;
 
 
 public class MainScreen implements Screen {
 
-    private TwilightHeroes parent;
+    public TwilightHeroes parent;
     private World world;
     private BodyFactory bodyFactory;
     private SpriteBatch sb;
@@ -138,7 +139,6 @@ private     float viewportWidth,viewportHeight;
         touchpad.setOrigin(Align.center);
         hud.stage.addActor(touchpad);
 
-        Gdx.input.setInputProcessor(hud.stage);
 
         // Create our new rendering system
         renderingSystem = new RenderingSystem(sb,gameCam,viewport);
@@ -199,6 +199,7 @@ hud.stage.setDebugAll(true);
         hud.stage.addActor(btnPause);
 
 
+        Gdx.input.setInputProcessor(hud.stage);
 
 
         // add all the relevant systems our engine should run
@@ -207,7 +208,7 @@ hud.stage.setDebugAll(true);
         engine.addSystem(new PhysicsSystem(world,engine,this));
         engine.addSystem(new PhysicsDebugSystem(world, renderingSystem.getCamera()));
         engine.addSystem(new CollisionSystem(renderingSystem,this));
-        engine.addSystem(new PlayerControlSystem(touchpad,btnJump,btnAttack,btnDodge,btnHabilidad1,btnHabilidad2,this));
+        engine.addSystem(new PlayerControlSystem(touchpad,btnJump,btnAttack,btnDodge,btnHabilidad1,btnHabilidad2,btnPause,this));
         engine.addSystem(new EnemySystem(this));
         engine.addSystem(new EffectSystem());
         engine.addSystem(new BulletSystem(this));
@@ -319,6 +320,7 @@ hud.stage.setDebugAll(true);
     @Override
     public void resize(int width, int height) {
    renderingSystem.resize(width,height);
+
     }
 
 
@@ -330,6 +332,9 @@ hud.stage.setDebugAll(true);
 
     @Override
     public void resume() {
+        hud.stage.unfocusAll();
+        Gdx.input.setInputProcessor(hud.stage);
+        gameCam.position.set(Mappers.b2dCom.get(playerEntity).body.getPosition(),0);
 
     }
 

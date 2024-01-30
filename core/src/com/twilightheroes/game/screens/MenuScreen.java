@@ -3,7 +3,10 @@ package com.twilightheroes.game.screens;
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
@@ -15,6 +18,8 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Scaling;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.twilightheroes.game.TwilightHeroes;
+
+import java.awt.GradientPaint;
 
 import jdk.tools.jmod.Main;
 
@@ -32,6 +37,16 @@ public class MenuScreen implements Screen {
     public void show() {
         stage = new Stage(new ScreenViewport());
         skin = new Skin(Gdx.files.internal("skin.json"));
+        FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("KarmaFuture.ttf"));
+        final FreeTypeFontGenerator.FreeTypeFontParameter parameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
+        parameter.size = 75;
+        parameter.color = Color.RED;
+        BitmapFont font12 = generator.generateFont(parameter);
+
+        generator.dispose();
+        TextButton.TextButtonStyle textButtonStyle = new TextButton.TextButtonStyle();
+        textButtonStyle.font = font12;
+
         Gdx.input.setInputProcessor(stage);
 
         Table table = new Table();
@@ -49,7 +64,8 @@ public class MenuScreen implements Screen {
         table1.add(image);
 
         table1.row();
-        TextButton textButton = new TextButton("Jugar", skin);
+
+        TextButton textButton = new TextButton("Jugar", textButtonStyle);
         textButton.setName("play");
         table1.add(textButton).padBottom(30.0f);
 textButton.addListener(new ClickListener()
@@ -62,22 +78,22 @@ textButton.addListener(new ClickListener()
 });
 
         table1.row();
-        textButton = new TextButton("Opciones", skin);
+        textButton = new TextButton("Opciones", textButtonStyle);
         textButton.setName("options");
         table1.add(textButton).padBottom(30.0f);
 
         table1.row();
-        textButton = new TextButton("Logros", skin);
+        textButton = new TextButton("Logros", textButtonStyle);
         textButton.setName("logres");
         table1.add(textButton).padBottom(30.0f);
 
         table1.row();
-        textButton = new TextButton("Creditos", skin);
+        textButton = new TextButton("Creditos", textButtonStyle);
         textButton.setName("credits");
         table1.add(textButton).padBottom(30.0f);
 
         table1.row();
-        textButton = new TextButton("Controles", skin);
+        textButton = new TextButton("Controles", textButtonStyle);
         textButton.setName("controls");
         table1.add(textButton);
         stack.addActor(table1);

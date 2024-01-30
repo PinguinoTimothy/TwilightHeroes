@@ -67,7 +67,7 @@ public class PlayerControlSystem extends IteratingSystem {
 
     private MainScreen screen;
 
-    public PlayerControlSystem(Touchpad touchpad, Button btnSaltar, Button btnAtacar,Button btnDodge, Button btnHabilidad1,Button btnHabilidad2, MainScreen screen) {
+    public PlayerControlSystem(Touchpad touchpad, Button btnSaltar, Button btnAtacar, Button btnDodge, Button btnHabilidad1, Button btnHabilidad2, Button btnPause, final MainScreen screen) {
         super(Family.all(PlayerComponent.class).get());
         this.touchpad = touchpad;
         this.btnSaltar = btnSaltar;
@@ -164,6 +164,15 @@ saltar();
                     castSpell(spellComponent.spell2.id);
 
                 }
+            }
+        });
+
+        btnPause.addListener(new ClickListener(){
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                super.clicked(event, x, y);
+                screen.pause();
+            screen.parent.changeScreen(TwilightHeroes.MAGIC);
             }
         });
 

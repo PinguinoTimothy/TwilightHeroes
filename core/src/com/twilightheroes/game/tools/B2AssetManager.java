@@ -1,8 +1,10 @@
 package com.twilightheroes.game.tools;
 
 import com.badlogic.gdx.assets.AssetManager;
+import com.badlogic.gdx.assets.loaders.SkinLoader;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
+import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 
 public class B2AssetManager {
     public final AssetManager manager = new AssetManager();
@@ -40,6 +42,10 @@ public class B2AssetManager {
         manager.load("arrow.png", Texture.class);
         manager.load("pantallaNegra.jpg", Texture.class);
         manager.load("scrollbar-vertical.png", Texture.class);
+
+         String skin	= "hud/neonui/neon-ui.json";
+        SkinLoader.SkinParameter params = new SkinLoader.SkinParameter("hud/neonui/neon-ui.atlas");
+        manager.load(skin, Skin.class,params);
 
 
     }
