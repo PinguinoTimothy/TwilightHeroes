@@ -460,14 +460,6 @@ if (!knockback && !dodging) {
 
 
 
-                    float xVel = texture.runningRight ? 0.5f : -0.5f;  // set the speed of the bullet
-                    float shooterX = b2body.body.getPosition().x; // get player location
-                    float shooterY = b2body.body.getPosition().y; // get player location
-
-
-
-                    // create a bullet
-                    screen.b2WorldCreator.createBullet(shooterX, shooterY, xVel, BulletComponent.Owner.PLAYER,texture.runningRight,25);
 
 
                 //createAttackFixture(texture,b2body,attackComponent,20f,6f,16f, 0f);
@@ -478,6 +470,13 @@ if (!knockback && !dodging) {
                 case SpellList.FURY:
                     status.effects.add(new StatusEffect(StatusType.DAMAGE,true,10,25));
                     break;
+            case SpellList.FROSTSPEAR:
+
+                float xVel = texture.runningRight ? 0.5f : -0.5f;  // set the speed of the bullet
+                float shooterX = b2body.body.getPosition().x; // get player location
+                float shooterY = b2body.body.getPosition().y; // get player location
+                screen.b2WorldCreator.createBullet(shooterX, shooterY, xVel, BulletComponent.Owner.PLAYER,texture.runningRight,25,"frostSpear");
+                break;
         }
     }
 

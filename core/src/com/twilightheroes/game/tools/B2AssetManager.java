@@ -23,7 +23,6 @@ public class B2AssetManager {
         manager.load("enemies/caballero.atlas", TextureAtlas.class);
         manager.load("enemies/enemy.png", Texture.class);
         manager.load("enemies/skeleton.atlas", TextureAtlas.class);
-        manager.load("enemies/caballero.atlas", TextureAtlas.class);
 
         manager.load("player/player.atlas", TextureAtlas.class);
         manager.load("player/player.png", Texture.class);
@@ -50,6 +49,7 @@ public class B2AssetManager {
         manager.load("variety/checkboxOff.png",Texture.class);
         manager.load("variety/checked.png",Texture.class);
 
+        manager.load("spells/spells.atlas",TextureAtlas.class);
 
         manager.load("spells/healingSpell.png",Texture.class);
         manager.load("spells/healingSpellChecked.png",Texture.class);

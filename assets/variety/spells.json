@@ -1,0 +1,16 @@
+{
+    "frostSpear":
+    {
+        "spellName": "frostSpear",
+        "startFrames": 3,
+        "goingFrames":10,
+        "endingFrames":7
+    },
+    "heal":
+    {
+        "spellName": "heal",
+        "startFrames": 3,
+        "goingFrames":10,
+        "endingFrames":7
+    }
+}

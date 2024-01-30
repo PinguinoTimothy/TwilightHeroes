@@ -1,0 +1,9 @@
+spells.png
+size:1024,64
+repeat:none
+frostSpearEnding
+bounds:484,2,384,32
+frostSpearStart
+bounds:870,2,144,32
+frostSpearGoing
+bounds:2,2,480,32

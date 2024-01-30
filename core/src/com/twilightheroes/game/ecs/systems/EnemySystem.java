@@ -83,7 +83,7 @@ public class EnemySystem extends IteratingSystem {
                         createAttackFixture(textureComponent, bodyCom, attackComponent);
                     } else if (enemyCom.attackMethod.equals("range")) {
                         float xVel = textureComponent.runningRight ? 1f : -1f;
-                        screen.b2WorldCreator.createBullet(bodyCom.body.getPosition().x, bodyCom.body.getPosition().y, xVel, BulletComponent.Owner.ENEMY, textureComponent.runningRight, statsComponent.damage);
+                        screen.b2WorldCreator.createBullet(bodyCom.body.getPosition().x, bodyCom.body.getPosition().y, xVel, BulletComponent.Owner.ENEMY, textureComponent.runningRight, statsComponent.damage,"frostSpear");
                     }
                     attackComponent.performAttack = false;
 

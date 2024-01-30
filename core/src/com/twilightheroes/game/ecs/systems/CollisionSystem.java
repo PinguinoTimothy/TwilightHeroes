@@ -147,17 +147,18 @@ public class CollisionSystem extends IteratingSystem {
                 if (collidedEntity != null) {
                     TypeComponent type = Mappers.typeCom.get(collidedEntity);
                     BulletComponent bullet = Mappers.bullCom.get(entity);
-                    if (type != null) {
-                        switch (type.type) {
-                            case TypeComponent.PLAYER:
-                                if (bullet.owner != BulletComponent.Owner.PLAYER) {
+                    if (!bullet.isDead) {
+                        if (type != null) {
+                            switch (type.type) {
+                                case TypeComponent.PLAYER:
+                                    if (bullet.owner != BulletComponent.Owner.PLAYER) {
 
-                                    PlayerComponent player = Mappers.playerCom.get(collidedEntity);
-                                    B2dBodyComponent bodyPlayer = Mappers.b2dCom.get(collidedEntity);
-                                    StatsComponent playerStats = Mappers.statsCom.get(collidedEntity);
+                                        PlayerComponent player = Mappers.playerCom.get(collidedEntity);
+                                        B2dBodyComponent bodyPlayer = Mappers.b2dCom.get(collidedEntity);
+                                        StatsComponent playerStats = Mappers.statsCom.get(collidedEntity);
 
-                                    if (!player.inmune) {
-                                        System.out.println("enemy hit player");
+                                        if (!player.inmune) {
+                                            System.out.println("enemy hit player");
                                         /*
                                         float xForce = 2.5f;
                                         if (bodyPlayer.body.getPosition().x < bodyEnemy.body.getPosition().x) {
@@ -165,40 +166,41 @@ public class CollisionSystem extends IteratingSystem {
                                         }
 
                                          */
-                                        playerStats.hp -= bullet.damage;
-                                        bullet.isDead = true;
+                                            playerStats.hp -= bullet.damage;
+                                            bullet.isDead = true;
 
-                                        bodyPlayer.body.getFixtureList().get(0).setFilterData(inmuneFilter);
-                                        player.inmune = true;
-                                        player.inmuneTime = 0.5f;
-                                        // bodyPlayer.body.setLinearVelocity(new Vector2(0f, 0f));
-                                        // bodyPlayer.body.setLinearVelocity(new Vector2(xForce, 0f));
-                                        // player.knockback = true;
-                                        // player.knockBackTime = 0.3f;
-                                        Gdx.input.vibrate(500);
-                                    }
-                                }
-                                break;
-                            case TypeComponent.ENEMY:
-                                if (bullet.owner != BulletComponent.Owner.ENEMY) {
-                                    //do player hit enemy thing
-                                    StatsComponent enemyStats = Mappers.statsCom.get(collidedEntity);
-
-
-                                    if (!isEnemyHitbox) {
-                                        if (canBeReduced) {
-                                            enemyStats.hp -= bullet.damage - enemyStats.damageReduction;
-                                        } else {
-                                            enemyStats.hp -= bullet.damage;
+                                            bodyPlayer.body.getFixtureList().get(0).setFilterData(inmuneFilter);
+                                            player.inmune = true;
+                                            player.inmuneTime = 0.5f;
+                                            // bodyPlayer.body.setLinearVelocity(new Vector2(0f, 0f));
+                                            // bodyPlayer.body.setLinearVelocity(new Vector2(xForce, 0f));
+                                            // player.knockback = true;
+                                            // player.knockBackTime = 0.3f;
+                                            Gdx.input.vibrate(500);
                                         }
-                                        bullet.isDead = true;
-
                                     }
-                                }
+                                    break;
+                                case TypeComponent.ENEMY:
+                                    if (bullet.owner != BulletComponent.Owner.ENEMY) {
+                                        //do player hit enemy thing
+                                        StatsComponent enemyStats = Mappers.statsCom.get(collidedEntity);
 
 
-                                break;
+                                        if (!isEnemyHitbox) {
+                                            if (canBeReduced) {
+                                                enemyStats.hp -= bullet.damage - enemyStats.damageReduction;
+                                            } else {
+                                                enemyStats.hp -= bullet.damage;
+                                            }
+                                            bullet.isDead = true;
 
+                                        }
+                                    }
+
+
+                                    break;
+
+                            }
                         }
                     }
                         cc.collisionEntities.removeIndex(i); // collision handled reset component

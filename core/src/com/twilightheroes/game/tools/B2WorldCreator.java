@@ -38,6 +38,7 @@ import com.twilightheroes.game.ecs.components.StatsComponent;
 import com.twilightheroes.game.ecs.components.TextureComponent;
 import com.twilightheroes.game.ecs.components.TypeComponent;
 import com.twilightheroes.game.ecs.components.effectComponents.StatusComponent;
+import com.twilightheroes.game.ecs.components.spells.SpellList;
 import com.twilightheroes.game.screens.MainScreen;
 
 import java.util.HashMap;
@@ -426,14 +427,17 @@ public class B2WorldCreator {
     }
 
 
-
-    public Entity createBullet(float x, float y, float xVel, BulletComponent.Owner own, boolean runningRight, float damage) {
+    public Entity createBullet(float x, float y, float xVel, BulletComponent.Owner own, boolean runningRight, float damage,String spellName ) {
         Entity entity = engine.createEntity();
         B2dBodyComponent b2dbody = engine.createComponent(B2dBodyComponent.class);
         TextureComponent texture = engine.createComponent(TextureComponent.class);
         TypeComponent type = engine.createComponent(TypeComponent.class);
         CollisionComponent colComp = engine.createComponent(CollisionComponent.class);
         BulletComponent bul = engine.createComponent(BulletComponent.class);
+        AnimationComponent animationComponent = engine.createComponent(AnimationComponent.class);
+        StateComponent stateComponent = engine.createComponent(StateComponent.class);
+         TextureAtlas spellAtlas = manager.get("spells/spells.atlas");
+
 
         bul.owner = own;
         bul.damage = damage;
@@ -460,6 +464,17 @@ public class B2WorldCreator {
         texture.sprite.setBounds(x,y,10/TwilightHeroes.PPM,10/TwilightHeroes.PPM);
         texture.runningRight = runningRight;
 
+
+        JsonValue json = new JsonReader().parse(Gdx.files.internal("variety/spells.json"));
+        JsonValue jsonSpell = json.get(spellName);
+
+
+
+        animationComponent.animations.put(StateComponent.STATE_SPELL_STARTING, AnimationMaker.crearAnimacion(spellAtlas, spellName+"Start", jsonSpell.get("startFrames").asInt(),  jsonSpell.get("startFrames").asInt()));
+        animationComponent.animations.put(StateComponent.STATE_SPELL_GOING, AnimationMaker.crearAnimacion(spellAtlas, spellName+"Going",   jsonSpell.get("goingFrames").asInt(), jsonSpell.get("goingFrames").asInt()));
+        animationComponent.animations.put(StateComponent.STATE_SPELL_ENDING, AnimationMaker.crearAnimacion(spellAtlas, spellName+"Ending",  jsonSpell.get("endingFrames").asInt(), jsonSpell.get("endingFrames").asInt()));
+        stateComponent.set(StateComponent.STATE_SPELL_STARTING);
+
         type.type = TypeComponent.BULLET;
         b2dbody.body.setUserData(entity);
         bul.xVel = xVel;
@@ -469,6 +484,8 @@ public class B2WorldCreator {
         entity.add(b2dbody);
         entity.add(texture);
         entity.add(type);
+        entity.add(animationComponent);
+        entity.add(stateComponent);
 
         engine.addEntity(entity);
         return entity;
