@@ -5,18 +5,22 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Stack;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Scaling;
+import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
+import com.badlogic.gdx.utils.viewport.StretchViewport;
 import com.twilightheroes.game.TwilightHeroes;
 
 import java.awt.GradientPaint;
@@ -35,17 +39,24 @@ public class MenuScreen implements Screen {
 
     @Override
     public void show() {
-        stage = new Stage(new ScreenViewport());
+        stage = new Stage(new StretchViewport(1920,1080));
         skin = new Skin(Gdx.files.internal("skin.json"));
         FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("KarmaFuture.ttf"));
         final FreeTypeFontGenerator.FreeTypeFontParameter parameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
-        parameter.size = 75;
-        parameter.color = Color.RED;
-        BitmapFont font12 = generator.generateFont(parameter);
+        parameter.size = 50;
+        parameter.color = Color.CYAN;
+        parameter.borderColor = Color.valueOf("fea973");
+        parameter.borderWidth = 1f;
+        BitmapFont fontButtons = generator.generateFont(parameter);
+
+        parameter.size = 70;
+        parameter.color = Color.valueOf("731116");
+        parameter.borderWidth = 0;
+        BitmapFont fontTitle = generator.generateFont(parameter);
 
         generator.dispose();
         TextButton.TextButtonStyle textButtonStyle = new TextButton.TextButtonStyle();
-        textButtonStyle.font = font12;
+        textButtonStyle.font = fontButtons;
 
         Gdx.input.setInputProcessor(stage);
 
@@ -54,16 +65,16 @@ public class MenuScreen implements Screen {
 
         Stack stack = new Stack();
 
-        Image image = new Image(skin, "background");
+        Image image = new Image(parent.assMan.manager.get("backgrounds/mainMenuBackground.png", Texture.class));
         image.setScaling(Scaling.fill);
         stack.addActor(image);
 
         Table table1 = new Table();
 
-        image = new Image(skin, "aa");
-        table1.add(image);
-
-        table1.row();
+        Label.LabelStyle labelStyle = new Label.LabelStyle();
+        labelStyle.font = fontTitle;
+        Label lblTitle = new Label("Twilight Heroes", labelStyle);
+        table1.add(lblTitle).padTop(-450f).row();
 
         TextButton textButton = new TextButton("Jugar", textButtonStyle);
         textButton.setName("play");

@@ -3,8 +3,11 @@
 
     import com.badlogic.gdx.Gdx;
     import com.badlogic.gdx.Screen;
+    import com.badlogic.gdx.graphics.Color;
     import com.badlogic.gdx.graphics.GL20;
+    import com.badlogic.gdx.graphics.Texture;
     import com.badlogic.gdx.graphics.g2d.BitmapFont;
+    import com.badlogic.gdx.graphics.g2d.TextureRegion;
     import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
     import com.badlogic.gdx.scenes.scene2d.Actor;
     import com.badlogic.gdx.scenes.scene2d.InputEvent;
@@ -22,6 +25,8 @@
     import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
     import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
     import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+    import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
+    import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
     import com.badlogic.gdx.utils.Align;
     import com.badlogic.gdx.utils.Scaling;
     import com.badlogic.gdx.utils.viewport.ExtendViewport;
@@ -66,25 +71,26 @@
             stack.addActor(image);
 
             Table mainTable = new Table();
-            mainTable.setDebug(true);
             mainTable.setFillParent(true);
             mainTable.top().padTop(20.0f);
 
             FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("KarmaFuture.ttf"));
             final FreeTypeFontGenerator.FreeTypeFontParameter parameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
             parameter.size = 45;
-            BitmapFont font12 = generator.generateFont(parameter);
+            parameter.borderWidth = 2f;
+            parameter.borderColor = Color.BLACK;
+            BitmapFont fontBig = generator.generateFont(parameter);
             parameter.size = 30;
-            BitmapFont font123 = generator.generateFont(parameter);
+            BitmapFont fontMedium = generator.generateFont(parameter);
             parameter.size = 15;
-            BitmapFont font1234 = generator.generateFont(parameter);
+            BitmapFont fontSmall = generator.generateFont(parameter);
 
             generator.dispose();
             skin = new Skin();
-            skin.add("font", font12);
+            skin.add("font", fontBig);
 
             TextButton.TextButtonStyle textButtonStyle = new TextButton.TextButtonStyle();
-            textButtonStyle.font = font12;
+            textButtonStyle.font = fontBig;
 
             // Alinea los botones "Hechizos" y "Opciones" en la parte superior y a los lados
             TextButton btnMenuHechizos = createTextButton("Hechizos", textButtonStyle);
@@ -105,32 +111,32 @@
                 }
             });
 
-            mainTable.add(btnMenuHechizos).padTop(20.0f).align(Align.left).padLeft(20.0f);
-            mainTable.add().expandX(); // Espacio en blanco para centrar entre "Hechizos" y "Opciones"
-            mainTable.add(btnMenuOpciones).padTop(20.0f).align(Align.right).padRight(20.0f).row();
+            mainTable.add(btnMenuHechizos).padBottom(40.0f).align(Align.left).padRight(200f);
+            mainTable.add(btnMenuOpciones).padBottom(40.0f).align(Align.right).padLeft(200f).row();
 
 
             // Crear widgets para configuraciones de opciones
             Label.LabelStyle labelStyle = new Label.LabelStyle();
-            labelStyle.font = font123;
+            labelStyle.font = fontMedium;
             Label lblVolume = new Label("Volumen:", labelStyle);
 
             skin = parent.assMan.manager.get("hud/neonui/neon-ui.json", Skin.class);
             sliderVolume = new Slider(0.0f, 1.0f, 0.1f, false, skin);
-            sliderVolume.getStyle().background.setMinHeight(50f);
-            sliderVolume.getStyle().knob.setMinHeight(25f);
+            sliderVolume.getStyle().background.setMinHeight(30f);
 
 
-            chkAccelerometer = new CheckBox("Desactivar Acelerómetro", skin);
-            chkAccelerometer.getStyle().font = font123;
+            CheckBox.CheckBoxStyle checkBoxStyle = new CheckBox.CheckBoxStyle();
+            checkBoxStyle.checkboxOff = new TextureRegionDrawable(new TextureRegion(parent.assMan.manager.get("variety/checkboxOff.png", Texture.class)));
+            checkBoxStyle.checkboxOn = new TextureRegionDrawable(new TextureRegion(parent.assMan.manager.get("variety/checked.png", Texture.class)));
+            checkBoxStyle.font = fontMedium;
+            chkAccelerometer = new CheckBox("Desactivar Acelerómetro",checkBoxStyle);
 
-            chkVibrator = new CheckBox("Desactivar Vibrador", skin);
-            chkVibrator.getStyle().font = font123;
+            chkVibrator = new CheckBox("Desactivar Vibrador", checkBoxStyle);
 
             Label lblLanguage = new Label("Idioma:", labelStyle);
 
             languageSelectBox = new SelectBox<>(skin);
-            languageSelectBox.getStyle().font = font1234;
+            languageSelectBox.getStyle().font = fontSmall;
 
             languageSelectBox.setItems("Espanol","English");
 
@@ -169,12 +175,12 @@
             });
 
             // Ajustar el tamaño de los botones y controles según sea necesario
-            mainTable.add(lblVolume).padLeft(150f).padBottom(20.0f).colspan(2).center().row();
-            mainTable.add(sliderVolume).padLeft(150f).padBottom(20.0f).colspan(2).center().row();
-            mainTable.add(lblLanguage).padLeft(150f).padBottom(20.0f).colspan(2).center();
-            mainTable.add(languageSelectBox).padBottom(20.0f).colspan(2).center().row();
-            mainTable.add(chkAccelerometer).padLeft(150f).padBottom(20.0f).colspan(2).center().row();
-            mainTable.add(chkVibrator).padLeft(150f).padBottom(20.0f).colspan(2).center().row();
+            mainTable.add(lblVolume).colspan(2).center().row();
+            mainTable.add(sliderVolume).colspan(2).center().row();
+            mainTable.add(lblLanguage).colspan(2).center().row();
+            mainTable.add(languageSelectBox).colspan(2).center().row();
+            mainTable.add(chkAccelerometer).colspan(2).center().row();
+            mainTable.add(chkVibrator).colspan(2).center().row();
 
 
 

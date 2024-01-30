@@ -24,6 +24,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.scenes.scene2d.utils.TiledDrawable;
 import com.badlogic.gdx.utils.Align;
+import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.twilightheroes.game.TwilightHeroes;
 
@@ -49,7 +50,7 @@ public class EndScreen implements Screen {
 
 
         // create stage and set it as input processor
-        stage = new Stage(new ScreenViewport());
+        stage = new Stage(new ExtendViewport(720,480));
         Gdx.input.setInputProcessor(stage);
 
         // create table to layout iutems we will add

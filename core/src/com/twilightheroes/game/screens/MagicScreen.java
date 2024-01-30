@@ -3,6 +3,7 @@
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
@@ -19,7 +20,10 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Scaling;
+import com.badlogic.gdx.utils.viewport.ExtendViewport;
+import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
+import com.badlogic.gdx.utils.viewport.StretchViewport;
 import com.twilightheroes.game.TwilightHeroes;
 
 public class MagicScreen implements Screen {
@@ -29,6 +33,8 @@ public class MagicScreen implements Screen {
     private TwilightHeroes parent;
 
     public ImageButton selectedSpell;
+    public ImageButton lastSelected;
+
     public Label name;
     public Label description;
 
@@ -38,7 +44,7 @@ public class MagicScreen implements Screen {
 
     @Override
     public void show() {
-        stage = new Stage(new ScreenViewport());
+        stage = new Stage(new StretchViewport(1920,1080));
         skin = new Skin(Gdx.files.internal("skin.json"));
         Gdx.input.setInputProcessor(stage);
 
@@ -61,13 +67,17 @@ public class MagicScreen implements Screen {
         FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("KarmaFuture.ttf"));
         final FreeTypeFontGenerator.FreeTypeFontParameter parameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
         parameter.size = 75;
-        BitmapFont font12 = generator.generateFont(parameter);
+        parameter.borderColor = Color.BLACK;
+        parameter.borderWidth = 2f;
+        BitmapFont fontBig = generator.generateFont(parameter);
+        parameter.size = 40;
+        BitmapFont fontSmall = generator.generateFont(parameter);
         generator.dispose();
         skin = new Skin();
-        skin.add("font", font12);
+        skin.add("font", fontBig);
 
         TextButton.TextButtonStyle textButtonStyle = new TextButton.TextButtonStyle();
-        textButtonStyle.font = font12;
+        textButtonStyle.font = fontBig;
 
         // Adding Hechizos and Opciones buttons to the top
         TextButton btnMenuHechizos = createTextButton("Hechizos", textButtonStyle);
@@ -88,8 +98,8 @@ public class MagicScreen implements Screen {
             }
         });
 
-        mainTable.add(btnMenuHechizos).padBottom(50.0f).align(Align.left).padLeft(200f);
-        mainTable.add(btnMenuOpciones).padBottom(50.0f).align(Align.left).row();
+        mainTable.add(btnMenuHechizos).padBottom(50.0f).align(Align.left).padLeft(100f);
+        mainTable.add(btnMenuOpciones).padBottom(50.0f).align(Align.right).padRight(100f).row();
 
         // Adding two buttons in the middle
         Skin skin3 = new Skin();
@@ -132,26 +142,35 @@ public class MagicScreen implements Screen {
         Table buttonTable = new Table();
         buttonTable.setDebug(true);
 
-        for (int i = 0; i < 3; i++) {
-            for (int j = 0; j < 8; j++) {
-                final ImageButton aux = createImageButton("attack");
+        String[] spells = new String[]{"healingSpell","frostSpear"};
+        final String[] spellNames = new String[]{"Healing Sigil","Ice Spear"};
+        final String[] spellDescriptions = new String[]{"Coste: 25 mana \nHeals the user","Coste: 50 mana \nConjures and shoot \na spear of ice\n to pierce enemies"};
+
+
+            for (int j = 0; j < spells.length; j++) {
+                final ImageButton aux = createImageButton(spells[j]);
                 buttonTable.add(aux).padBottom(15.0f).size(150f).padLeft(30f).padBottom(30f);
+                final int finalJ = j;
                 aux.addListener(new ClickListener() {
                     @Override
                     public void clicked(InputEvent event, float x, float y) {
                         super.clicked(event, x, y);
+                        if (lastSelected != null){
+                            lastSelected.setChecked(false);
+                        }
+                        lastSelected = aux;
                         if (selectedSpell != null) {
                             selectedSpell.setStyle(aux.getStyle());
 
 
                         }
-                        name.setText("hola");
-                        description.setText("descripcion");
+                        name.setText(spellNames[finalJ]);
+                        description.setText(spellDescriptions[finalJ]);
                     }
                 });
             }
             buttonTable.row();
-        }
+
 
         ScrollPane scrollPane = new ScrollPane(buttonTable);
         mainTable.add(scrollPane).center().padTop(20.0f).grow();
@@ -162,7 +181,7 @@ public class MagicScreen implements Screen {
 
         // Add information labels to the rightTable
         Label.LabelStyle labelStyle = new Label.LabelStyle();
-        labelStyle.font = font12;
+        labelStyle.font = fontSmall;
         Label nameLabel = new Label("Spell Name:", labelStyle);
          name = new Label("", labelStyle);
 
@@ -202,8 +221,8 @@ public class MagicScreen implements Screen {
     // Helper method to create ImageButton
     private ImageButton createImageButton(String imageName) {
         Skin skin2 = new Skin();
-        skin2.add(imageName, parent.assMan.manager.get("hud/" + imageName + ".png"));
-        skin2.add(imageName + "checked", parent.assMan.manager.get("hud/" + imageName + "checked.png"));
+        skin2.add(imageName, parent.assMan.manager.get("spells/" + imageName + ".png"));
+        skin2.add(imageName + "checked", parent.assMan.manager.get("spells/" + imageName + "Checked.png"));
 
         ImageButton.ImageButtonStyle imageButtonStyle = new ImageButton.ImageButtonStyle();
         imageButtonStyle.up = skin2.getDrawable(imageName);
@@ -224,6 +243,7 @@ public class MagicScreen implements Screen {
     public void resize(int width, int height) {
         // Se puede implementar si es necesario
         Gdx.input.setInputProcessor(stage);
+        stage.getViewport().update(width, height, true);
 
     }
 

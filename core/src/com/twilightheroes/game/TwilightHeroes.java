@@ -15,7 +15,6 @@ import com.twilightheroes.game.screens.MainScreen;
 import com.twilightheroes.game.screens.OptionScreen;
 import com.twilightheroes.game.tools.B2AssetManager;
 
-public enum languag
 public class TwilightHeroes extends Game {
 
 	public static final int V_WIDTH = 400;
@@ -64,7 +63,7 @@ public class TwilightHeroes extends Game {
 
 	public int musicVolume = 100;
 
-	public
+
 
 	@Override
 	public void create () {
@@ -74,7 +73,7 @@ public class TwilightHeroes extends Game {
 		assMan.loadImages();
 		assMan.manager.finishLoading();
 		mainScreen = new MainScreen(this);
-		changeScreen(OPTIONS);
+		changeScreen(MENU);
 //setScreen(new MagicScreen(this));
 	}
 
