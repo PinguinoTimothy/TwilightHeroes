@@ -19,20 +19,22 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Align;
+import com.badlogic.gdx.utils.JsonReader;
+import com.badlogic.gdx.utils.JsonValue;
 import com.badlogic.gdx.utils.Scaling;
-import com.badlogic.gdx.utils.viewport.ExtendViewport;
-import com.badlogic.gdx.utils.viewport.FitViewport;
-import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.badlogic.gdx.utils.viewport.StretchViewport;
 import com.twilightheroes.game.TwilightHeroes;
+import com.twilightheroes.game.ecs.components.spells.Spell;
+import com.twilightheroes.game.ecs.components.spells.SpellComponent;
+import com.twilightheroes.game.tools.Mappers;
 
-public class MagicScreen implements Screen {
+        public class MagicScreen implements Screen {
 
     private Skin skin;
     private Stage stage;
     private TwilightHeroes parent;
 
-    public ImageButton selectedSpell;
+    public ImageButton selectedSlot;
     public ImageButton lastSelected;
 
     public Label name;
@@ -111,20 +113,22 @@ public class MagicScreen implements Screen {
         imageButtonStyle.checked = skin3.getDrawable("dodge");
 
         final ImageButton btn1 = new ImageButton(imageButtonStyle);
+        btn1.setName("Button1");
         btn1.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 super.clicked(event, x, y);
-                changeSelectedSpell(btn1);
+                changeSelectedSlot(btn1);
             }
         });
 
         final ImageButton btn2 = new ImageButton(imageButtonStyle);
+        btn1.setName("Button2");
         btn2.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x,float y) {
                 super.clicked(event, x, y);
-                changeSelectedSpell(btn2);
+                changeSelectedSlot(btn2);
             }
         });
 
@@ -142,30 +146,20 @@ public class MagicScreen implements Screen {
         Table buttonTable = new Table();
         buttonTable.setDebug(true);
 
-        String[] spells = new String[]{"healingSpell","frostSpear"};
-        final String[] spellNames = new String[]{"Healing Sigil","Ice Spear"};
-        final String[] spellDescriptions = new String[]{"Coste: 25 mana \nHeals the user","Coste: 50 mana \nConjures and shoot \na spear of ice\n to pierce enemies"};
 
 
-            for (int j = 0; j < spells.length; j++) {
-                final ImageButton aux = createImageButton(spells[j]);
+        JsonValue json = new JsonReader().parse(Gdx.files.internal("variety/spells.json"));
+
+            for (int j = 0; j < json.size; j++) {
+                final ImageButton aux = createImageButton(json.get(j).get("spellId").asString());
+                aux.setName(json.get(j).get("spellId").asString());
                 buttonTable.add(aux).padBottom(15.0f).size(150f).padLeft(30f).padBottom(30f);
                 final int finalJ = j;
                 aux.addListener(new ClickListener() {
                     @Override
                     public void clicked(InputEvent event, float x, float y) {
                         super.clicked(event, x, y);
-                        if (lastSelected != null){
-                            lastSelected.setChecked(false);
-                        }
-                        lastSelected = aux;
-                        if (selectedSpell != null) {
-                            selectedSpell.setStyle(aux.getStyle());
-
-
-                        }
-                        name.setText(spellNames[finalJ]);
-                        description.setText(spellDescriptions[finalJ]);
+                    changeSelectedSpell(aux);
                     }
                 });
             }
@@ -203,12 +197,44 @@ public class MagicScreen implements Screen {
         stage.addActor(table);
     }
 
-    private void changeSelectedSpell(ImageButton selectedSpell) {
-        if (this.selectedSpell != null) {
-            this.selectedSpell.setChecked(false);
+    private void changeSelectedSlot(ImageButton selectedSlot) {
+        if (this.selectedSlot != null) {
+            this.selectedSlot.setChecked(false);
         }
-        this.selectedSpell = selectedSpell;
-        selectedSpell.setChecked(true);
+        this.selectedSlot = selectedSlot;
+        selectedSlot.setChecked(true);
+
+    }
+
+    private void changeSelectedSpell(ImageButton selectedSpell){
+        JsonValue json = new JsonReader().parse(Gdx.files.internal("variety/spells.json"));
+        JsonValue jsonSpell = json.get(selectedSpell.getName());
+
+        if (lastSelected != null){
+            lastSelected.setChecked(false);
+        }
+        lastSelected = selectedSpell;
+        if (selectedSlot != null) {
+            selectedSlot.setStyle(selectedSpell.getStyle());
+            selectedSlot.setChecked(false);
+            selectedSlot = null;
+
+        }
+        name.setText(jsonSpell.get("spellName").asString());
+        description.setText(jsonSpell.get("description").asString());
+
+
+        SpellComponent spellComponent = Mappers.spellCom.get(parent.mainScreen.playerEntity);
+
+/*
+
+        if (selectedSpell.getName().equals("Button1")){
+            spellComponent.spell1 = new Spell()
+        }else{
+            spellComponent.spell2
+        }
+
+ */
     }
 
     // Helper method to create TextButton

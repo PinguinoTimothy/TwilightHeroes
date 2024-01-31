@@ -50,7 +50,7 @@ public class EndScreen implements Screen {
 
 
         // create stage and set it as input processor
-        stage = new Stage(new ExtendViewport(720,480));
+        stage = new Stage(new ExtendViewport(1920,1080));
         Gdx.input.setInputProcessor(stage);
 
         // create table to layout iutems we will add

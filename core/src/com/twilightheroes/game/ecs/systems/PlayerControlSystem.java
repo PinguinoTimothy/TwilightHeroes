@@ -219,11 +219,15 @@ saltar();
         knockback = playerComponent.knockback;
         speed = stats.speed;
 
-        accelY = Gdx.input.getAccelerometerZ();
-        if (accelY > 20){
-            saltar();
-        }
+        if (screen.parent.accelerometerOn) {
 
+
+            accelY = Gdx.input.getAccelerometerZ();
+            if (accelY > 20) {
+                saltar();
+            }
+
+        }
 if (makeDodge){
 
     playerComponent.inmune = true;

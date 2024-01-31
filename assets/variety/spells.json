@@ -1,14 +1,21 @@
 {
     "frostSpear":
     {
-        "spellName": "frostSpear",
+        "spellId": "frostSpear",
+        "spellName": "Frost Spear",
+        "description": "Coste: 50 mana \nConjures and shoot \na spear of ice\n to pierce enemies",
+        "manaCost": 25,
+        "unlocked": true,
+        "damage": 25,
         "startFrames": 3,
         "goingFrames":10,
         "endingFrames":7
     },
-    "heal":
+    "healingSpell":
     {
-        "spellName": "heal",
+        "spellId": "healingSpell",
+        "spellName": "Healing Sigil",
+        "description": "Coste: 25 mana \nHeals the user",
         "startFrames": 3,
         "goingFrames":10,
         "endingFrames":7

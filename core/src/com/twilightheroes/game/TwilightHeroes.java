@@ -1,6 +1,7 @@
 package com.twilightheroes.game;
 
 import com.badlogic.gdx.Game;
+import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
@@ -17,6 +18,10 @@ import com.twilightheroes.game.tools.B2AssetManager;
 
 public class TwilightHeroes extends Game {
 
+	public enum languages{
+		SPANISH,
+		ENGLISH
+	}
 	public static final int V_WIDTH = 400;
 	public static final int V_HEIGHT = 208;
 	public  static  final float PPM = 100;
@@ -30,6 +35,7 @@ public class TwilightHeroes extends Game {
 	public static final short EXIT_BIT = 32;
 	public static final short INMUNE_BIT = 64;
 	public static final short BULLET_BIT = 128;
+
 
 	public ShapeRenderer shapeRenderer;
 
@@ -51,7 +57,7 @@ public class TwilightHeroes extends Game {
 	public final static int MAGIC = 3;
 	public final static int ENDGAME = 4;
 
-	private MainScreen mainScreen;
+	public MainScreen mainScreen;
 	private com.twilightheroes.game.screens.MenuScreen menuScreen;
 	private MagicScreen magicScreen;
 	private EndScreen endScreen;
@@ -60,8 +66,13 @@ public class TwilightHeroes extends Game {
 
 	public boolean accelerometerOn = true;
 	public boolean vibratorOn = true;
+	public float musicVolume = 100;
+	public languages language = languages.SPANISH;
 
-	public int musicVolume = 100;
+	public boolean inGame = false;
+
+	public int previousScreen;
+
 
 
 
@@ -73,6 +84,7 @@ public class TwilightHeroes extends Game {
 		assMan.loadImages();
 		assMan.manager.finishLoading();
 		mainScreen = new MainScreen(this);
+
 		changeScreen(MENU);
 //setScreen(new MagicScreen(this));
 	}
@@ -82,7 +94,8 @@ public class TwilightHeroes extends Game {
 
 			case MENU:
 				if(menuScreen == null) menuScreen = new com.twilightheroes.game.screens.MenuScreen(this);
-
+				previousScreen = MENU;
+				inGame = false;
 				this.setScreen(menuScreen);
 				break;
 
@@ -95,8 +108,9 @@ public class TwilightHeroes extends Game {
 
 			case APPLICATION:
 				// always make new game screen so game can't start midway
-
 				mainScreen.resume();
+				inGame = true;
+				previousScreen = APPLICATION;
 				this.setScreen(mainScreen);
 				break;
 			case MAGIC:
@@ -107,6 +121,7 @@ public class TwilightHeroes extends Game {
 				break;
 			case ENDGAME:
 				if(endScreen == null) endScreen = new EndScreen(this);
+				inGame = false;
 				this.setScreen(endScreen);
 				break;
 		}

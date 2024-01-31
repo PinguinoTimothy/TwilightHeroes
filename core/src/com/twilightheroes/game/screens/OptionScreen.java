@@ -57,7 +57,7 @@
 
         @Override
         public void show() {
-            stage = new Stage(new ExtendViewport(720,480));
+            stage = new Stage(new ExtendViewport(900,550));
             skin = new Skin(Gdx.files.internal("skin.json"));
             Gdx.input.setInputProcessor(stage);
 
@@ -103,6 +103,7 @@
             });
 
             TextButton btnMenuOpciones = createTextButton("Opciones", textButtonStyle);
+
             btnMenuOpciones.addListener(new ClickListener() {
                 @Override
                 public void clicked(InputEvent event, float x, float y) {
@@ -111,8 +112,14 @@
                 }
             });
 
-            mainTable.add(btnMenuHechizos).padBottom(40.0f).align(Align.left).padRight(200f);
-            mainTable.add(btnMenuOpciones).padBottom(40.0f).align(Align.right).padLeft(200f).row();
+            if (parent.inGame){
+                mainTable.add(btnMenuHechizos).padBottom(40.0f).align(Align.left).padRight(200f);
+                mainTable.add(btnMenuOpciones).padBottom(40.0f).align(Align.right).padLeft(200f).row();
+
+            }else{
+                mainTable.add(btnMenuOpciones).padBottom(40.0f).align(Align.center).padLeft(50f).row();
+
+            }
 
 
             // Crear widgets para configuraciones de opciones
@@ -123,15 +130,17 @@
             skin = parent.assMan.manager.get("hud/neonui/neon-ui.json", Skin.class);
             sliderVolume = new Slider(0.0f, 1.0f, 0.1f, false, skin);
             sliderVolume.getStyle().background.setMinHeight(30f);
-
+            sliderVolume.setValue(parent.musicVolume);
 
             CheckBox.CheckBoxStyle checkBoxStyle = new CheckBox.CheckBoxStyle();
             checkBoxStyle.checkboxOff = new TextureRegionDrawable(new TextureRegion(parent.assMan.manager.get("variety/checkboxOff.png", Texture.class)));
             checkBoxStyle.checkboxOn = new TextureRegionDrawable(new TextureRegion(parent.assMan.manager.get("variety/checked.png", Texture.class)));
             checkBoxStyle.font = fontMedium;
             chkAccelerometer = new CheckBox("Desactivar Acelerómetro",checkBoxStyle);
+            chkAccelerometer.setChecked(!parent.accelerometerOn);
 
             chkVibrator = new CheckBox("Desactivar Vibrador", checkBoxStyle);
+            chkVibrator.setChecked(!parent.vibratorOn);
 
             Label lblLanguage = new Label("Idioma:", labelStyle);
 
@@ -139,38 +148,45 @@
             languageSelectBox.getStyle().font = fontSmall;
 
             languageSelectBox.setItems("Espanol","English");
+            languageSelectBox.setSelectedIndex(parent.language.ordinal());
 
+            TextButton btnVolver = createTextButton("Volver", textButtonStyle);
+            btnVolver.addListener(new ClickListener() {
+                @Override
+                public void clicked(InputEvent event, float x, float y) {
+                    super.clicked(event, x, y);
+                    parent.changeScreen(parent.previousScreen);
+                }
+            });
 
             // Agregar listeners para manejar cambios en las configuraciones
             sliderVolume.addListener(new ChangeListener() {
                 @Override
                 public void changed(ChangeEvent event, Actor actor) {
                     float volume = sliderVolume.getValue();
-                    // Implementa la lógica para ajustar el volumen
+                   parent.musicVolume = volume;
                 }
             });
 
             chkAccelerometer.addListener(new ChangeListener() {
                 @Override
                 public void changed(ChangeEvent event, Actor actor) {
-                    boolean accelerometerEnabled = !chkAccelerometer.isChecked();
-                    // Implementa la lógica para activar/desactivar el acelerómetro
+                    parent.accelerometerOn = !chkAccelerometer.isChecked();
                 }
             });
 
             chkVibrator.addListener(new ChangeListener() {
                 @Override
                 public void changed(ChangeEvent event, Actor actor) {
-                    boolean vibratorEnabled = !chkVibrator.isChecked();
-                    // Implementa la lógica para activar/desactivar el vibrador
+
+                    parent.vibratorOn = !chkVibrator.isChecked();
                 }
             });
 
             languageSelectBox.addListener(new ChangeListener() {
                 @Override
                 public void changed(ChangeEvent event, Actor actor) {
-                    String selectedLanguage = languageSelectBox.getSelected();
-                    // Implementa la lógica para cambiar el idioma
+                  parent.language = TwilightHeroes.languages.values()[languageSelectBox.getSelectedIndex()];
                 }
             });
 
@@ -181,6 +197,7 @@
             mainTable.add(languageSelectBox).colspan(2).center().row();
             mainTable.add(chkAccelerometer).colspan(2).center().row();
             mainTable.add(chkVibrator).colspan(2).center().row();
+            mainTable.add(btnVolver).colspan(2).center().row();
 
 
 

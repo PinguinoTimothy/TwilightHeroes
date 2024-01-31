@@ -136,7 +136,9 @@ public class CollisionSystem extends IteratingSystem {
                                     bodyPlayer.body.setLinearVelocity(new Vector2(xForce, 0f));
                                     player.knockback = true;
                                     player.knockBackTime = 0.3f;
-                                    Gdx.input.vibrate(500);
+                                    if (screen.parent.vibratorOn){
+                                        Gdx.input.vibrate(500);
+                                    }
                                 }
                                 break;
                         }
@@ -176,7 +178,9 @@ public class CollisionSystem extends IteratingSystem {
                                             // bodyPlayer.body.setLinearVelocity(new Vector2(xForce, 0f));
                                             // player.knockback = true;
                                             // player.knockBackTime = 0.3f;
-                                            Gdx.input.vibrate(500);
+                                            if (screen.parent.vibratorOn){
+                                                Gdx.input.vibrate(500);
+                                            }
                                         }
                                     }
                                     break;
