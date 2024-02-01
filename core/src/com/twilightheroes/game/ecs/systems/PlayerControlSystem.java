@@ -19,6 +19,7 @@ import com.twilightheroes.game.ecs.components.AttackComponent;
 import com.twilightheroes.game.ecs.components.B2dBodyComponent;
 import com.twilightheroes.game.ecs.components.BulletComponent;
 import com.twilightheroes.game.ecs.components.PlayerComponent;
+import com.twilightheroes.game.ecs.components.spells.Spell;
 import com.twilightheroes.game.ecs.components.spells.SpellComponent;
 import com.twilightheroes.game.ecs.components.spells.SpellList;
 import com.twilightheroes.game.ecs.components.StateComponent;
@@ -144,19 +145,27 @@ saltar();
         btnHabilidad1.addListener(new ClickListener(){
             @Override
             public void clicked(InputEvent event, float x, float y) {
-            if (playerComponent.mana >= spellComponent.spell1.manaCost){
+                spellComponent.spellToCast = new Spell("shockingGrasp",SpellList.shockingGrasp,25,true);
+            /*
+                if (playerComponent.mana >= spellComponent.spell1.manaCost){
                 playerComponent.mana -= spellComponent.spell1.manaCost;
 
 
                 castSpell(spellComponent.spell1.id);
 
             }
+
+
+             */
             }
+
+
         });
 
         btnHabilidad2.addListener(new ClickListener(){
             @Override
             public void clicked(InputEvent event, float x, float y) {
+                /*
                 if (playerComponent.mana >= spellComponent.spell2.manaCost){
                     playerComponent.mana -= spellComponent.spell2.manaCost;
 
@@ -164,6 +173,8 @@ saltar();
                     castSpell(spellComponent.spell2.id);
 
                 }
+
+                 */
             }
         });
 
@@ -460,7 +471,7 @@ if (!knockback && !dodging) {
 
     public void castSpell(int spell){
         switch (spell){
-            case SpellList.SHOCKING_GRASP:
+            case SpellList.shockingGrasp:
 
 
 
@@ -468,13 +479,13 @@ if (!knockback && !dodging) {
 
                 //createAttackFixture(texture,b2body,attackComponent,20f,6f,16f, 0f);
                 break;
-            case  SpellList.HEAL:
+            case  SpellList.healingSigil:
                 stats.hp  -= 100;
                 break;
-                case SpellList.FURY:
+            case SpellList.fury:
                     status.effects.add(new StatusEffect(StatusType.DAMAGE,true,10,25));
                     break;
-            case SpellList.FROSTSPEAR:
+            case SpellList.frostSpear:
 
                 float xVel = texture.runningRight ? 0.5f : -0.5f;  // set the speed of the bullet
                 float shooterX = b2body.body.getPosition().x; // get player location

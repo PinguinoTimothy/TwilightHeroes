@@ -40,6 +40,7 @@ import com.twilightheroes.game.ecs.systems.PhysicsDebugSystem;
 import com.twilightheroes.game.ecs.systems.PhysicsSystem;
 import com.twilightheroes.game.ecs.systems.PlayerControlSystem;
 import com.twilightheroes.game.ecs.systems.RenderingSystem;
+import com.twilightheroes.game.ecs.systems.SpellSystem;
 import com.twilightheroes.game.scenes.Hud;
 import com.twilightheroes.game.tools.B2WorldCreator;
 import com.twilightheroes.game.tools.B2dContactListener;
@@ -212,6 +213,7 @@ hud.stage.setDebugAll(true);
         engine.addSystem(new EnemySystem(this));
         engine.addSystem(new EffectSystem());
         engine.addSystem(new BulletSystem(this));
+        engine.addSystem(new SpellSystem());
         b2WorldCreator = new B2WorldCreator(world,engine,this,manager);
         // create some game objects
         Drawable drawable = new TextureRegionDrawable(new TextureRegion(manager.get("pantallaNegra.jpg", Texture.class)));
