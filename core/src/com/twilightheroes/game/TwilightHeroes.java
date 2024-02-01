@@ -1,6 +1,8 @@
 package com.twilightheroes.game;
 
 import com.badlogic.gdx.Game;
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Preferences;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.Sprite;
@@ -19,8 +21,8 @@ import com.twilightheroes.game.tools.B2AssetManager;
 public class TwilightHeroes extends Game {
 
 	public enum languages{
-		SPANISH,
-		ENGLISH
+		ES,
+		EN
 	}
 	public static final int V_WIDTH = 400;
 	public static final int V_HEIGHT = 208;
@@ -64,10 +66,14 @@ public class TwilightHeroes extends Game {
 	private OptionScreen optionScreen;
 	public B2AssetManager assMan = new B2AssetManager();
 
-	public boolean accelerometerOn = true;
-	public boolean vibratorOn = true;
-	public float musicVolume = 100;
-	public languages language = languages.SPANISH;
+
+	Preferences prefs;
+
+	public boolean accelerometerOn;
+	public boolean vibratorOn ;
+	public float musicVolume ;
+	public languages language ;
+
 
 	public boolean inGame = false;
 
@@ -80,13 +86,21 @@ public class TwilightHeroes extends Game {
 	public void create () {
 
 		world = new World(new Vector2(0,0f),true);
-
 		assMan.loadImages();
 		assMan.manager.finishLoading();
+
+try {
+	prefs = Gdx.app.getPreferences("Preferences");
+	accelerometerOn = prefs.getBoolean("accelerometerOn",true);
+	vibratorOn = prefs.getBoolean("vibratorOn",true);
+	musicVolume = prefs.getFloat("musicVolume",100);
+	language = languages.values()[prefs.getInteger("language",0)];
+}catch (NullPointerException ex){}
+
 		mainScreen = new MainScreen(this);
 
 		changeScreen(MENU);
-//setScreen(new MagicScreen(this));
+
 	}
 
 	public void changeScreen(int screen){
@@ -140,8 +154,22 @@ public class TwilightHeroes extends Game {
 	}
 
 	@Override
+	public void pause() {
+		super.pause();
+		prefs.putBoolean("accelerometerOn", accelerometerOn);
+		prefs.putBoolean("vibratorOn", vibratorOn);
+		prefs.putFloat("musicVolume",musicVolume);
+		prefs.putInteger("language",language.ordinal());
+
+		prefs.flush();
+	}
+
+	@Override
 	public void dispose() {
 		super.dispose();
+
 		assMan.manager.dispose();
 	}
+
+
 }

@@ -176,10 +176,12 @@ import com.twilightheroes.game.tools.Mappers;
         // Add information labels to the rightTable
         Label.LabelStyle labelStyle = new Label.LabelStyle();
         labelStyle.font = fontSmall;
-        Label nameLabel = new Label("Spell Name:", labelStyle);
+        String[] nameLabelText = {"Nombre hechizo:","Spell Name:"};
+        Label nameLabel = new Label(nameLabelText[parent.language.ordinal()], labelStyle);
          name = new Label("", labelStyle);
 
-        Label descriptionLabel = new Label("Spell Description:", labelStyle);
+        String[] descriptionLabelText = {"Descripcion:","Description:"};
+        Label descriptionLabel = new Label(descriptionLabelText[parent.language.ordinal()], labelStyle);
          description = new Label("", labelStyle);
 
         rightTable.add(nameLabel).align(Align.left).padLeft(20.0f).padBottom(20.0f).row();
@@ -220,8 +222,8 @@ import com.twilightheroes.game.tools.Mappers;
             selectedSlot = null;
 
         }
-        name.setText(jsonSpell.get("spellName").asString());
-        description.setText(jsonSpell.get("description").asString());
+        name.setText(jsonSpell.get("spellName"+parent.language).asString());
+        description.setText(jsonSpell.get("description"+parent.language).asString());
 
 
         SpellComponent spellComponent = Mappers.spellCom.get(parent.mainScreen.playerEntity);
