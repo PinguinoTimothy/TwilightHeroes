@@ -11,6 +11,7 @@ public class AnimationComponent implements Component, Pool.Poolable {
 
     public int currentFrame = 0;
 
+
     @Override
     public void reset() {
         animations.clear();

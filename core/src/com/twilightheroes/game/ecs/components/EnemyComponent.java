@@ -3,13 +3,11 @@ package com.twilightheroes.game.ecs.components;
 import com.badlogic.ashley.core.Component;
 import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.utils.Pool;
+import com.twilightheroes.game.ecs.components.spells.Spell;
 
 public class EnemyComponent implements Component, Pool.Poolable {
 
-    public static enum Type {
-        Goblin,
-        Nightborne
-    }
+
 
     public boolean isDead = false;
     public float xPosCenter = -1;
@@ -21,6 +19,8 @@ public class EnemyComponent implements Component, Pool.Poolable {
     public float attackCooldown;
     public int attackFrame;
     public String attackMethod;
+
+    public Spell[] spells;
 
     @Override
     public void reset() {

@@ -15,10 +15,13 @@ import com.twilightheroes.game.ecs.components.EnemyComponent;
 import com.twilightheroes.game.ecs.components.StateComponent;
 import com.twilightheroes.game.ecs.components.StatsComponent;
 import com.twilightheroes.game.ecs.components.TextureComponent;
+import com.twilightheroes.game.ecs.components.spells.Spell;
+import com.twilightheroes.game.ecs.components.spells.SpellComponent;
 import com.twilightheroes.game.screens.MainScreen;
 import com.twilightheroes.game.tools.Mappers;
 
 import java.util.Map;
+import java.util.Random;
 
 public class EnemySystem extends IteratingSystem {
 
@@ -62,6 +65,7 @@ public class EnemySystem extends IteratingSystem {
         AttackComponent attackComponent = Mappers.atkCom.get(entity);
         AnimationComponent animationComponent = Mappers.animCom.get(entity);
         StatsComponent statsComponent = Mappers.statsCom.get(entity);
+        SpellComponent spellComponent = Mappers.spellCom.get(entity);
 
         if (statsComponent.hp <= 0) {
             bodyCom.isDead = true;
@@ -83,7 +87,10 @@ public class EnemySystem extends IteratingSystem {
                         createAttackFixture(textureComponent, bodyCom, attackComponent);
                     } else if (enemyCom.attackMethod.equals("range")) {
                         float xVel = textureComponent.runningRight ? 1f : -1f;
+                        
                         screen.b2WorldCreator.createBullet(bodyCom.body.getPosition().x, bodyCom.body.getPosition().y, xVel, BulletComponent.Owner.ENEMY, textureComponent.runningRight, statsComponent.damage,"frostSpear");
+                    } else if (enemyCom.attackMethod.equals("spellCaster")) {
+                    spellComponent.spellToCast = enemyCom.spells[new Random().nextInt(enemyCom.spells.length)];
                     }
                     attackComponent.performAttack = false;
 

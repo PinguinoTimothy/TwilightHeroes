@@ -55,8 +55,8 @@ public class B2AssetManager {
 
         manager.load("spells/spells.atlas",TextureAtlas.class);
 
-        manager.load("spells/healingSpell.png",Texture.class);
-        manager.load("spells/healingSpellChecked.png",Texture.class);
+        manager.load("spells/healingSigil.png",Texture.class);
+        manager.load("spells/healingSigilChecked.png",Texture.class);
         manager.load("spells/frostSpear.png",Texture.class);
         manager.load("spells/frostSpearChecked.png",Texture.class);
 

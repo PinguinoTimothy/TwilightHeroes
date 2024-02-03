@@ -8,14 +8,13 @@ import com.twilightheroes.game.ecs.components.B2dBodyComponent;
 import com.twilightheroes.game.ecs.components.BulletComponent;
 import com.twilightheroes.game.ecs.components.StateComponent;
 import com.twilightheroes.game.screens.MainScreen;
-import com.twilightheroes.game.tools.B2WorldCreator;
 import com.twilightheroes.game.tools.Mappers;
 
 public class BulletSystem extends IteratingSystem {
-    private MainScreen parent;
-    public BulletSystem(MainScreen parent) {
+    private MainScreen screen;
+    public BulletSystem(MainScreen screen) {
         super(Family.all(BulletComponent.class).get());
-        this.parent =  parent;
+        this.screen = screen;
     }
 
     @Override
@@ -30,7 +29,7 @@ public class BulletSystem extends IteratingSystem {
 
 
             // get player pos
-            B2dBodyComponent playerBodyComp = Mappers.b2dCom.get(parent.playerEntity);
+            B2dBodyComponent playerBodyComp = Mappers.b2dCom.get(screen.playerEntity);
             float px = playerBodyComp.body.getPosition().x;
             float py = playerBodyComp.body.getPosition().y;
 

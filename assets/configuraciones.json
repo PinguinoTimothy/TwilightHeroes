@@ -41,7 +41,8 @@
     "speed":1,
     "attackFrame":5,
     "attackDamage": 50,
-    "attackMethod": "range"
+    "attackMethod": "spellCaster",
+    "spells": ["frostSpear"]
 
   }
   

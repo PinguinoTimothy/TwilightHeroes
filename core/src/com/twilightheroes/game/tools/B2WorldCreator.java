@@ -32,6 +32,7 @@ import com.twilightheroes.game.ecs.components.CollisionComponent;
 import com.twilightheroes.game.ecs.components.EnemyComponent;
 import com.twilightheroes.game.ecs.components.ExitComponent;
 import com.twilightheroes.game.ecs.components.PlayerComponent;
+import com.twilightheroes.game.ecs.components.spells.Spell;
 import com.twilightheroes.game.ecs.components.spells.SpellComponent;
 import com.twilightheroes.game.ecs.components.StateComponent;
 import com.twilightheroes.game.ecs.components.StatsComponent;
@@ -55,6 +56,7 @@ public class B2WorldCreator {
     private HashMap<String,EnemyPrototype> enemigos = new HashMap<String,EnemyPrototype>();
     private AssetManager manager;
 
+    private JsonValue jsonSpells = new JsonReader().parse(Gdx.files.internal("variety/spells.json"));
     public B2WorldCreator(World world, PooledEngine engine, MainScreen screen, AssetManager manager) {
 
         this.engine = engine;
@@ -85,7 +87,18 @@ public class B2WorldCreator {
              int attackFrame = enemigoActual.get("attackFrame").asInt();
             int attackDamage = enemigoActual.get("attackDamage").asInt();
             String attackMethod = enemigoActual.get("attackMethod").asString();
-        enemigos.put(enemigoActual.get("nombre").asString(),new EnemyPrototype(atlas,width,height,hitboxX,hitboxY,hp,idleFrames,walkFrames,attackFrames,viewDistance,attackDistance,attackCooldown,speed,attackFrame,attackDamage,attackMethod));
+            Spell[] spells = null;
+            if (attackMethod.equals("spellCaster")){
+                String[] auxSpellString = enemigoActual.get("spells").asStringArray();
+                Spell[] auxSpells = new Spell[auxSpellString.length];
+                for (int j = 0; j < auxSpellString.length; j++) {
+                    JsonValue jsonSpell = jsonSpells.get(auxSpellString[j]);
+                    auxSpells[j] = new Spell(SpellList.spells.valueOf(jsonSpell.get("spellId").asString()).ordinal(),jsonSpell.get("manaCost").asInt(), jsonSpell.get("castingTime").asFloat());
+                }
+                spells = auxSpells;
+            }
+
+        enemigos.put(enemigoActual.get("nombre").asString(),new EnemyPrototype(atlas,width,height,hitboxX,hitboxY,hp,idleFrames,walkFrames,attackFrames,viewDistance,attackDistance,attackCooldown,speed,attackFrame,attackDamage,attackMethod,spells));
         }
 
     }
@@ -273,6 +286,8 @@ public class B2WorldCreator {
             animCom.animations.put(StateComponent.STATE_DAMAGED, AnimationMaker.crearAnimacion(atlas, "Hurt", 4, 4));
             animCom.animations.put(StateComponent.STATE_DODGING, AnimationMaker.crearAnimacion(atlas, "Roll", 7, 14));
             animCom.animations.put(StateComponent.STATE_JUMPING, AnimationMaker.crearAnimacion(atlas, "Jump", 7, 14));
+            animCom.animations.put(StateComponent.STATE_CASTING, AnimationMaker.crearAnimacion(atlas, "Casting", 8, 16));
+
 
             statsComponent.speed = 100;
             statsComponent.hp = 100;
@@ -332,6 +347,8 @@ public class B2WorldCreator {
         }
     }
 
+
+
     public void createEnemy() {
 
         for (MapObject object : map.getLayers().get(4).getObjects().getByType(RectangleMapObject.class)) {
@@ -349,6 +366,7 @@ public class B2WorldCreator {
             AttackComponent attackComponent = engine.createComponent(AttackComponent.class);
             StatsComponent statsComponent = engine.createComponent(StatsComponent.class);
             StatusComponent statusComponent = engine.createComponent(StatusComponent.class);
+            SpellComponent spellComponent = engine.createComponent(SpellComponent.class);
 
             // create the data for the components and add them to the components
             texture.sprite.setRegion(enemyPrototype.atlas.findRegion("IDLE"));
@@ -406,6 +424,7 @@ public class B2WorldCreator {
             enemyComponent.attackFrame = enemyPrototype.attackFrame;
             enemyComponent.viewDistance = enemyPrototype.viewDistance;
             enemyComponent.attackMethod = enemyPrototype.attackMethod;
+            enemyComponent.spells = enemyPrototype.spells;
 
             statsComponent.speed = enemyPrototype.speed;
             statsComponent.hp = enemyPrototype.hp;
@@ -420,6 +439,7 @@ public class B2WorldCreator {
             entity.add(attackComponent);
             entity.add(statsComponent);
             entity.add(statusComponent);
+            entity.add(spellComponent);
 
 // add the entity to the engine
             engine.addEntity(entity);

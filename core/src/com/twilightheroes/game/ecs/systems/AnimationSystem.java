@@ -30,7 +30,7 @@ public class AnimationSystem extends IteratingSystem {
 
         if(ani.animations.containsKey(state.get())){
             TextureComponent tex = Mappers.texCom.get(entity);
-            tex.sprite.setRegion(ani.animations.get(state.get()).getKeyFrame(state.time, true));
+            tex.sprite.setRegion(ani.animations.get(state.get()).getKeyFrame(state.time, state.isLooping));
         ani.currentFrame = ani.animations.get(state.get()).getKeyFrameIndex(state.time);
         }
         state.time += deltaTime;

@@ -213,7 +213,7 @@ hud.stage.setDebugAll(true);
         engine.addSystem(new EnemySystem(this));
         engine.addSystem(new EffectSystem());
         engine.addSystem(new BulletSystem(this));
-        engine.addSystem(new SpellSystem());
+        engine.addSystem(new SpellSystem(this));
         b2WorldCreator = new B2WorldCreator(world,engine,this,manager);
         // create some game objects
         Drawable drawable = new TextureRegionDrawable(new TextureRegion(manager.get("pantallaNegra.jpg", Texture.class)));

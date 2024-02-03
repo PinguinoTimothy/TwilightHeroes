@@ -22,6 +22,7 @@ public class StateComponent implements Component , Pool.Poolable{
     public static final int STATE_SPELL_STARTING = 13;
     public static final int STATE_SPELL_GOING = 14;
     public static final int STATE_SPELL_ENDING = 15;
+    public static final int STATE_CASTING = 16;
 
 
 
@@ -30,7 +31,7 @@ public class StateComponent implements Component , Pool.Poolable{
     public int previousState = 0;
 
     public float time = 0.0f;
-    public boolean isLooping = false;
+    public boolean isLooping = true;
 
 
     public void set(int newState){

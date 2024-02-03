@@ -2,17 +2,17 @@ package com.twilightheroes.game.ecs.components.spells;
 
 public class Spell {
 
-    public String name;
     public int id;
     public float manaCost;
 
-    public boolean unlocked;
+    public float castingTime;
 
 
-    public Spell(String name, int id, float manaCost, boolean unlocked) {
-        this.name = name;
+    public Spell( int id, float manaCost, float castingTime) {
+
         this.id = id;
         this.manaCost = manaCost;
-        this.unlocked = unlocked;
+        this.castingTime = castingTime;
+
     }
 }

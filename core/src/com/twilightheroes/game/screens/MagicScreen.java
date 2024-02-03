@@ -26,6 +26,7 @@ import com.badlogic.gdx.utils.viewport.StretchViewport;
 import com.twilightheroes.game.TwilightHeroes;
 import com.twilightheroes.game.ecs.components.spells.Spell;
 import com.twilightheroes.game.ecs.components.spells.SpellComponent;
+import com.twilightheroes.game.ecs.components.spells.SpellList;
 import com.twilightheroes.game.tools.Mappers;
 
         public class MagicScreen implements Screen {
@@ -123,7 +124,7 @@ import com.twilightheroes.game.tools.Mappers;
         });
 
         final ImageButton btn2 = new ImageButton(imageButtonStyle);
-        btn1.setName("Button2");
+        btn2.setName("Button2");
         btn2.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x,float y) {
@@ -219,7 +220,6 @@ import com.twilightheroes.game.tools.Mappers;
         if (selectedSlot != null) {
             selectedSlot.setStyle(selectedSpell.getStyle());
             selectedSlot.setChecked(false);
-            selectedSlot = null;
 
         }
         name.setText(jsonSpell.get("spellName"+parent.language).asString());
@@ -228,15 +228,15 @@ import com.twilightheroes.game.tools.Mappers;
 
         SpellComponent spellComponent = Mappers.spellCom.get(parent.mainScreen.playerEntity);
 
-/*
 
-        if (selectedSpell.getName().equals("Button1")){
-            spellComponent.spell1 = new Spell()
+
+        if (selectedSlot.getName().equals("Button1")){
+            spellComponent.spell1 = new Spell(SpellList.spells.valueOf(jsonSpell.get("spellId").asString()).ordinal(),jsonSpell.get("manaCost").asInt(), jsonSpell.get("castingTime").asFloat());
         }else{
-            spellComponent.spell2
+            spellComponent.spell2 = new Spell(SpellList.spells.valueOf(jsonSpell.get("spellId").asString()).ordinal(),jsonSpell.get("manaCost").asInt(), jsonSpell.get("castingTime").asFloat());
         }
 
- */
+
     }
 
     // Helper method to create TextButton
