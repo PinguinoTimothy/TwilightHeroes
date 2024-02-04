@@ -14,7 +14,7 @@ public class BulletComponent implements Component, Pool.Poolable {
     public boolean isDead = false;
     public Owner owner = Owner.NONE;
 
-    public Entity particleEffect;
+
 
 
     @Override
@@ -23,6 +23,5 @@ public class BulletComponent implements Component, Pool.Poolable {
         xVel = 0;
         yVel = 0;
         isDead = false;
-        particleEffect = null;
     }
 }

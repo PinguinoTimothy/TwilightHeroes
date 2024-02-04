@@ -73,8 +73,8 @@ public class B2AssetManager {
 
 
         ParticleEffectLoader.ParticleEffectParameter pep = new ParticleEffectLoader.ParticleEffectParameter();
-        pep.atlasFile = "particles/fuego.atlas";
-        manager.load("particles/fuego.p", ParticleEffect.class, pep);
+        pep.atlasFile = "particles/buff.atlas";
+        manager.load("particles/buff.p", ParticleEffect.class, pep);
 
 
 

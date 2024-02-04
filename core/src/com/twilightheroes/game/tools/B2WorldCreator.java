@@ -107,7 +107,7 @@ public class B2WorldCreator {
         enemigos.put(enemigoActual.get("nombre").asString(),new EnemyPrototype(atlas,width,height,hitboxX,hitboxY,hp,idleFrames,walkFrames,attackFrames,viewDistance,attackDistance,attackCooldown,speed,attackFrame,attackDamage,attackMethod,spells));
         }
 
-        pem.addParticleEffect(ParticleEffectManager.FIRE, manager.get("particles/fuego.p", ParticleEffect.class),1f/64f);
+        pem.addParticleEffect(ParticleEffectManager.FIRE, manager.get("particles/buff.p", ParticleEffect.class),1f/64f);
 
 
     }
@@ -508,9 +508,6 @@ public class B2WorldCreator {
         b2dbody.body.setUserData(entity);
         bul.xVel = xVel;
 
-        makeParticleEffect(ParticleEffectManager.FIRE,b2dbody);
-
-        bul.particleEffect = makeParticleEffect(ParticleEffectManager.FIRE,b2dbody);
 
         entity.add(bul);
         entity.add(colComp);
