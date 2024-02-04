@@ -8,6 +8,7 @@ import com.twilightheroes.game.ecs.components.BulletComponent;
 import com.twilightheroes.game.ecs.components.CollisionComponent;
 import com.twilightheroes.game.ecs.components.EnemyComponent;
 import com.twilightheroes.game.ecs.components.ExitComponent;
+import com.twilightheroes.game.ecs.components.ParticleEffectComponent;
 import com.twilightheroes.game.ecs.components.PlayerComponent;
 import com.twilightheroes.game.ecs.components.spells.SpellComponent;
 import com.twilightheroes.game.ecs.components.StateComponent;
@@ -36,6 +37,7 @@ public class Mappers {
 
     public static final ComponentMapper<SpellComponent> spellCom = ComponentMapper.getFor(SpellComponent.class);
     public static final ComponentMapper<BulletComponent> bullCom = ComponentMapper.getFor(BulletComponent.class);
+    public static final ComponentMapper<ParticleEffectComponent> partCom = ComponentMapper.getFor(ParticleEffectComponent.class);
 
 
 }

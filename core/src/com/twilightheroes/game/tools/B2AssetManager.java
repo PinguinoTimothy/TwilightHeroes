@@ -3,11 +3,13 @@ package com.twilightheroes.game.tools;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.assets.loaders.FileHandleResolver;
 import com.badlogic.gdx.assets.loaders.I18NBundleLoader;
+import com.badlogic.gdx.assets.loaders.ParticleEffectLoader;
 import com.badlogic.gdx.assets.loaders.SkinLoader;
 import com.badlogic.gdx.assets.loaders.resolvers.InternalFileHandleResolver;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.ParticleEffect;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGeneratorLoader;
@@ -68,6 +70,11 @@ public class B2AssetManager {
          String skin	= "hud/neonui/neon-ui.json";
         SkinLoader.SkinParameter params = new SkinLoader.SkinParameter("hud/neonui/neon-ui.atlas");
         manager.load(skin, Skin.class,params);
+
+
+        ParticleEffectLoader.ParticleEffectParameter pep = new ParticleEffectLoader.ParticleEffectParameter();
+        pep.atlasFile = "particles/fuego.atlas";
+        manager.load("particles/fuego.p", ParticleEffect.class, pep);
 
 
 
