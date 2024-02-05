@@ -43,6 +43,7 @@ public class B2AssetManager {
         manager.load("hud/jump.png",Texture.class);
 
         manager.load("hud/habilidad1.png",Texture.class);
+        manager.load("hud/pauseButton.png",Texture.class);
 
 
         manager.load("background.png",Texture.class);
@@ -67,15 +68,18 @@ public class B2AssetManager {
         manager.load("pantallaNegra.jpg", Texture.class);
         manager.load("scrollbar-vertical.png", Texture.class);
 
+
          String skin	= "hud/neonui/neon-ui.json";
         SkinLoader.SkinParameter params = new SkinLoader.SkinParameter("hud/neonui/neon-ui.atlas");
         manager.load(skin, Skin.class,params);
 
+        String skin2 = "hud/orbeVidaPequeño.json";
+        SkinLoader.SkinParameter params2 = new SkinLoader.SkinParameter("hud/orbeVidaPequeño.atlas");
+        manager.load(skin2, Skin.class,params2);
 
-        ParticleEffectLoader.ParticleEffectParameter pep = new ParticleEffectLoader.ParticleEffectParameter();
-        pep.atlasFile = "particles/buff.atlas";
-        manager.load("particles/buff.p", ParticleEffect.class, pep);
-
+        String skinMana = "hud/orbeManaPequeño.json";
+        SkinLoader.SkinParameter params3 = new SkinLoader.SkinParameter("hud/orbeManaPequeño.atlas");
+        manager.load(skinMana, Skin.class,params3);
 
 
     }

@@ -1,0 +1,21 @@
+{
+com.badlogic.gdx.graphics.Color: {
+	RGBA_255_255_255_255: {
+		hex: ffffffff
+	}
+}
+com.badlogic.gdx.scenes.scene2d.utils.TiledDrawable: {
+	manaOrbFull22: {
+		region: manaOrbFull2
+		color: RGBA_255_255_255_255
+		minWidth: 74
+		minHeight: 0
+	}
+}
+com.badlogic.gdx.scenes.scene2d.ui.ProgressBar$ProgressBarStyle: {
+	default-vertical: {
+		background: manaOrbEmpty
+		knobBefore: manaOrbFull22
+	}
+}
+}

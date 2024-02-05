@@ -19,8 +19,10 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Align;
+import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.JsonReader;
 import com.badlogic.gdx.utils.JsonValue;
+import com.badlogic.gdx.utils.JsonWriter;
 import com.badlogic.gdx.utils.Scaling;
 import com.badlogic.gdx.utils.viewport.StretchViewport;
 import com.twilightheroes.game.TwilightHeroes;
@@ -41,12 +43,13 @@ import com.twilightheroes.game.tools.Mappers;
     public Label name;
     public Label description;
 
+    private ImageButton btnSpell1;
+    private ImageButton btnSpell2;
+
+    private Array<ImageButton> btnSpells = new Array<>();
+
     public MagicScreen(TwilightHeroes twilightHeroes) {
         parent = twilightHeroes;
-    }
-
-    @Override
-    public void show() {
         stage = new Stage(new StretchViewport(1920,1080));
         skin = new Skin(Gdx.files.internal("skin.json"));
         Gdx.input.setInputProcessor(stage);
@@ -88,7 +91,7 @@ import com.twilightheroes.game.tools.Mappers;
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 super.clicked(event, x, y);
-            parent.changeScreen(TwilightHeroes.APPLICATION);
+                parent.changeScreen(TwilightHeroes.APPLICATION);
             }
         });
 
@@ -113,30 +116,30 @@ import com.twilightheroes.game.tools.Mappers;
         imageButtonStyle.up = skin3.getDrawable("attack");
         imageButtonStyle.checked = skin3.getDrawable("dodge");
 
-        final ImageButton btn1 = new ImageButton(imageButtonStyle);
-        btn1.setName("Button1");
-        btn1.addListener(new ClickListener() {
+        btnSpell1 = new ImageButton(imageButtonStyle);
+        btnSpell1.setName("Button1");
+        btnSpell1.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 super.clicked(event, x, y);
-                changeSelectedSlot(btn1);
+                changeSelectedSlot(btnSpell1);
             }
         });
 
-        final ImageButton btn2 = new ImageButton(imageButtonStyle);
-        btn2.setName("Button2");
-        btn2.addListener(new ClickListener() {
+        btnSpell2 = new ImageButton(imageButtonStyle);
+        btnSpell2.setName("Button2");
+        btnSpell2.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x,float y) {
                 super.clicked(event, x, y);
-                changeSelectedSlot(btn2);
+                changeSelectedSlot(btnSpell2);
             }
         });
 
         // Create a Table for buttons on the top
         Table topButtonTable = new Table();
-        topButtonTable.add(btn1).center().padRight(100.0f).size(250);
-        topButtonTable.add(btn2).center().size(250).row();
+        topButtonTable.add(btnSpell1).center().padRight(100.0f).size(250);
+        topButtonTable.add(btnSpell2).center().size(250).row();
 
         // Add the topButtonTable to mainTable
         mainTable.add(topButtonTable).colspan(2).center().padBottom(20.0f).row();
@@ -149,22 +152,23 @@ import com.twilightheroes.game.tools.Mappers;
 
 
 
-        JsonValue json = new JsonReader().parse(Gdx.files.internal("variety/spells.json"));
+        JsonValue json = new JsonReader().parse(Gdx.files.internal("config/spells.json"));
 
-            for (int j = 0; j < json.size; j++) {
-                final ImageButton aux = createImageButton(json.get(j).get("spellId").asString());
-                aux.setName(json.get(j).get("spellId").asString());
-                buttonTable.add(aux).padBottom(15.0f).size(150f).padLeft(30f).padBottom(30f);
-                final int finalJ = j;
-                aux.addListener(new ClickListener() {
-                    @Override
-                    public void clicked(InputEvent event, float x, float y) {
-                        super.clicked(event, x, y);
+        for (int j = 0; j < json.size; j++) {
+            final ImageButton aux = createImageButton(json.get(j).get("spellId").asString());
+            aux.setName(json.get(j).get("spellId").asString());
+            buttonTable.add(aux).padBottom(15.0f).size(150f).padLeft(30f).padBottom(30f);
+            btnSpells.add(aux);
+            final int finalJ = j;
+            aux.addListener(new ClickListener() {
+                @Override
+                public void clicked(InputEvent event, float x, float y) {
+                    super.clicked(event, x, y);
                     changeSelectedSpell(aux);
-                    }
-                });
-            }
-            buttonTable.row();
+                }
+            });
+        }
+        buttonTable.row();
 
 
         ScrollPane scrollPane = new ScrollPane(buttonTable);
@@ -179,11 +183,11 @@ import com.twilightheroes.game.tools.Mappers;
         labelStyle.font = fontSmall;
         String[] nameLabelText = {"Nombre hechizo:","Spell Name:"};
         Label nameLabel = new Label(nameLabelText[parent.language.ordinal()], labelStyle);
-         name = new Label("", labelStyle);
+        name = new Label("", labelStyle);
 
         String[] descriptionLabelText = {"Descripcion:","Description:"};
         Label descriptionLabel = new Label(descriptionLabelText[parent.language.ordinal()], labelStyle);
-         description = new Label("", labelStyle);
+        description = new Label("", labelStyle);
 
         rightTable.add(nameLabel).align(Align.left).padLeft(20.0f).padBottom(20.0f).row();
         rightTable.add(name).align(Align.left).padLeft(20.0f).padBottom(20.0f).row();
@@ -200,6 +204,23 @@ import com.twilightheroes.game.tools.Mappers;
         stage.addActor(table);
     }
 
+    @Override
+    public void show() {
+
+        for (ImageButton btn : btnSpells)
+        {
+            if (btn.getName().equals(parent.playerSettings.spell1)){
+                changeSelectedSlot(btnSpell1);
+                changeSelectedSpell(btn);
+            } else if (btn.getName().equals(parent.playerSettings.spell2)) {
+                changeSelectedSlot(btnSpell2);
+                changeSelectedSpell(btn);
+            }
+
+        }
+
+    }
+
     private void changeSelectedSlot(ImageButton selectedSlot) {
         if (this.selectedSlot != null) {
             this.selectedSlot.setChecked(false);
@@ -210,7 +231,7 @@ import com.twilightheroes.game.tools.Mappers;
     }
 
     private void changeSelectedSpell(ImageButton selectedSpell){
-        JsonValue json = new JsonReader().parse(Gdx.files.internal("variety/spells.json"));
+        JsonValue json = new JsonReader().parse(Gdx.files.internal("config/spells.json"));
         JsonValue jsonSpell = json.get(selectedSpell.getName());
 
         if (lastSelected != null){
@@ -218,8 +239,10 @@ import com.twilightheroes.game.tools.Mappers;
         }
         lastSelected = selectedSpell;
         if (selectedSlot != null) {
-            selectedSlot.setStyle(selectedSpell.getStyle());
-            selectedSlot.setChecked(false);
+            if (selectedSlot.getStyle() != selectedSpell.getStyle()){
+                selectedSlot.setStyle(selectedSpell.getStyle());
+                selectedSlot.setChecked(false);
+            }
 
         }
         name.setText(jsonSpell.get("spellName"+parent.language).asString());
@@ -232,8 +255,11 @@ import com.twilightheroes.game.tools.Mappers;
 
         if (selectedSlot.getName().equals("Button1")){
             spellComponent.spell1 = new Spell(SpellList.spells.valueOf(jsonSpell.get("spellId").asString()).ordinal(),jsonSpell.get("manaCost").asInt(), jsonSpell.get("castingTime").asFloat());
+            parent.playerSettings.spell1 = jsonSpell.get("spellId").asString();
         }else{
             spellComponent.spell2 = new Spell(SpellList.spells.valueOf(jsonSpell.get("spellId").asString()).ordinal(),jsonSpell.get("manaCost").asInt(), jsonSpell.get("castingTime").asFloat());
+            parent.playerSettings.spell2 = jsonSpell.get("spellId").asString();
+
         }
 
 

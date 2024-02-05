@@ -57,8 +57,8 @@ public class B2WorldCreator {
     private HashMap<String,EnemyPrototype> enemigos = new HashMap<String,EnemyPrototype>();
     private AssetManager manager;
 
-    private JsonValue jsonSpells = new JsonReader().parse(Gdx.files.internal("variety/spells.json"));
-
+    private JsonValue jsonSpells = new JsonReader().parse(Gdx.files.internal("config/spells.json"));
+    private JsonValue jsonConfig =  new JsonReader().parse(Gdx.files.internal("config/configuraciones.json"));
 
     public B2WorldCreator(World world, PooledEngine engine, MainScreen screen, AssetManager manager) {
 
@@ -69,8 +69,7 @@ public class B2WorldCreator {
         this.screen = screen;
         this.manager = manager;
 
-        JsonValue json = new JsonReader().parse(Gdx.files.internal("configuraciones.json"));
-        JsonValue jsonEnemigos = json.get("enemigos");
+        JsonValue jsonEnemigos = jsonConfig.get("enemigos");
         for (int i = 0; i < jsonEnemigos.size; i++) {
             JsonValue enemigoActual = jsonEnemigos.get(i);
              TextureAtlas atlas = manager.get("enemies/"+enemigoActual.get("atlas").asString());
@@ -203,6 +202,8 @@ public class B2WorldCreator {
 
     public TextureRegion aux;
     public void createPlayer(TextureAtlas atlas, Entity playerEntity) {
+        JsonValue jsonPlayer = jsonConfig.get("personaje");
+
         if (playerEntity == null) {
             // Create the Entity and all the components that will go in the entity
             Entity entity = engine.createEntity();
@@ -218,11 +219,13 @@ public class B2WorldCreator {
             StatusComponent statusComponent = engine.createComponent(StatusComponent.class);
             SpellComponent spellComponent = engine.createComponent(SpellComponent.class);
 
+
+
             // create the data for the components and add them to the components
            aux = atlas.findRegion("Idle");
             texture.sprite.setRegion(aux);
 
-            texture.sprite.setBounds(2, 1, 35 / TwilightHeroes.PPM, 35 / TwilightHeroes.PPM);
+            texture.sprite.setBounds(2, 1, jsonPlayer.get("width").asFloat() / TwilightHeroes.PPM, jsonPlayer.get("height").asFloat() / TwilightHeroes.PPM);
 
             type.type = TypeComponent.PLAYER;
             stateCom.set(StateComponent.STATE_IDLE);
@@ -236,7 +239,7 @@ public class B2WorldCreator {
 
             // Define la hitbox rectangular
             PolygonShape shape = new PolygonShape();
-            shape.setAsBox(4 / TwilightHeroes.PPM, 8 / TwilightHeroes.PPM); // Tamaño de la hitbox
+            shape.setAsBox(jsonPlayer.get("hitboxX").asFloat()  / TwilightHeroes.PPM, jsonPlayer.get("hitboxY").asFloat()  / TwilightHeroes.PPM); // Tamaño de la hitbox
 
             FixtureDef fixtureDef = new FixtureDef();
             fixtureDef.friction = 0;
@@ -294,9 +297,19 @@ public class B2WorldCreator {
             animCom.animations.put(StateComponent.STATE_CASTING, AnimationMaker.crearAnimacion(atlas, "Casting", 8, 16));
 
 
-            statsComponent.speed = 100;
-            statsComponent.hp = 100;
-            statsComponent.damage = 25;
+            statsComponent.speed = jsonPlayer.get("speed").asFloat();
+            statsComponent.hp = jsonPlayer.get("hp").asFloat();
+            statsComponent.damage = jsonPlayer.get("attackDamage").asFloat();
+
+            //Selected Spells
+
+
+            JsonValue auxSpell = jsonSpells.get(screen.parent.playerSettings.spell1);
+            spellComponent.spell1 = new Spell(SpellList.spells.valueOf(auxSpell.get("spellId").asString()).ordinal(),auxSpell.get("manaCost").asInt(), auxSpell.get("castingTime").asFloat());
+
+            auxSpell = jsonSpells.get(screen.parent.playerSettings.spell1);
+            spellComponent.spell2 = new Spell(SpellList.spells.valueOf(auxSpell.get("spellId").asString()).ordinal(),auxSpell.get("manaCost").asInt(), auxSpell.get("castingTime").asFloat());
+
 
 
             entity.add(b2dbody);
@@ -327,7 +340,7 @@ public class B2WorldCreator {
 
             // Define la hitbox rectangular
             PolygonShape shape = new PolygonShape();
-            shape.setAsBox(4 / TwilightHeroes.PPM, 8 / TwilightHeroes.PPM); // Tamaño de la hitbox
+            shape.setAsBox(jsonPlayer.get("hitboxX").asFloat()  / TwilightHeroes.PPM, jsonPlayer.get("hitboxY").asFloat()  / TwilightHeroes.PPM); // Tamaño de la hitbox
 
             FixtureDef fixtureDef = new FixtureDef();
             fixtureDef.friction = 0;
@@ -490,7 +503,7 @@ public class B2WorldCreator {
         texture.runningRight = runningRight;
 
 
-        JsonValue json = new JsonReader().parse(Gdx.files.internal("variety/spells.json"));
+        JsonValue json = new JsonReader().parse(Gdx.files.internal("config/spells.json"));
         JsonValue jsonSpell = json.get(spellName);
 
 

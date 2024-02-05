@@ -75,7 +75,6 @@ this.screen = screen;
                     case healingSigil:
                         statsComponent.hp += 25;
 
-                        screen.b2WorldCreator.makeParticleEffect(ParticleEffectManager.FIRE,b2body);
 
                        // bul.particleEffect = makeParticleEffect(ParticleEffectManager.FIRE,b2dbody);
 

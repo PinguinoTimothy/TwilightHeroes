@@ -43,9 +43,7 @@ public class BulletSystem extends IteratingSystem {
             }
         }else{
             b2body.body.setLinearVelocity(0, 0f);
-            if ( Mappers.partCom.get(bullet.particleEffect) != null){
-                Mappers.partCom.get(bullet.particleEffect).isDead = true;
-            }
+
 
         }
         //

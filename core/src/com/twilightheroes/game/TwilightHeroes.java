@@ -2,6 +2,7 @@ package com.twilightheroes.game;
 
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Graphics;
 import com.badlogic.gdx.Preferences;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.OrthographicCamera;
@@ -17,6 +18,7 @@ import com.twilightheroes.game.screens.MagicScreen;
 import com.twilightheroes.game.screens.MainScreen;
 import com.twilightheroes.game.screens.OptionScreen;
 import com.twilightheroes.game.tools.B2AssetManager;
+import com.twilightheroes.game.tools.PlayerSettings;
 
 public class TwilightHeroes extends Game {
 
@@ -64,6 +66,9 @@ public class TwilightHeroes extends Game {
 	private MagicScreen magicScreen;
 	private EndScreen endScreen;
 	private OptionScreen optionScreen;
+
+	public PlayerSettings playerSettings = new PlayerSettings();
+
 	public B2AssetManager assMan = new B2AssetManager();
 
 
@@ -95,6 +100,11 @@ try {
 	vibratorOn = prefs.getBoolean("vibratorOn",true);
 	musicVolume = prefs.getFloat("musicVolume",100);
 	language = languages.values()[prefs.getInteger("language",0)];
+	playerSettings.spell1 = prefs.getString("spell1","frostSpear");
+	playerSettings.spell2 = prefs.getString("spell2","healingSigil");
+	playerSettings.level = prefs.getInteger("level",0);
+	playerSettings.money = prefs.getInteger("money",0);
+
 }catch (NullPointerException ex){}
 
 		mainScreen = new MainScreen(this);
@@ -160,7 +170,10 @@ try {
 		prefs.putBoolean("vibratorOn", vibratorOn);
 		prefs.putFloat("musicVolume",musicVolume);
 		prefs.putInteger("language",language.ordinal());
-
+		prefs.putString("spell1", playerSettings.spell1);
+		prefs.putString("spell2", playerSettings.spell2);
+		prefs.putInteger("level", playerSettings.level);
+		prefs.putInteger("money", playerSettings.money);
 		prefs.flush();
 	}
 

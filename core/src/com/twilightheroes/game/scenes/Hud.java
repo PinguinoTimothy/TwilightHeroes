@@ -8,6 +8,7 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
@@ -23,6 +24,7 @@ import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.twilightheroes.game.TwilightHeroes;
+import com.twilightheroes.game.tools.Mappers;
 
 public class Hud implements Disposable {
     public Stage stage;
@@ -36,7 +38,9 @@ public class Hud implements Disposable {
     Label scoreLabel;
 
 
-    ProgressBar healthBar;
+    ProgressBar healthOrb;
+    ProgressBar manaOrb;
+
 
     Texture hbTexture;
     private static final int FRAME_COLS = 3, FRAME_ROWS = 2;
@@ -85,17 +89,17 @@ public class Hud implements Disposable {
 
             }
         }
-ProgressBar.ProgressBarStyle progressBarStyle = new ProgressBar.ProgressBarStyle();
-        progressBarStyle.background = new TextureRegionDrawable(new TextureRegion(manager.get("hud/healthBar.png",Texture.class)));
-        progressBarStyle.knobBefore = new TextureRegionDrawable(new TextureRegion(manager.get("hud/knob.png",Texture.class)));
-        progressBarStyle.knobBefore.setMinHeight(10f);
-        progressBarStyle.knobBefore.setLeftWidth(10f);
-        progressBarStyle.knobBefore.setRightWidth(10f);
-        healthBar = new ProgressBar(0,100,.1f,false,progressBarStyle);
-        healthBar.setValue(100);
-        table.add(healthBar).expandX().padTop(10);
-        table.add(scoreLabel).expandX().padTop(10);
 
+        Skin progressBarSkin = manager.get("hud/orbeVidaPequeño.json", Skin.class);
+
+        healthOrb = new ProgressBar(0,100,.1f,true,progressBarSkin);
+        healthOrb.setValue(100);
+        table.add(healthOrb).size(37,37).left().padTop(10);
+
+        progressBarSkin = manager.get("hud/orbeManaPequeño.json", Skin.class);
+        manaOrb = new ProgressBar(0,100,.1f,true,progressBarSkin);
+        table.add(manaOrb).size(37,29).expandX().left().padTop(10);
+        ImageButton btnPause = new ImageButton(new TextureRegionDrawable(new TextureRegion(manager.get("hud/pauseButton.png", Texture.class))));
 
 
 
@@ -106,12 +110,12 @@ ProgressBar.ProgressBarStyle progressBarStyle = new ProgressBar.ProgressBarStyle
 
         }
 
-int vidasActuales;
 
         public void update(Entity playerEntity){
 
 
-
+        healthOrb.setValue(Mappers.statsCom.get(playerEntity).hp);
+            manaOrb.setValue(Mappers.playerCom.get(playerEntity).mana);
 
 
         }

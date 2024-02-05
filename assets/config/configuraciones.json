@@ -58,42 +58,12 @@
     "hp":100,
     "attackDistance":2.5,
     "attackCooldown":1.5,
-    "speed":0.5,
+    "speed":100,
     "attackDamage": 25,
     "spells":[
-      {
-        "nombre":"Shocking Grasp",
-        "types": [
-          "damage"
-        ],
-        "damage": 75,
-        "spellRange":4,
-        "manaCost":25
-      },
-      {
-        "nombre":"Cure Wounds",
-        "types" : [
-          "heal"
-        ],
-        "healing": 25,
-        "manaCost":30
-      },
-      {
-        "nombre":"Fury",
-        "types" : [
-          "attackBoost"
-        ],
-        "attackBoost": 25,
-        "duration": 10,
-        "manaCost":50
-      },
-      {
-        "nombre": "Freddy Five Bear",
-        "types" : [
-          "damage",
-          "heal",
-          "attackBoost"
-        ],
+      "frostSpear",
+      "healingSigil"
+    ],
         "damage": 100,
         "spellRange": 3,
         "healing": 75,
@@ -101,6 +71,6 @@
         "duration": 10,
         "manaCost":100
       }
-    ]
-}
+
+
 }

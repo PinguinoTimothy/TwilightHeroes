@@ -10,7 +10,6 @@ public class StatusEffect {
     private float timeRemaining;
     private float value;
     private boolean used;
-    public Entity particleEffect;
 
     public StatusEffect(int type, boolean buffOrDebuff, float timeRemaining, float value) {
         this.type = type;

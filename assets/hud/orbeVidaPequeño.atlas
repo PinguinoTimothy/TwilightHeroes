@@ -1,0 +1,20 @@
+
+orbeVidaPequeño.png
+size: 128, 128
+format: RGBA8888
+filter: Nearest, Nearest
+repeat: none
+healthOrbEmpty2
+  rotate: false
+  xy: 1, 40
+  size: 37, 37
+  orig: 37, 37
+  offset: 0, 0
+  index: -1
+healthOrbFull
+  rotate: false
+  xy: 1, 1
+  size: 37, 37
+  orig: 37, 37
+  offset: 0, 0
+  index: -1

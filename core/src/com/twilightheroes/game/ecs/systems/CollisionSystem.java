@@ -159,7 +159,7 @@ public class CollisionSystem extends IteratingSystem {
                                         B2dBodyComponent bodyPlayer = Mappers.b2dCom.get(collidedEntity);
                                         StatsComponent playerStats = Mappers.statsCom.get(collidedEntity);
 
-                                        if (!player.inmune) {
+                                        if (!player.inmune && !isHitbox) {
                                             System.out.println("enemy hit player");
                                         /*
                                         float xForce = 2.5f;

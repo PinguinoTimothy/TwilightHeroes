@@ -1,0 +1,20 @@
+
+orbeManaPequeño.png
+size: 64, 64
+format: RGBA8888
+filter: Nearest, Nearest
+repeat: none
+manaOrbEmpty
+  rotate: false
+  xy: 1, 32
+  size: 37, 29
+  orig: 37, 29
+  offset: 0, 0
+  index: -1
+manaOrbFull
+  rotate: false
+  xy: 1, 1
+  size: 37, 29
+  orig: 37, 29
+  offset: 0, 0
+  index: -1

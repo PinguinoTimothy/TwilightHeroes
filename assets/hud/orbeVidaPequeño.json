@@ -1,0 +1,24 @@
+{
+com.badlogic.gdx.graphics.Color: {
+	RGBA_255_255_255_255: {
+		r: 1
+		g: 1
+		b: 1
+		a: 1
+	}
+}
+com.badlogic.gdx.scenes.scene2d.utils.TiledDrawable: {
+	healthOrbFullTiled: {
+		region: healthOrbFull
+		color: RGBA_255_255_255_255
+		minWidth: 37
+		minHeight: 0
+	}
+}
+com.badlogic.gdx.scenes.scene2d.ui.ProgressBar$ProgressBarStyle: {
+	default-vertical: {
+		background: healthOrbEmpty2
+		knobBefore: healthOrbFullTiled
+	}
+}
+}

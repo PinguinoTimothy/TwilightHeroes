@@ -194,9 +194,9 @@ hud.stage.setDebugAll(true);
 
         // Boton Pause 2
 
-        btnPause = new ImageButton(btnHabilidad2Skin.getDrawable("habilidad1"));
+        btnPause = new ImageButton(new TextureRegionDrawable(new TextureRegion(manager.get("hud/pauseButton.png", Texture.class))));
         btnPause.setScale(1.5f,1.5f);
-        btnPause.setBounds(300, 60, 30, 30);
+        btnPause.setBounds(350, 170, 30, 30);
         hud.stage.addActor(btnPause);
 
 
@@ -301,6 +301,7 @@ hud.stage.setDebugAll(true);
         // Render the HUD on top
         hud.stage.act(delta);
         hud.stage.draw();
+        hud.update(playerEntity);
         if (auxChangeMap > 0){
             auxChangeMap--;
         }
