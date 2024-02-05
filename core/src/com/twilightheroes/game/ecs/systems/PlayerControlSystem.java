@@ -431,17 +431,7 @@ public class PlayerControlSystem extends IteratingSystem {
         float auxOffsetY = offsetY;
         float auxHx = hx;
         float auxHy = hy;
-        if (touchpad.getKnobPercentY() < -0.3f) {
-            auxHx = hy;
-            auxHy = hx;
-            auxOffsetX = offsetY;
-            auxOffsetY = -offsetX;
-        } else if (touchpad.getKnobPercentY() > 0.3f) {
-            auxHx = hy;
-            auxHy = hx;
-            auxOffsetX = offsetY;
-            auxOffsetY = offsetX;
-        } else {
+
             if (touchpad.getKnobPercentX() > 0) {
                 texture.runningRight = true;
                 auxOffsetX = offsetX;
@@ -451,7 +441,7 @@ public class PlayerControlSystem extends IteratingSystem {
             } else {
                 auxOffsetX = texture.runningRight ? offsetX : -offsetX;
             }
-        }
+
         attackShape.setAsBox(auxHx / TwilightHeroes.PPM, auxHy / TwilightHeroes.PPM, new Vector2(auxOffsetX / TwilightHeroes.PPM, auxOffsetY / TwilightHeroes.PPM), 0);
         FixtureDef attackFixtureDef = new FixtureDef();
         attackFixtureDef.shape = attackShape;

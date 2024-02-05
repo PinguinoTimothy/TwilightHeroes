@@ -36,7 +36,6 @@ import com.twilightheroes.game.ecs.systems.BulletSystem;
 import com.twilightheroes.game.ecs.systems.CollisionSystem;
 import com.twilightheroes.game.ecs.systems.EffectSystem;
 import com.twilightheroes.game.ecs.systems.EnemySystem;
-import com.twilightheroes.game.ecs.systems.ParticleEffectSystem;
 import com.twilightheroes.game.ecs.systems.PhysicsDebugSystem;
 import com.twilightheroes.game.ecs.systems.PhysicsSystem;
 import com.twilightheroes.game.ecs.systems.PlayerControlSystem;
@@ -215,7 +214,6 @@ hud.stage.setDebugAll(true);
         engine.addSystem(new EffectSystem());
         engine.addSystem(new BulletSystem(this));
         engine.addSystem(new SpellSystem(this));
-        engine.addSystem(new ParticleEffectSystem(sb,gameCam));
 
 
         b2WorldCreator = new B2WorldCreator(world,engine,this,manager);

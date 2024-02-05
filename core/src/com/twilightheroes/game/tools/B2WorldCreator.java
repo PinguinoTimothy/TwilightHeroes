@@ -32,7 +32,6 @@ import com.twilightheroes.game.ecs.components.BulletComponent;
 import com.twilightheroes.game.ecs.components.CollisionComponent;
 import com.twilightheroes.game.ecs.components.EnemyComponent;
 import com.twilightheroes.game.ecs.components.ExitComponent;
-import com.twilightheroes.game.ecs.components.ParticleEffectComponent;
 import com.twilightheroes.game.ecs.components.PlayerComponent;
 import com.twilightheroes.game.ecs.components.spells.Spell;
 import com.twilightheroes.game.ecs.components.spells.SpellComponent;
@@ -42,7 +41,6 @@ import com.twilightheroes.game.ecs.components.TextureComponent;
 import com.twilightheroes.game.ecs.components.TypeComponent;
 import com.twilightheroes.game.ecs.components.effectComponents.StatusComponent;
 import com.twilightheroes.game.ecs.components.spells.SpellList;
-import com.twilightheroes.game.ecs.systems.ParticleEffectManager;
 import com.twilightheroes.game.screens.MainScreen;
 
 import java.util.HashMap;
@@ -61,7 +59,6 @@ public class B2WorldCreator {
 
     private JsonValue jsonSpells = new JsonReader().parse(Gdx.files.internal("variety/spells.json"));
 
-    ParticleEffectManager pem = new ParticleEffectManager();
 
     public B2WorldCreator(World world, PooledEngine engine, MainScreen screen, AssetManager manager) {
 
@@ -107,7 +104,6 @@ public class B2WorldCreator {
         enemigos.put(enemigoActual.get("nombre").asString(),new EnemyPrototype(atlas,width,height,hitboxX,hitboxY,hp,idleFrames,walkFrames,attackFrames,viewDistance,attackDistance,attackCooldown,speed,attackFrame,attackDamage,attackMethod,spells));
         }
 
-        pem.addParticleEffect(ParticleEffectManager.FIRE, manager.get("particles/buff.p", ParticleEffect.class),1f/64f);
 
 
     }
@@ -522,52 +518,6 @@ public class B2WorldCreator {
     }
 
 
-    /**
-     * Make particle effect at xy
-     * @param x
-     * @param y
-     * @return the Particle Effect Entity
-     */
-    public Entity makeParticleEffect(int type, float x, float y){
-        Entity entPE = engine.createEntity();
-        ParticleEffectComponent pec = engine.createComponent(ParticleEffectComponent.class);
-        pec.particleEffect = pem.getPooledParticleEffect(type);
-        pec.particleEffect.setPosition(x, y);
-        entPE.add(pec);
-        engine.addEntity(entPE);
-        return entPE;
-    }
 
-    /** Attache particle effect to body from body component
-     * @param type the type of particle effect to show
-     * @param b2dbody the bodycomponent with the body to attach to
-     * @return the Particle Effect Entity
-     */
-    public Entity makeParticleEffect(int type, B2dBodyComponent b2dbody){
-        return makeParticleEffect(type,b2dbody,0,0);
-    }
-
-    /**
-     * Attache particle effect to body from body component with offsets
-     * @param type the type of particle effect to show
-     * @param b2dbody the bodycomponent with the body to attach to
-     * @param xo x offset
-     * @param yo y offset
-     * @return the Particle Effect Entity
-     */
-    public Entity makeParticleEffect(int type, B2dBodyComponent b2dbody, float xo, float yo){
-        Entity entPE = engine.createEntity();
-        ParticleEffectComponent pec = engine.createComponent(ParticleEffectComponent.class);
-        pec.particleEffect = pem.getPooledParticleEffect(type);
-        pec.particleEffect.setPosition(b2dbody.body.getPosition().x, b2dbody.body.getPosition().y);
-        pec.particleEffect.getEmitters().first().setAttached(true); //manually attach for testing
-        pec.xOffset = xo;
-        pec.yOffset = yo;
-        pec.isattached = true;
-        pec.attachedBody = b2dbody.body;
-        entPE.add(pec);
-        engine.addEntity(entPE);
-        return entPE;
-    }
 
 }
