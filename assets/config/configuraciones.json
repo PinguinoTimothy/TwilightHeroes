@@ -1,7 +1,7 @@
 {
 "enemigos":[
   {
-    "nombre":"caballero",
+    "name":"caballero",
     "atlas":"caballero.atlas",
     "width": 35,
     "height": 47,
@@ -23,7 +23,7 @@
   }
   ,
   {
-        "nombre":"skeleton",
+        "name":"skeleton",
     "atlas":"skeleton.atlas",
     "width": 64,
     "height": 64,

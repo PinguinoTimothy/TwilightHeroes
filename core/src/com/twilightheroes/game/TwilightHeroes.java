@@ -64,12 +64,14 @@ public class TwilightHeroes extends Game {
 	public final static int APPLICATION = 2;
 	public final static int MAGIC = 3;
 	public final static int ENDGAME = 4;
+	public final static int ACHIVEMENTS = 5;
 
 	public MainScreen mainScreen;
 	private com.twilightheroes.game.screens.MenuScreen menuScreen;
 	private MagicScreen magicScreen;
 	private EndScreen endScreen;
 	private OptionScreen optionScreen;
+	private AchivmentsScreen achivmentsScreen;
 
 	public PlayerSettings playerSettings = new PlayerSettings();
 
@@ -115,12 +117,8 @@ try {
 jsonMultilanguage = new JsonReader().parse(Gdx.files.internal("config/language.json")).get(language.name());
 killCounterHandler(true);
 
-		mainScreen = new MainScreen(this);
-
 		changeScreen(MENU);
 
-		AchivmentsScreen achivmentsScreen = new AchivmentsScreen();
-		setScreen(achivmentsScreen);
 	}
 
 	public void killCounterHandler(boolean read){
@@ -128,17 +126,19 @@ killCounterHandler(true);
 		if (read){
 
 
+if (fileHandle.exists()) {
+	JsonValue jsonKillCounter = new JsonReader().parse(fileHandle);
 
-			JsonValue jsonKillCounter = new JsonReader().parse(fileHandle);
+	if (jsonKillCounter != null) {
+		for (int i = 0; i < jsonKillCounter.size; i++) {
+			KillCounter killCounter = new KillCounter();
+			killCounter.enemyName = jsonKillCounter.get(i).getString("enemyName");
+			killCounter.killCount = jsonKillCounter.get(i).getInt("killCount");
+			playerSettings.killCounter.add(killCounter);
 
-			for (int i = 0; i < jsonKillCounter.size; i++) {
-				KillCounter killCounter = new KillCounter();
-				killCounter.enemyName = jsonKillCounter.get(i).getString("enemyName");
-				killCounter.killCount = jsonKillCounter.get(i).getInt("killCount");
-				playerSettings.killCounter.add(killCounter);
-
-			}
-
+		}
+	}
+}
 		}else{
 
 
@@ -172,6 +172,7 @@ killCounterHandler(true);
 	}
 
 	public void changeScreen(int screen){
+
 		switch(screen){
 
 			case MENU:
@@ -204,7 +205,12 @@ killCounterHandler(true);
 			case ENDGAME:
 				if(endScreen == null) endScreen = new EndScreen(this);
 				inGame = false;
+				previousScreen = ENDGAME;
 				this.setScreen(endScreen);
+				break;
+			case ACHIVEMENTS:
+				if(achivmentsScreen == null) achivmentsScreen = new AchivmentsScreen(this);
+				this.setScreen(achivmentsScreen);
 				break;
 		}
 	}

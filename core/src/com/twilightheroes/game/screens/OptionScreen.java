@@ -123,7 +123,9 @@
                 @Override
                 public void clicked(InputEvent event, float x, float y) {
                     super.clicked(event, x, y);
-                    parent.changeScreen(TwilightHeroes.APPLICATION);
+                    if (parent.inGame){
+                        parent.changeScreen(TwilightHeroes.APPLICATION);
+                    }
                 }
             });
             widgets.widgets.add(btnMenuOpciones);

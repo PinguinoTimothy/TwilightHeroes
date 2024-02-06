@@ -103,6 +103,13 @@ public class MenuScreen implements Screen {
         textButton.setName("achievements");
         widgetContainer.widgets.add(textButton);
         table1.add(textButton).padBottom(30.0f);
+        textButton.addListener(new ClickListener(){
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                super.clicked(event, x, y);
+                parent.changeScreen(TwilightHeroes.ACHIVEMENTS);
+            }
+        });
 
         table1.row();
         textButton = new TextButton(language.get("credits").asString(), textButtonStyle);

@@ -73,6 +73,7 @@ public class B2WorldCreator {
         for (int i = 0; i < jsonEnemigos.size; i++) {
             JsonValue enemigoActual = jsonEnemigos.get(i);
              TextureAtlas atlas = manager.get("enemies/"+enemigoActual.get("atlas").asString());
+             String name = enemigoActual.get("name").asString();
              int width = enemigoActual.get("width").asInt();
              int height = enemigoActual.get("height").asInt();
              int hitboxX = enemigoActual.get("hitboxX").asInt();
@@ -100,7 +101,7 @@ public class B2WorldCreator {
                 spells = auxSpells;
             }
 
-        enemigos.put(enemigoActual.get("nombre").asString(),new EnemyPrototype(atlas,width,height,hitboxX,hitboxY,hp,idleFrames,walkFrames,attackFrames,viewDistance,attackDistance,attackCooldown,speed,attackFrame,attackDamage,attackMethod,spells));
+        enemigos.put(enemigoActual.get("name").asString(),new EnemyPrototype(atlas,name,width,height,hitboxX,hitboxY,hp,idleFrames,walkFrames,attackFrames,viewDistance,attackDistance,attackCooldown,speed,attackFrame,attackDamage,attackMethod,spells));
         }
 
 
@@ -437,6 +438,8 @@ public class B2WorldCreator {
             animCom.animations.put(StateComponent.STATE_CHASING, AnimationMaker.crearAnimacion(enemyPrototype.atlas, "WALK", enemyPrototype.walkFrames, enemyPrototype.walkFrames));
 
             statsComponent.damage = enemyPrototype.attackDamage;
+
+            enemyComponent.name = enemyPrototype.name;
             enemyComponent.attackCooldown = enemyPrototype.attackCooldown;
             enemyComponent.attackDistance = enemyPrototype.attackDistance;
             enemyComponent.attackFrame = enemyPrototype.attackFrame;

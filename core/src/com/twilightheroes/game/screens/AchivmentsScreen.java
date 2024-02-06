@@ -6,67 +6,108 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
+import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
+import com.badlogic.gdx.scenes.scene2d.ui.Stack;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
-import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Align;
+import com.badlogic.gdx.utils.JsonReader;
+import com.badlogic.gdx.utils.JsonValue;
+import com.badlogic.gdx.utils.Scaling;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
+import com.badlogic.gdx.utils.viewport.StretchViewport;
+import com.twilightheroes.game.TwilightHeroes;
+import com.twilightheroes.game.tools.KillCounter;
 
 
 public class AchivmentsScreen implements Screen {
-    private Stage stage;
-    private Table table;
-    private ScrollPane scrollPane;
-    private BitmapFont font;
 
-    private int enemigosTipo1;
-    private int enemigosTipo2;
+        private Stage stage;
+        private Table table;
+        private ScrollPane scrollPane;
+        private BitmapFont bigFont;
+        private BitmapFont smallFont;
+
 
         private Table mainTable;
         private Table enemigoInfoTable;
+        Stack stack = new Stack();
+        private TwilightHeroes parent;
+        private ImageButton backButton;
 
-
-
-    public AchivmentsScreen() {
-
-            this.stage = new Stage(new ScreenViewport());
+        public AchivmentsScreen(final TwilightHeroes parent) {
+            this.parent = parent;
+            stage = new Stage(new StretchViewport(1920, 1080)); // Utilizando StretchViewport
             this.mainTable = new Table();
             this.enemigoInfoTable = new Table();
             this.scrollPane = new ScrollPane(mainTable);
-            this.font = new BitmapFont();
+
+            FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("KarmaFuture.ttf"));
+            final FreeTypeFontGenerator.FreeTypeFontParameter parameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
+            parameter.size = 50;
+            parameter.borderColor = Color.BLACK;
+            parameter.borderWidth = 2f;
+            BitmapFont fontBig = generator.generateFont(parameter);
+            parameter.size = 40;
+            BitmapFont fontSmall = generator.generateFont(parameter);
+            generator.dispose();
+
+            this.bigFont = fontBig;
+            this.smallFont = fontSmall;
 
             // Configurar la tabla principal y el scroll
-            mainTable.defaults().pad(10).width(200);
-            mainTable.add(new Label("Enemigo", new Label.LabelStyle(font, Color.WHITE)));
-            mainTable.add(new Label("Cantidad", new Label.LabelStyle(font, Color.WHITE)));
-            mainTable.row();
+            mainTable.padLeft(200).padTop(50).align(Align.left);
 
-            // Inicializar el conteo de enemigos
-            enemigosTipo1 = 0;
-            enemigosTipo2 = 0;
+            backButton = new ImageButton(new TextureRegionDrawable(parent.assMan.manager.get("hud/backButton.png",Texture.class)));
+            backButton.addListener(new ClickListener(){
+                @Override
+                public void clicked(InputEvent event, float x, float y) {
+                    super.clicked(event, x, y);
+                    parent.changeScreen(TwilightHeroes.MENU);
+
+                }
+            });
+
+            backButton.setBounds(50,stage.getHeight()-150,100,100);
+
         }
 
         @Override
         public void show() {
+            stage.clear();
+            stack .clear();
+
+            mainTable.clear();
             // Configurar la apariencia de la tabla principal (opcional)
-            mainTable.setBackground(new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal("background.png")))));
+            Image image = new Image(parent.assMan.manager.get("backgrounds/book.png", Texture.class));
+            image.setScaling(Scaling.fillY);
+            stack.addActor(image);
+
+
 
             // Agregar la textura del sprite del enemigo y la cantidad de veces que se ha matado
-            agregarFila("skele.png", "Enemigo Tipo 1", enemigosTipo1);
-            agregarFila("skele.png", "Enemigo Tipo 2", enemigosTipo2);
+            for (KillCounter kc: parent.playerSettings.killCounter)
+            {
+                agregarFila(kc.enemyName,kc.killCount);
+            }
+
 
             // Configurar el scroll pane
             scrollPane.setFillParent(true);
 
             // Agregar el scroll pane al escenario
-            stage.addActor(scrollPane);
+            stack.addActor(scrollPane);
+            stack.setFillParent(true);
+            stage.addActor(stack);
+            stage.addActor(backButton);
 
             // Configurar el input para el escenario
             Gdx.input.setInputProcessor(stage);
@@ -81,93 +122,93 @@ public class AchivmentsScreen implements Screen {
             // Actualizar y dibujar el escenario
             stage.act(Math.min(Gdx.graphics.getDeltaTime(), 1 / 30f));
             stage.draw();
-
-            // Dibujar la información detallada del enemigo seleccionado
-            stage.getBatch().begin();
-            enemigoInfoTable.draw(stage.getBatch(), 1);
-            stage.getBatch().end();
         }
 
-        // Métodos de incremento de conteo de enemigos (igual que en el ejemplo anterior)
+    JsonValue json = new JsonReader().parse(Gdx.files.internal("config/enemiesES.json"));
 
     // Método para agregar una fila a la tabla principal con la textura, nombre y cantidad
-    private void agregarFila(String textura, final String nombre, final int cantidad) {
-        Image imagen = new Image(new Texture(Gdx.files.internal(textura)));
-        Label labelNombre = new Label(nombre, new Label.LabelStyle(font, Color.WHITE));
-        Label labelCantidad = new Label(String.valueOf(cantidad), new Label.LabelStyle(font, Color.WHITE));
-
-        // Agregar la fila a la tabla principal y configurar el evento de clic
-        mainTable.add(imagen);
-        mainTable.add(labelNombre);
-        mainTable.add(labelCantidad).padRight(10);
-        mainTable.row();
-        agregarListener(imagen, nombre, cantidad);
-    }
-
-    // Método para agregar un listener de clic a una imagen (enemigo)
-    private void agregarListener(final Image imagen, final String nombre, final int cantidad) {
-        imagen.addListener(new ClickListener() {
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-                // Limpiar la tabla de información del enemigo
-                enemigoInfoTable.clear();
-
-                // Agregar nueva información detallada del enemigo seleccionado
-                Label infoLabel = new Label("Detalles de " + nombre, new Label.LabelStyle(font, Color.WHITE));
-                Label cantidadLabel = new Label("Cantidad: " + cantidad, new Label.LabelStyle(font, Color.WHITE));
-
-                // Agregar la imagen grande del enemigo
-                Image largeImagen = new Image(new Texture(Gdx.files.internal( "skele.png"))); // Asume que las imágenes grandes tienen el prefijo "large_"
-
-                // Agregar descripción (personaliza según tus necesidades)
-                Label descripcionLabel = new Label("Descripción del enemigo:\nEste enemigo es peligroso y...", new Label.LabelStyle(font, Color.WHITE));
-
-                // Agregar labels a la tabla de información del enemigo
-                enemigoInfoTable.add(infoLabel).padBottom(10).align(Align.left).colspan(2);
-                enemigoInfoTable.row();
-                enemigoInfoTable.add(largeImagen).colspan(2).padBottom(10);
-                enemigoInfoTable.row();
-                enemigoInfoTable.add(descripcionLabel).padBottom(10).align(Align.left).colspan(2);
-                enemigoInfoTable.row();
-                enemigoInfoTable.add(cantidadLabel).padBottom(10).align(Align.left).colspan(2);
-
-                // Configurar la posición y tamaño de la tabla de información del enemigo
-                enemigoInfoTable.setBounds(Gdx.graphics.getWidth() / 2f, 0, Gdx.graphics.getWidth() / 2f, Gdx.graphics.getHeight());
-
-                // Añadir la tabla de información del enemigo al escenario
-                stage.addActor(enemigoInfoTable);
-            }
-        });
-    }
+        private void agregarFila(String nombre, int cantidad) {
+            JsonValue jsonEnemy = json.get(nombre);
+            String name = jsonEnemy.getString("name");
 
 
+            Texture texture = parent.assMan.manager.get("enemies/enemySample/"+nombre + ".png", Texture.class);
+            texture.setFilter(Texture.TextureFilter.Nearest, Texture.TextureFilter.Nearest);
+            Image imagen = new Image(texture);
 
+            Label labelNombre = new Label(name, new Label.LabelStyle(bigFont, Color.WHITE));
 
+            // Agregar la fila a la tabla principal y configurar el evento de clic
+            mainTable.add(imagen).size(250f,250f).padBottom(50);
+            mainTable.add(labelNombre);
+            mainTable.row();
+            agregarListener(imagen, nombre, cantidad);
+        }
+
+        // Método para agregar un listener de clic a una imagen (enemigo)
+        private void agregarListener(final Image imagen, final String nombre, final int cantidad) {
+            imagen.addListener(new ClickListener() {
+                @Override
+                public void clicked(InputEvent event, float x, float y) {
+                    // Limpiar la tabla de información del enemigo
+                    enemigoInfoTable.clear();
+
+                    JsonValue jsonEnemy = json.get(nombre);
+                    String name = jsonEnemy.getString("name");
+                    String description = jsonEnemy.getString("description");
+
+                    // Agregar nueva información detallada del enemigo seleccionado
+                    Label infoLabel = new Label(name, new Label.LabelStyle(smallFont, Color.WHITE));
+                    Label cantidadLabel = new Label(cantidad+" killed", new Label.LabelStyle(smallFont, Color.WHITE));
+
+                    // Agregar la imagen grande del enemigo
+                    Texture texture = parent.assMan.manager.get("enemies/enemySample/"+nombre + ".png", Texture.class);
+                    texture.setFilter(Texture.TextureFilter.Nearest, Texture.TextureFilter.Nearest);
+                    Image imagen = new Image(texture);
+                    // Agregar descripción (personaliza según tus necesidades)
+                    Label descripcionLabel = new Label(description, new Label.LabelStyle(smallFont, Color.WHITE));
+
+                    // Agregar labels a la tabla de información del enemigo
+                    enemigoInfoTable.add(infoLabel).padBottom(10);
+                    enemigoInfoTable.row();
+                    enemigoInfoTable.add(imagen).padBottom(10).size(250f);
+                    enemigoInfoTable.row();
+                    enemigoInfoTable.add(descripcionLabel).padBottom(10);
+                    enemigoInfoTable.row();
+                    enemigoInfoTable.add(cantidadLabel).padBottom(10);
+
+                    // Configurar la posición y tamaño de la tabla de información del enemigo
+                    enemigoInfoTable.setBounds(stage.getWidth() / 2f - 50, 0, stage.getWidth() / 2f, stage.getHeight());
+
+                    // Añadir la tabla de información del enemigo al escenario
+                    stage.addActor(enemigoInfoTable);
+                }
+            });
+        }
 
         @Override
-    public void resize(int width, int height) {
+        public void resize(int width, int height) {
+            stage.getViewport().update(width, height, true);
+        }
 
+        @Override
+        public void pause() {
+        }
+
+        @Override
+        public void resume() {
+        }
+
+        @Override
+        public void hide() {
+        }
+
+        @Override
+        public void dispose() {
+            stage.dispose();
+        }
     }
 
-    @Override
-    public void pause() {
-
-    }
-
-    @Override
-    public void resume() {
-
-    }
-
-    @Override
-    public void hide() {
-
-    }
-
-    @Override
-    public void dispose() {
-
-    }
 
 
-}
+

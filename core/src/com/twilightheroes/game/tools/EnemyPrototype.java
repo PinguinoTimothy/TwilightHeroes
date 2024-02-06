@@ -6,6 +6,7 @@ import com.twilightheroes.game.ecs.components.spells.Spell;
 
 public class EnemyPrototype {
     public TextureAtlas atlas;
+    public String name;
     public int width;
     public int height;
     public int hitboxX;
@@ -26,8 +27,9 @@ public class EnemyPrototype {
     public Spell[] spells;
 
 
-    public EnemyPrototype(TextureAtlas atlas, int width, int height, int hitboxX, int hitboxY, int hp, int idleFrames, int walkFrames, int attackFrames, float viewDistance, float attackDistance, float attackCooldown, float speed, int attackFrame,int attackDamage, String attackMethod, Spell[] spells) {
+    public EnemyPrototype(TextureAtlas atlas, String name, int width, int height, int hitboxX, int hitboxY, int hp, int idleFrames, int walkFrames, int attackFrames, float viewDistance, float attackDistance, float attackCooldown, float speed, int attackFrame,int attackDamage, String attackMethod, Spell[] spells) {
         this.atlas = atlas;
+        this.name = name;
         this.width = width;
         this.height = height;
         this.hitboxX = hitboxX;

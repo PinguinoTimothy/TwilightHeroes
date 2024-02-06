@@ -1,0 +1,10 @@
+{
+  "caballero":{
+    "name":"Caballero Capa \nRoja",
+    "description":"Enemigo caballero"
+  },
+   "skeleton":{
+    "name":"Esqueleto mago",
+    "description":"Esqueleto que lanza magia"
+  }
+}

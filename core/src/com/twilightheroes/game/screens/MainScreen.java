@@ -1,5 +1,6 @@
 package com.twilightheroes.game.screens;
 
+import com.badlogic.ashley.core.Component;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.PooledEngine;
 import com.badlogic.gdx.Gdx;
@@ -28,6 +29,7 @@ import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.twilightheroes.game.TwilightHeroes;
+import com.twilightheroes.game.ecs.components.AnimationComponent;
 import com.twilightheroes.game.ecs.components.PlayerComponent;
 import com.twilightheroes.game.ecs.systems.AnimationSystem;
 import com.twilightheroes.game.ecs.systems.BulletSystem;
@@ -224,9 +226,11 @@ hud.stage.setDebugAll(true);
         pantallaNegro.setColor(0,0,0,0f);
         pantallaNegro.setVisible(false);
         hud.stage.addActor(pantallaNegro);
-        changeMap();
 
+        newMap = parent.playerSettings.level;
+changeMap();
         parent.widgets.add(widgetContainer);
+
 
     }
 
@@ -236,6 +240,7 @@ hud.stage.setDebugAll(true);
     @Override
     public void show() {
         Gdx.input.setInputProcessor(hud.stage);
+        newMap = parent.playerSettings.level;
 
     }
 
@@ -272,11 +277,19 @@ hud.stage.setDebugAll(true);
         }
 
 
-        for (Entity entity : engine.getEntities()) {
-            if (entity != playerEntity){
-                engine.removeEntity(entity);
+        engine.clearPools();
+        Array<Entity> entitiesToRemove = new Array<>();
+        for (Entity ent: engine.getEntities())
+        {
+            if (Mappers.playerCom.get(ent) == null){
+                entitiesToRemove.add(ent);
             }
         }
+        for (Entity ent: entitiesToRemove)
+        {
+            engine.removeEntity(ent);
+        }
+        entitiesToRemove.clear();
         bodies.clear();
 
 
@@ -285,6 +298,7 @@ hud.stage.setDebugAll(true);
             b2WorldCreator.generateLevel(map,playerEntity);
             mapRenderer.setMap(map);
 
+            parent.playerSettings.level = newMap;
 
 
 
@@ -365,15 +379,6 @@ hud.stage.setDebugAll(true);
     @Override
     public void dispose() {
 
-        hud.stage.dispose();
-        hud.dispose();
-        map.dispose();
-        mapRenderer.dispose();
-        sb.dispose();
-       btnAttackSkin.dispose();
-       btnJumpSkin.dispose();
-        world.dispose();
-        engine.clearPools();
 
     }
 

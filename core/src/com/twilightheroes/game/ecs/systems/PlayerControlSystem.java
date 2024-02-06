@@ -213,6 +213,7 @@ public class PlayerControlSystem extends IteratingSystem {
         stats = Mappers.statsCom.get(entity);
         status = Mappers.statusCom.get(entity);
         spellComponent = Mappers.spellCom.get(entity);
+        playerComponent.canJump = true;
 
         if (stats.hp <= 0) {
             playerComponent.isDead = true;

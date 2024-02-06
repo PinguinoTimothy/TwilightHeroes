@@ -8,7 +8,7 @@ import com.twilightheroes.game.ecs.components.spells.Spell;
 public class EnemyComponent implements Component, Pool.Poolable {
 
 
-
+    public String name = "";
     public boolean isDead = false;
     public float xPosCenter = -1;
     public boolean playerGoingLeft = false;

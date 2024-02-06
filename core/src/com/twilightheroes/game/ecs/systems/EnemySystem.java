@@ -18,6 +18,7 @@ import com.twilightheroes.game.ecs.components.TextureComponent;
 import com.twilightheroes.game.ecs.components.spells.Spell;
 import com.twilightheroes.game.ecs.components.spells.SpellComponent;
 import com.twilightheroes.game.screens.MainScreen;
+import com.twilightheroes.game.tools.KillCounter;
 import com.twilightheroes.game.tools.Mappers;
 
 import java.util.Map;
@@ -69,6 +70,22 @@ public class EnemySystem extends IteratingSystem {
 
         if (statsComponent.hp <= 0) {
             bodyCom.isDead = true;
+
+            boolean enemyRegistered = false;
+            for (KillCounter kc:screen.parent.playerSettings.killCounter)
+            {
+             if (kc.enemyName == enemyCom.name){
+                kc.killCount++;
+                enemyRegistered = true;
+             }
+            }
+
+            if (!enemyRegistered){
+        KillCounter killCounter = new KillCounter();
+        killCounter.enemyName = enemyCom.name;
+        killCounter.killCount = 1;
+        screen.parent.playerSettings.killCounter.add(killCounter);
+            }
 
         } else {
 
