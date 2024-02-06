@@ -1,6 +1,5 @@
 package com.twilightheroes.game.screens;
 
-import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
@@ -17,29 +16,27 @@ import com.badlogic.gdx.scenes.scene2d.ui.Stack;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.badlogic.gdx.utils.JsonValue;
 import com.badlogic.gdx.utils.Scaling;
-import com.badlogic.gdx.utils.viewport.ExtendViewport;
-import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.badlogic.gdx.utils.viewport.StretchViewport;
 import com.twilightheroes.game.TwilightHeroes;
-
-import java.awt.GradientPaint;
-
-import jdk.tools.jmod.Main;
+import com.twilightheroes.game.tools.WidgetContainer;
 
 public class MenuScreen implements Screen {
     private Skin skin;
 
     private Stage stage;
     TwilightHeroes parent;
+    JsonValue language;
 
-   public MenuScreen(TwilightHeroes parent){
-       this.parent = parent;
-   }
+    private WidgetContainer widgetContainer = new WidgetContainer();
 
-    @Override
-    public void show() {
-        stage = new Stage(new StretchViewport(1920,1080));
+    public MenuScreen(TwilightHeroes TH) {
+        this.parent = TH;
+        language = TH.jsonMultilanguage.get("menu");
+
+
+        stage = new Stage(new StretchViewport(1920, 1080));
         skin = new Skin(Gdx.files.internal("skin.json"));
         FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("KarmaFuture.ttf"));
         final FreeTypeFontGenerator.FreeTypeFontParameter parameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
@@ -58,7 +55,6 @@ public class MenuScreen implements Screen {
         TextButton.TextButtonStyle textButtonStyle = new TextButton.TextButtonStyle();
         textButtonStyle.font = fontButtons;
 
-        Gdx.input.setInputProcessor(stage);
 
         Table table = new Table();
         table.setFillParent(true);
@@ -76,51 +72,66 @@ public class MenuScreen implements Screen {
         Label lblTitle = new Label("Twilight Heroes", labelStyle);
         table1.add(lblTitle).padTop(-450f).row();
 
-        TextButton textButton = new TextButton("Jugar", textButtonStyle);
+        TextButton textButton = new TextButton(language.get("play").asString(), textButtonStyle);
         textButton.setName("play");
+        widgetContainer.widgets.add(textButton);
         table1.add(textButton).padBottom(30.0f);
-textButton.addListener(new ClickListener()
-{
-    @Override
-    public void clicked(InputEvent event, float x, float y) {
-        super.clicked(event, x, y);
-        parent.restart();
-    }
-});
+        textButton.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                super.clicked(event, x, y);
+                parent.restart();
+            }
+        });
 
         table1.row();
-        textButton = new TextButton("Opciones", textButtonStyle);
+        textButton = new TextButton(language.get("options").asString(), textButtonStyle);
         textButton.setName("options");
+        widgetContainer.widgets.add(textButton);
         table1.add(textButton).padBottom(30.0f);
-textButton.addListener(new ClickListener(){
-    @Override
-    public void clicked(InputEvent event, float x, float y) {
-        super.clicked(event, x, y);
-        parent.changeScreen(TwilightHeroes.OPTIONS);
-    }
-});
+        textButton.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                super.clicked(event, x, y);
+                parent.changeScreen(TwilightHeroes.OPTIONS);
+            }
+        });
 
 
         table1.row();
-        textButton = new TextButton("Logros", textButtonStyle);
-        textButton.setName("logres");
+        textButton = new TextButton(language.get("achievements").asString(), textButtonStyle);
+        textButton.setName("achievements");
+        widgetContainer.widgets.add(textButton);
         table1.add(textButton).padBottom(30.0f);
 
         table1.row();
-        textButton = new TextButton("Creditos", textButtonStyle);
+        textButton = new TextButton(language.get("credits").asString(), textButtonStyle);
         textButton.setName("credits");
+        widgetContainer.widgets.add(textButton);
         table1.add(textButton).padBottom(30.0f);
 
         table1.row();
-        textButton = new TextButton("Controles", textButtonStyle);
+        textButton = new TextButton(language.get("controls").asString(), textButtonStyle);
         textButton.setName("controls");
+        widgetContainer.widgets.add(textButton);
+
         table1.add(textButton);
+
         stack.addActor(table1);
         table.add(stack).grow();
         stage.addActor(table);
 
+        widgetContainer.nameScreen = "menu";
+        parent.widgets.add(widgetContainer);
 
     }
+
+    @Override
+    public void show() {
+        Gdx.input.setInputProcessor(stage);
+
+    }
+
 
     @Override
     public void render(float delta) {

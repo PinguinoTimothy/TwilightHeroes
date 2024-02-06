@@ -30,6 +30,7 @@ import com.twilightheroes.game.ecs.components.spells.Spell;
 import com.twilightheroes.game.ecs.components.spells.SpellComponent;
 import com.twilightheroes.game.ecs.components.spells.SpellList;
 import com.twilightheroes.game.tools.Mappers;
+import com.twilightheroes.game.tools.WidgetContainer;
 
         public class MagicScreen implements Screen {
 
@@ -48,11 +49,15 @@ import com.twilightheroes.game.tools.Mappers;
 
     private Array<ImageButton> btnSpells = new Array<>();
 
+    private JsonValue language;
+
+    private WidgetContainer widgetContainer = new WidgetContainer();
+
     public MagicScreen(TwilightHeroes twilightHeroes) {
         parent = twilightHeroes;
         stage = new Stage(new StretchViewport(1920,1080));
         skin = new Skin(Gdx.files.internal("skin.json"));
-        Gdx.input.setInputProcessor(stage);
+        language = parent.jsonMultilanguage.get("magic");
 
 
         final Table table = new Table();
@@ -86,7 +91,7 @@ import com.twilightheroes.game.tools.Mappers;
         textButtonStyle.font = fontBig;
 
         // Adding Hechizos and Opciones buttons to the top
-        TextButton btnMenuHechizos = createTextButton("Hechizos", textButtonStyle);
+        TextButton btnMenuHechizos = createTextButton(language.get("spells").asString(), textButtonStyle);
         btnMenuHechizos.addListener(new ClickListener(){
             @Override
             public void clicked(InputEvent event, float x, float y) {
@@ -94,8 +99,10 @@ import com.twilightheroes.game.tools.Mappers;
                 parent.changeScreen(TwilightHeroes.APPLICATION);
             }
         });
+        btnMenuHechizos.setName("spells");
+        widgetContainer.widgets.add(btnMenuHechizos);
 
-        TextButton btnMenuOpciones = createTextButton("Opciones", textButtonStyle);
+        TextButton btnMenuOpciones = createTextButton(language.get("options").asString(), textButtonStyle);
         btnMenuOpciones.addListener(new ClickListener(){
             @Override
             public void clicked(InputEvent event, float x, float y) {
@@ -103,6 +110,8 @@ import com.twilightheroes.game.tools.Mappers;
                 parent.changeScreen(TwilightHeroes.OPTIONS);
             }
         });
+        btnMenuOpciones.setName("options");
+        widgetContainer.widgets.add(btnMenuOpciones);
 
         mainTable.add(btnMenuHechizos).padBottom(50.0f).align(Align.left).padLeft(100f);
         mainTable.add(btnMenuOpciones).padBottom(50.0f).align(Align.right).padRight(100f).row();
@@ -181,13 +190,16 @@ import com.twilightheroes.game.tools.Mappers;
         // Add information labels to the rightTable
         Label.LabelStyle labelStyle = new Label.LabelStyle();
         labelStyle.font = fontSmall;
-        String[] nameLabelText = {"Nombre hechizo:","Spell Name:"};
-        Label nameLabel = new Label(nameLabelText[parent.language.ordinal()], labelStyle);
+        Label nameLabel = new Label(language.get("name").asString(), labelStyle);
         name = new Label("", labelStyle);
+        nameLabel.setName("name");
+        widgetContainer.widgets.add(nameLabel);
 
-        String[] descriptionLabelText = {"Descripcion:","Description:"};
-        Label descriptionLabel = new Label(descriptionLabelText[parent.language.ordinal()], labelStyle);
+        Label descriptionLabel = new Label(language.get("description").asString(), labelStyle);
         description = new Label("", labelStyle);
+        descriptionLabel.setName("description");
+        widgetContainer.widgets.add(descriptionLabel);
+
 
         rightTable.add(nameLabel).align(Align.left).padLeft(20.0f).padBottom(20.0f).row();
         rightTable.add(name).align(Align.left).padLeft(20.0f).padBottom(20.0f).row();
@@ -202,17 +214,22 @@ import com.twilightheroes.game.tools.Mappers;
 
         table.add(stack).grow();
         stage.addActor(table);
+
+        widgetContainer.nameScreen = "magic";
+        parent.widgets.add(widgetContainer);
     }
 
     @Override
     public void show() {
+        Gdx.input.setInputProcessor(stage);
 
         for (ImageButton btn : btnSpells)
         {
             if (btn.getName().equals(parent.playerSettings.spell1)){
                 changeSelectedSlot(btnSpell1);
                 changeSelectedSpell(btn);
-            } else if (btn.getName().equals(parent.playerSettings.spell2)) {
+            }
+            if (btn.getName().equals(parent.playerSettings.spell2)) {
                 changeSelectedSlot(btnSpell2);
                 changeSelectedSpell(btn);
             }
@@ -262,7 +279,7 @@ import com.twilightheroes.game.tools.Mappers;
 
         }
 
-
+      parent.mainScreen.actualizarBotones();
     }
 
     // Helper method to create TextButton
@@ -296,7 +313,6 @@ import com.twilightheroes.game.tools.Mappers;
     @Override
     public void resize(int width, int height) {
         // Se puede implementar si es necesario
-        Gdx.input.setInputProcessor(stage);
         stage.getViewport().update(width, height, true);
 
     }
@@ -309,7 +325,7 @@ import com.twilightheroes.game.tools.Mappers;
     @Override
     public void resume() {
         // Se puede implementar si es necesario
-        Gdx.input.setInputProcessor(stage);
+
 
     }
 

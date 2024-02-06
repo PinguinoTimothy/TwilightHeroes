@@ -307,7 +307,7 @@ public class B2WorldCreator {
             JsonValue auxSpell = jsonSpells.get(screen.parent.playerSettings.spell1);
             spellComponent.spell1 = new Spell(SpellList.spells.valueOf(auxSpell.get("spellId").asString()).ordinal(),auxSpell.get("manaCost").asInt(), auxSpell.get("castingTime").asFloat());
 
-            auxSpell = jsonSpells.get(screen.parent.playerSettings.spell1);
+            auxSpell = jsonSpells.get(screen.parent.playerSettings.spell2);
             spellComponent.spell2 = new Spell(SpellList.spells.valueOf(auxSpell.get("spellId").asString()).ordinal(),auxSpell.get("manaCost").asInt(), auxSpell.get("castingTime").asFloat());
 
 

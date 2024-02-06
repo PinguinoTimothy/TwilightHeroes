@@ -31,6 +31,8 @@ import com.twilightheroes.game.ecs.components.effectComponents.StatusType;
 import com.twilightheroes.game.screens.MainScreen;
 import com.twilightheroes.game.tools.Mappers;
 
+import java.awt.Color;
+
 public class PlayerControlSystem extends IteratingSystem {
 
 
@@ -238,16 +240,16 @@ public class PlayerControlSystem extends IteratingSystem {
 
             playerComponent.inmune = true;
             dodging = true;
-            playerComponent.inmuneTime = 0.3f;
+            playerComponent.inmuneTime = 0.5f;
             dodgeTime = 0.1f;
             state.set(StateComponent.STATE_DODGING);
             float dodgeForceX;
             if (touchpad.getKnobPercentX() > 0) {
-                dodgeForceX = 9f;
+                dodgeForceX = 3f;
             } else if (touchpad.getKnobPercentX() < 0) {
-                dodgeForceX = -9f;
+                dodgeForceX = -3f;
             } else {
-                dodgeForceX = texture.runningRight ? 9f : -9f;
+                dodgeForceX = texture.runningRight ? 3f : -3f;
             }
 
             b2body.body.setLinearVelocity(0, 0);
@@ -255,6 +257,7 @@ public class PlayerControlSystem extends IteratingSystem {
             b2body.body.applyLinearImpulse(new Vector2(dodgeForceX, 0f), b2body.body.getWorldCenter(), true);
             b2body.body.getFixtureList().get(0).setFilterData(inmuneFilter);
             makeDodge = false;
+            texture.sprite.setAlpha(0);
 
         }
 
@@ -277,6 +280,7 @@ public class PlayerControlSystem extends IteratingSystem {
             }
         } else {
             dodgeCooldown -= deltaTime;
+            texture.sprite.setAlpha(1);
             if (knockback) {
 
                 state.set(StateComponent.STATE_DAMAGED);

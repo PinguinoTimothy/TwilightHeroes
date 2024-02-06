@@ -10,14 +10,12 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.World;
-import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
@@ -46,6 +44,7 @@ import com.twilightheroes.game.tools.B2WorldCreator;
 import com.twilightheroes.game.tools.B2dContactListener;
 import com.twilightheroes.game.tools.BodyFactory;
 import com.twilightheroes.game.tools.Mappers;
+import com.twilightheroes.game.tools.WidgetContainer;
 
 
 public class MainScreen implements Screen {
@@ -85,11 +84,12 @@ private     float viewportWidth,viewportHeight;
     private Skin btnDodgeSkin;
     private Button btnDodge;
 
-    private Skin btnHabilidad1Skin;
-    private Button btnHabilidad1;
+    private ImageButton.ImageButtonStyle btnSpell1Style = new ImageButton.ImageButtonStyle();
+    private ImageButton.ImageButtonStyle btnSpell2Style = new ImageButton.ImageButtonStyle();
 
-    private Skin btnHabilidad2Skin;
-    private Button btnHabilidad2;
+    private Button btnSpell1;
+
+    private Button btnSpell2;
     private Button btnPause;
 
     public B2WorldCreator b2WorldCreator;
@@ -97,6 +97,8 @@ private     float viewportWidth,viewportHeight;
     public Entity playerEntity;
     private AssetManager manager;
     Image pantallaNegro;
+
+    private WidgetContainer widgetContainer = new WidgetContainer();
 
     public MainScreen(TwilightHeroes twilightHeroes){
         parent = twilightHeroes;
@@ -176,21 +178,19 @@ hud.stage.setDebugAll(true);
         btnDodge.setBounds(350, 60, 30, 30);
         hud.stage.addActor(btnDodge);
 
+
+        actualizarBotones();
         // Boton Habilidad 1
-        btnHabilidad1Skin = new Skin();
-        btnHabilidad1Skin.add("habilidad1",manager.get("hud/habilidad1.png"));
-        btnHabilidad1 = new ImageButton(btnHabilidad1Skin.getDrawable("habilidad1"));
-        btnHabilidad1.setScale(1.5f,1.5f);
-        btnHabilidad1.setBounds(350, 120, 30, 30);
-        hud.stage.addActor(btnHabilidad1);
+        btnSpell1 = new ImageButton(btnSpell1Style);
+        btnSpell1.setScale(1.5f,1.5f);
+        btnSpell1.setBounds(300, 120, 30, 30);
+        hud.stage.addActor(btnSpell1);
 
         // Boton Habilidad 2
-        btnHabilidad2Skin = new Skin();
-        btnHabilidad2Skin.add("habilidad1",manager.get("hud/habilidad1.png"));
-        btnHabilidad2 = new ImageButton(btnHabilidad2Skin.getDrawable("habilidad1"));
-        btnHabilidad2.setScale(1.5f,1.5f);
-        btnHabilidad2.setBounds(300, 120, 30, 30);
-        hud.stage.addActor(btnHabilidad2);
+        btnSpell2 = new ImageButton(btnSpell2Style);
+        btnSpell2.setScale(1.5f,1.5f);
+        btnSpell2.setBounds(350, 120, 30, 30);
+        hud.stage.addActor(btnSpell2);
 
         // Boton Pause 2
 
@@ -200,7 +200,6 @@ hud.stage.setDebugAll(true);
         hud.stage.addActor(btnPause);
 
 
-        Gdx.input.setInputProcessor(hud.stage);
 
 
         // add all the relevant systems our engine should run
@@ -209,7 +208,7 @@ hud.stage.setDebugAll(true);
         engine.addSystem(new PhysicsSystem(world,engine,this));
         engine.addSystem(new PhysicsDebugSystem(world, renderingSystem.getCamera()));
         engine.addSystem(new CollisionSystem(renderingSystem,this));
-        engine.addSystem(new PlayerControlSystem(touchpad,btnJump,btnAttack,btnDodge,btnHabilidad1,btnHabilidad2,btnPause,this));
+        engine.addSystem(new PlayerControlSystem(touchpad,btnJump,btnAttack,btnDodge, btnSpell1, btnSpell2,btnPause,this));
         engine.addSystem(new EnemySystem(this));
         engine.addSystem(new EffectSystem());
         engine.addSystem(new BulletSystem(this));
@@ -227,6 +226,8 @@ hud.stage.setDebugAll(true);
         hud.stage.addActor(pantallaNegro);
         changeMap();
 
+        parent.widgets.add(widgetContainer);
+
     }
 
 
@@ -234,6 +235,20 @@ hud.stage.setDebugAll(true);
 
     @Override
     public void show() {
+        Gdx.input.setInputProcessor(hud.stage);
+
+    }
+
+    public void actualizarBotones(){
+
+
+        btnSpell1Style.up = new TextureRegionDrawable((Texture) parent.assMan.manager.get("spells/" + parent.playerSettings.spell1 + ".png"));
+        btnSpell2Style.up = new TextureRegionDrawable((Texture) parent.assMan.manager.get("spells/" + parent.playerSettings.spell2 + ".png"));
+
+        if (btnSpell1 != null){
+            btnSpell1.setStyle(btnSpell1Style);
+            btnSpell2.setStyle(btnSpell2Style);
+        }
 
     }
 
@@ -338,7 +353,6 @@ hud.stage.setDebugAll(true);
     @Override
     public void resume() {
         hud.stage.unfocusAll();
-        Gdx.input.setInputProcessor(hud.stage);
         gameCam.position.set(Mappers.b2dCom.get(playerEntity).body.getPosition(),0);
 
     }
@@ -350,15 +364,18 @@ hud.stage.setDebugAll(true);
 
     @Override
     public void dispose() {
+
         hud.stage.dispose();
         hud.dispose();
         map.dispose();
         mapRenderer.dispose();
         sb.dispose();
-        btnAttackSkin.dispose();
-        btnJumpSkin.dispose();
+       btnAttackSkin.dispose();
+       btnJumpSkin.dispose();
         world.dispose();
         engine.clearPools();
 
     }
+
+
 }

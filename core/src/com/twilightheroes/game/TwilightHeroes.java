@@ -5,20 +5,37 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Graphics;
 import com.badlogic.gdx.Preferences;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.World;
+import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Touchpad;
+import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.Json;
+import com.badlogic.gdx.utils.JsonReader;
+import com.badlogic.gdx.utils.JsonValue;
+import com.badlogic.gdx.utils.JsonWriter;
+import com.twilightheroes.game.screens.AchivmentsScreen;
 import com.twilightheroes.game.screens.EndScreen;
 import com.twilightheroes.game.screens.MagicScreen;
 import com.twilightheroes.game.screens.MainScreen;
 import com.twilightheroes.game.screens.OptionScreen;
 import com.twilightheroes.game.tools.B2AssetManager;
+import com.twilightheroes.game.tools.KillCounter;
 import com.twilightheroes.game.tools.PlayerSettings;
+import com.twilightheroes.game.tools.WidgetContainer;
+
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectOutputStream;
 
 public class TwilightHeroes extends Game {
 
@@ -41,19 +58,6 @@ public class TwilightHeroes extends Game {
 	public static final short BULLET_BIT = 128;
 
 
-	public ShapeRenderer shapeRenderer;
-
-
-	private Skin touchpadSkin;
-	private Touchpad.TouchpadStyle touchpadStyle;
-	private Touchpad touchpad;
-
-	private OrthographicCamera camara2d;
-
-	private Stage stage;
-	private Sprite grafico;
-	private float velocidade = 5;
-	private World world;
 
 	public final static int MENU = 0;
 	public final static int OPTIONS = 1;
@@ -84,13 +88,14 @@ public class TwilightHeroes extends Game {
 
 	public int previousScreen;
 
+	public JsonValue jsonMultilanguage;
+	public Array<WidgetContainer> widgets = new Array<>();
 
 
 
 	@Override
 	public void create () {
 
-		world = new World(new Vector2(0,0f),true);
 		assMan.loadImages();
 		assMan.manager.finishLoading();
 
@@ -107,9 +112,62 @@ try {
 
 }catch (NullPointerException ex){}
 
+jsonMultilanguage = new JsonReader().parse(Gdx.files.internal("config/language.json")).get(language.name());
+killCounterHandler(true);
+
 		mainScreen = new MainScreen(this);
 
 		changeScreen(MENU);
+
+		AchivmentsScreen achivmentsScreen = new AchivmentsScreen();
+		setScreen(achivmentsScreen);
+	}
+
+	public void killCounterHandler(boolean read){
+		FileHandle fileHandle = Gdx.files.local("config/killCounter.json");
+		if (read){
+
+
+
+			JsonValue jsonKillCounter = new JsonReader().parse(fileHandle);
+
+			for (int i = 0; i < jsonKillCounter.size; i++) {
+				KillCounter killCounter = new KillCounter();
+				killCounter.enemyName = jsonKillCounter.get(i).getString("enemyName");
+				killCounter.killCount = jsonKillCounter.get(i).getInt("killCount");
+				playerSettings.killCounter.add(killCounter);
+
+			}
+
+		}else{
+
+
+			Json json = new Json();
+			json.setOutputType(JsonWriter.OutputType.json);
+
+			String txt = json.toJson(playerSettings.killCounter);
+
+			fileHandle.writeString(json.prettyPrint(txt), false);
+
+		}
+	}
+
+	public void updateLanguage(){
+		jsonMultilanguage = new JsonReader().parse(Gdx.files.internal("config/language.json")).get(language.name());
+			for (WidgetContainer screen: widgets)
+			{
+
+				for (Actor act: screen.widgets)
+				{
+					if (act instanceof TextButton){
+						((TextButton)act).setText(jsonMultilanguage.get(screen.nameScreen).get(act.getName()).asString());
+					} else if (act instanceof Label) {
+						((Label) act).setText(jsonMultilanguage.get(screen.nameScreen).get(act.getName()).asString());
+					}
+
+				}
+
+			}
 
 	}
 
@@ -151,7 +209,12 @@ try {
 		}
 	}
 
+
+
 	public void restart(){
+		if (mainScreen != null){
+			mainScreen.dispose();
+		}
 		mainScreen = new MainScreen(this);
 		changeScreen(APPLICATION);
 	}
@@ -175,11 +238,16 @@ try {
 		prefs.putInteger("level", playerSettings.level);
 		prefs.putInteger("money", playerSettings.money);
 		prefs.flush();
+		killCounterHandler(false);
 	}
 
 	@Override
 	public void dispose() {
 		super.dispose();
+mainScreen.dispose();
+optionScreen.dispose();
+magicScreen.dispose();
+menuScreen.dispose();
 
 		assMan.manager.dispose();
 	}

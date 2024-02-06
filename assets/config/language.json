@@ -1,0 +1,51 @@
+{
+  "ES":{
+    "menu":{
+      "play":"Jugar",
+      "options":"Opciones",
+      "achievements":"Logros",
+      "credits":"Creditos",
+      "controls":"Controles"
+    },
+    "options":{
+      "options":"Opciones",
+      "spells":"Hechizos",
+      "volume":"Volumen:",
+      "language":"Idioma:",
+      "accelerometer":"Desactivar Acelerómetro",
+      "vibrator":"Desactivar Vibrador",
+      "back":"Volver"
+    },
+    "magic":{
+      "spells":"Hechizos",
+      "options":"Opciones",
+      "name":"Nombre Hechizo:",
+      "description":"Descripcion"
+    }
+  },
+  "EN":{
+    "menu":{
+      "play": "Play",
+      "options":"Options",
+      "achievements": "Achievements",
+      "credits": "Credits",
+      "controls": "Controls"
+    },
+    "options":{
+      "options":"Options",
+      "spells": "Spells",
+      "volume": "Volume:",
+      "language":"Language:",
+      "accelerometer": "Disable Accelerometer",
+      "vibrator": "Disable Vibrator",
+      "back": "Return"
+    },
+    "magic":{
+      "spells": "Spells",
+      "options": "Options",
+      "name":"Spell Name:",
+      "description":"Description"
+    }
+  }
+
+}

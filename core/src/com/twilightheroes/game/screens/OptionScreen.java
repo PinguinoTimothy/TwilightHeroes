@@ -23,11 +23,14 @@
     import com.badlogic.gdx.scenes.scene2d.ui.Stack;
     import com.badlogic.gdx.scenes.scene2d.ui.Table;
     import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+    import com.badlogic.gdx.scenes.scene2d.ui.Widget;
     import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
     import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
     import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
     import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
     import com.badlogic.gdx.utils.Align;
+    import com.badlogic.gdx.utils.Array;
+    import com.badlogic.gdx.utils.JsonValue;
     import com.badlogic.gdx.utils.Scaling;
     import com.badlogic.gdx.utils.viewport.ExtendViewport;
     import com.badlogic.gdx.utils.viewport.FillViewport;
@@ -35,6 +38,9 @@
     import com.badlogic.gdx.utils.viewport.ScreenViewport;
     import com.badlogic.gdx.utils.viewport.StretchViewport;
     import com.twilightheroes.game.TwilightHeroes;
+    import com.twilightheroes.game.tools.WidgetContainer;
+
+    import org.w3c.dom.Text;
 
     public class OptionScreen implements Screen {
 
@@ -44,22 +50,29 @@
 
         public Slider sliderVolume;
 
+        TextButton btnMenuHechizos;
+        TextButton btnMenuOpciones;
+
         CheckBox chkAccelerometer;
         CheckBox chkVibrator;
         SelectBox<String> languageSelectBox;
+        Label lblLanguage;
 
         public Label name;
         public Label description;
+        TextButton btnVolver;
+        Label lblVolume;
+        private JsonValue language;
+        private   Table mainTable;
+        WidgetContainer widgets = new WidgetContainer();
+
 
         public OptionScreen(TwilightHeroes twilightHeroes) {
             parent = twilightHeroes;
-        }
+            language = parent.jsonMultilanguage.get("options");
 
-        @Override
-        public void show() {
             stage = new Stage(new ExtendViewport(900,550));
             skin = new Skin(Gdx.files.internal("skin.json"));
-            Gdx.input.setInputProcessor(stage);
 
             Table table = new Table();
             table.setFillParent(true);
@@ -70,7 +83,7 @@
             image.setScaling(Scaling.fill);
             stack.addActor(image);
 
-            Table mainTable = new Table();
+             mainTable = new Table();
             mainTable.setFillParent(true);
             mainTable.top().padTop(20.0f);
 
@@ -93,7 +106,8 @@
             textButtonStyle.font = fontBig;
 
             // Alinea los botones "Hechizos" y "Opciones" en la parte superior y a los lados
-            TextButton btnMenuHechizos = createTextButton("Hechizos", textButtonStyle);
+            btnMenuHechizos = createTextButton(language.get("spells").asString(), textButtonStyle);
+            btnMenuHechizos.setName("spells");
             btnMenuHechizos.addListener(new ClickListener() {
                 @Override
                 public void clicked(InputEvent event, float x, float y) {
@@ -101,9 +115,10 @@
                     parent.changeScreen(TwilightHeroes.MAGIC);
                 }
             });
+            widgets.widgets.add(btnMenuHechizos);
 
-            TextButton btnMenuOpciones = createTextButton("Opciones", textButtonStyle);
-
+            btnMenuOpciones = createTextButton(language.get("options").asString(), textButtonStyle);
+            btnMenuOpciones.setName("options");
             btnMenuOpciones.addListener(new ClickListener() {
                 @Override
                 public void clicked(InputEvent event, float x, float y) {
@@ -111,21 +126,16 @@
                     parent.changeScreen(TwilightHeroes.APPLICATION);
                 }
             });
+            widgets.widgets.add(btnMenuOpciones);
 
-            if (parent.inGame){
-                mainTable.add(btnMenuHechizos).padBottom(40.0f).align(Align.left).padRight(200f);
-                mainTable.add(btnMenuOpciones).padBottom(40.0f).align(Align.right).padLeft(200f).row();
-
-            }else{
-                mainTable.add(btnMenuOpciones).padBottom(40.0f).align(Align.center).padLeft(50f).row();
-
-            }
 
 
             // Crear widgets para configuraciones de opciones
             Label.LabelStyle labelStyle = new Label.LabelStyle();
             labelStyle.font = fontMedium;
-            Label lblVolume = new Label("Volumen:", labelStyle);
+            lblVolume = new Label(language.get("volume").asString(), labelStyle);
+            lblVolume.setName("volume");
+            widgets.widgets.add(lblVolume);
 
             skin = parent.assMan.manager.get("hud/neonui/neon-ui.json", Skin.class);
             sliderVolume = new Slider(0.0f, 1.0f, 0.1f, false, skin);
@@ -136,13 +146,19 @@
             checkBoxStyle.checkboxOff = new TextureRegionDrawable(new TextureRegion(parent.assMan.manager.get("variety/checkboxOff.png", Texture.class)));
             checkBoxStyle.checkboxOn = new TextureRegionDrawable(new TextureRegion(parent.assMan.manager.get("variety/checked.png", Texture.class)));
             checkBoxStyle.font = fontMedium;
-            chkAccelerometer = new CheckBox("Desactivar Acelerómetro",checkBoxStyle);
+            chkAccelerometer = new CheckBox(language.get("accelerometer").asString(),checkBoxStyle);
             chkAccelerometer.setChecked(!parent.accelerometerOn);
+            chkAccelerometer.setName("accelerometer");
+            widgets.widgets.add(chkAccelerometer);
 
-            chkVibrator = new CheckBox("Desactivar Vibrador", checkBoxStyle);
+            chkVibrator = new CheckBox(language.get("vibrator").asString(), checkBoxStyle);
             chkVibrator.setChecked(!parent.vibratorOn);
+            chkVibrator.setName("vibrator");
+            widgets.widgets.add(chkVibrator);
 
-            Label lblLanguage = new Label("Idioma:", labelStyle);
+            Label lblLanguage = new Label(language.get("language").asString(), labelStyle);
+            lblLanguage.setName("language");
+            widgets.widgets.add(lblLanguage);
 
             languageSelectBox = new SelectBox<>(skin);
             languageSelectBox.getStyle().font = fontSmall;
@@ -150,7 +166,7 @@
             languageSelectBox.setItems("Espanol","English");
             languageSelectBox.setSelectedIndex(parent.language.ordinal());
 
-            TextButton btnVolver = createTextButton("Volver", textButtonStyle);
+            btnVolver = createTextButton(language.get("back").asString(), textButtonStyle);
             btnVolver.addListener(new ClickListener() {
                 @Override
                 public void clicked(InputEvent event, float x, float y) {
@@ -158,13 +174,15 @@
                     parent.changeScreen(parent.previousScreen);
                 }
             });
+            btnVolver.setName("back");
+            widgets.widgets.add(btnVolver);
 
             // Agregar listeners para manejar cambios en las configuraciones
             sliderVolume.addListener(new ChangeListener() {
                 @Override
                 public void changed(ChangeEvent event, Actor actor) {
                     float volume = sliderVolume.getValue();
-                   parent.musicVolume = volume;
+                    parent.musicVolume = volume;
                 }
             });
 
@@ -186,11 +204,38 @@
             languageSelectBox.addListener(new ChangeListener() {
                 @Override
                 public void changed(ChangeEvent event, Actor actor) {
-                  parent.language = TwilightHeroes.languages.values()[languageSelectBox.getSelectedIndex()];
+                    parent.language = TwilightHeroes.languages.values()[languageSelectBox.getSelectedIndex()];
+                    parent.updateLanguage();
                 }
             });
 
-            // Ajustar el tamaño de los botones y controles según sea necesario
+
+
+
+            stack.add(mainTable);
+            table.add(stack).grow();
+            stage.addActor(table);
+
+            widgets.nameScreen = "options";
+            parent.widgets.add(widgets);
+        }
+
+
+
+        @Override
+        public void show() {
+            Gdx.input.setInputProcessor(stage);
+
+    mainTable.clear();
+            if (parent.inGame){
+                mainTable.add(btnMenuHechizos).padBottom(40.0f).align(Align.left).padRight(200f);
+                mainTable.add(btnMenuOpciones).padBottom(40.0f).align(Align.right).padLeft(200f).row();
+
+            }else{
+                mainTable.removeActor(btnMenuHechizos);
+                mainTable.add(btnMenuOpciones).padBottom(40.0f).align(Align.center).padLeft(50f).row();
+
+            }
             mainTable.add(lblVolume).colspan(2).center().row();
             mainTable.add(sliderVolume).colspan(2).center().row();
             mainTable.add(lblLanguage).colspan(2).center().row();
@@ -199,13 +244,8 @@
             mainTable.add(chkVibrator).colspan(2).center().row();
             mainTable.add(btnVolver).colspan(2).center().row();
 
-
-
-
-            stack.add(mainTable);
-            table.add(stack).grow();
-            stage.addActor(table);
         }
+
 
 
 
@@ -240,7 +280,6 @@
         @Override
         public void resize(int width, int height) {
             // Se puede implementar si es necesario
-            Gdx.input.setInputProcessor(stage);
 
         }
 
@@ -252,7 +291,6 @@
         @Override
         public void resume() {
             // Se puede implementar si es necesario
-            Gdx.input.setInputProcessor(stage);
 
         }
 
