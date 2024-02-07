@@ -14,6 +14,7 @@
         import com.twilightheroes.game.ecs.components.PlayerComponent;
         import com.twilightheroes.game.ecs.components.TextureComponent;
         import com.twilightheroes.game.tools.Mappers;
+        import com.twilightheroes.game.tools.RoomSize;
 
         import java.util.Map;
 
@@ -76,6 +77,14 @@
                 viewport.getCamera().update();
             }
 
+            public void updateRoom(RoomSize roomSize){
+                this.roomWidth = roomSize.roomWidth;
+                this.roomHeight = roomSize.roomHeight;
+                this.roomStartX = roomSize.roomStartX;
+                this.roomStartY = roomSize.roomStartY;
+
+            }
+
             @Override
             public void update(float deltaTime) {
                 super.update(deltaTime);
@@ -92,10 +101,10 @@
                     if (entity.getComponents().contains(Mappers.playerCom.get(entity),true)){
 
                         float lerp = 0.1f; // Ajusta este valor según sea necesario
-                     //   float targetX = MathUtils.clamp(tex.sprite.getX(),  PixelsToMeters(roomStartX) + cam.viewportWidth / 2, PixelsToMeters(roomStartX) +PixelsToMeters(roomWidth) - cam.viewportWidth / 2);
-                    //    float targetY = MathUtils.clamp(tex.sprite.getY(),  PixelsToMeters(roomStartY) + cam.viewportHeight / 2, PixelsToMeters(roomStartY) +PixelsToMeters(roomHeight) - cam.viewportHeight / 2);
+                        float targetX = MathUtils.clamp(tex.sprite.getX(),  PixelsToMeters(roomStartX) + cam.viewportWidth / 2, PixelsToMeters(roomStartX) +PixelsToMeters(roomWidth) - cam.viewportWidth / 2);
+                     float targetY = MathUtils.clamp(tex.sprite.getY(),  PixelsToMeters(roomStartY) + cam.viewportHeight / 2, PixelsToMeters(roomStartY) +PixelsToMeters(roomHeight) - cam.viewportHeight / 2);
 
-                        cam.position.lerp(new Vector3(tex.sprite.getX(),tex.sprite.getY() +0.3f, 0), lerp);
+                        cam.position.lerp(new Vector3(targetX, targetY, 0), lerp);
 
                     }
                     if (tex.sprite == null) {

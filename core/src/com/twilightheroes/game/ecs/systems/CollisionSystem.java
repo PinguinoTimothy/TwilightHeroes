@@ -88,6 +88,7 @@ public class CollisionSystem extends IteratingSystem {
                                 player.canJump = true;
                                 player.coyoteTime = 0f;
                                 break;
+
                             case TypeComponent.EXIT:
 
                                 if (!screen.change && screen.auxChangeMap == 0) {

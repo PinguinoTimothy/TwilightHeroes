@@ -9,6 +9,8 @@ public class TypeComponent implements Component {
     public static final int WALL = 3;
     public static  final int EXIT = 4;
     public static  final int BULLET = 5;
+    public static final int ROOM = 6;
+    public static final int HAZARD = 7;
 
 
     public int type = WALL;

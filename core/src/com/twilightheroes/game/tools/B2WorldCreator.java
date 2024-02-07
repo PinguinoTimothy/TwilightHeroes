@@ -108,7 +108,7 @@ public class B2WorldCreator {
 
     }
 
-    public void generateLevel(TiledMap map, Entity playerEntity) {
+    public RoomSize generateLevel(TiledMap map, Entity playerEntity) {
         if (this.map != null){
             this.map.dispose();
 
@@ -137,9 +137,13 @@ public class B2WorldCreator {
         shape.dispose();
         crearSalidas();
 
+
+
         createPlayer(manager.get("player/player.atlas",TextureAtlas.class),playerEntity);
 
         createEnemy();
+        Rectangle rectangleRoom = ((RectangleMapObject) map.getLayers().get("room").getObjects().get(0)).getRectangle();
+        return new RoomSize(rectangleRoom.width, rectangleRoom.height, rectangleRoom.x, rectangleRoom.y);
         // createEnemy(playerAtlas.findRegion("Idle-Sheet"),5f,1,4,8,atlasEnemigo);
         // createEnemy(playerAtlas.findRegion("Idle-Sheet"),6f,1,4,8,atlasEnemigo);
         //createEnemy(playerAtlas.findRegion("Idle-Sheet"),7f,1,4,8,atlasEnemigo);
@@ -186,7 +190,7 @@ public class B2WorldCreator {
             b2dbody.startX = rectangle.getX();
             b2dbody.startY = rectangle.getY();
 
-            exitComponent.exitToRoom = (int) object.getProperties().get("salida");
+            exitComponent.exitToRoom = (int) object.getProperties().get("toMap");
 
             // add the components to the entity
             entity.add(b2dbody);
@@ -226,7 +230,7 @@ public class B2WorldCreator {
            aux = atlas.findRegion("Idle");
             texture.sprite.setRegion(aux);
 
-            texture.sprite.setBounds(2, 1, jsonPlayer.get("width").asFloat() / TwilightHeroes.PPM, jsonPlayer.get("height").asFloat() / TwilightHeroes.PPM);
+            texture.sprite.setBounds( ((RectangleMapObject)  map.getLayers().get("spawn").getObjects().get(0)).getRectangle().x/TwilightHeroes.PPM, ((RectangleMapObject)  map.getLayers().get("spawn").getObjects().get(0)).getRectangle().y/TwilightHeroes.PPM, jsonPlayer.get("width").asFloat() / TwilightHeroes.PPM, jsonPlayer.get("height").asFloat() / TwilightHeroes.PPM);
 
             type.type = TypeComponent.PLAYER;
             stateCom.set(StateComponent.STATE_IDLE);
@@ -369,100 +373,102 @@ public class B2WorldCreator {
 
     public void createEnemy() {
 
-        for (MapObject object : map.getLayers().get("enemies").getObjects().getByType(RectangleMapObject.class)) {
-            Rectangle rectangle = ((RectangleMapObject) object).getRectangle();
-            EnemyPrototype enemyPrototype = enemigos.get(object.getProperties().get("enemigo"));
-            // Create the Entity and all the components that will go in the entity
-            Entity entity = engine.createEntity();
-            B2dBodyComponent b2dbody = engine.createComponent(B2dBodyComponent.class);
-            TextureComponent texture = engine.createComponent(TextureComponent.class);
-            EnemyComponent enemyComponent = engine.createComponent(EnemyComponent.class);
-            CollisionComponent colComp = engine.createComponent(CollisionComponent.class);
-            TypeComponent type = engine.createComponent(TypeComponent.class);
-            StateComponent stateCom = engine.createComponent(StateComponent.class);
-            AnimationComponent animCom = engine.createComponent(AnimationComponent.class);
-            AttackComponent attackComponent = engine.createComponent(AttackComponent.class);
-            StatsComponent statsComponent = engine.createComponent(StatsComponent.class);
-            StatusComponent statusComponent = engine.createComponent(StatusComponent.class);
-            SpellComponent spellComponent = engine.createComponent(SpellComponent.class);
+        if (map.getLayers().get("enemies") != null) {
+            for (MapObject object : map.getLayers().get("enemies").getObjects().getByType(RectangleMapObject.class)) {
+                Rectangle rectangle = ((RectangleMapObject) object).getRectangle();
+                EnemyPrototype enemyPrototype = enemigos.get(object.getProperties().get("enemigo"));
+                // Create the Entity and all the components that will go in the entity
+                Entity entity = engine.createEntity();
+                B2dBodyComponent b2dbody = engine.createComponent(B2dBodyComponent.class);
+                TextureComponent texture = engine.createComponent(TextureComponent.class);
+                EnemyComponent enemyComponent = engine.createComponent(EnemyComponent.class);
+                CollisionComponent colComp = engine.createComponent(CollisionComponent.class);
+                TypeComponent type = engine.createComponent(TypeComponent.class);
+                StateComponent stateCom = engine.createComponent(StateComponent.class);
+                AnimationComponent animCom = engine.createComponent(AnimationComponent.class);
+                AttackComponent attackComponent = engine.createComponent(AttackComponent.class);
+                StatsComponent statsComponent = engine.createComponent(StatsComponent.class);
+                StatusComponent statusComponent = engine.createComponent(StatusComponent.class);
+                SpellComponent spellComponent = engine.createComponent(SpellComponent.class);
 
-            // create the data for the components and add them to the components
-            texture.sprite.setRegion(enemyPrototype.atlas.findRegion("IDLE"));
+                // create the data for the components and add them to the components
+                texture.sprite.setRegion(enemyPrototype.atlas.findRegion("IDLE"));
 
-            texture.sprite.setBounds(rectangle.getX()/TwilightHeroes.PPM,rectangle.getY()/TwilightHeroes.PPM, enemyPrototype.width / TwilightHeroes.PPM, enemyPrototype.height / TwilightHeroes.PPM);
+                texture.sprite.setBounds(rectangle.getX() / TwilightHeroes.PPM, rectangle.getY() / TwilightHeroes.PPM, enemyPrototype.width / TwilightHeroes.PPM, enemyPrototype.height / TwilightHeroes.PPM);
 
-            type.type = TypeComponent.ENEMY;
-            stateCom.set(StateComponent.STATE_IDLE);
-            stateCom.isLooping = true;
+                type.type = TypeComponent.ENEMY;
+                stateCom.set(StateComponent.STATE_IDLE);
+                stateCom.isLooping = true;
 
-            BodyDef bodyDef = new BodyDef();
-            bodyDef.position.set(texture.sprite.getX(), texture.sprite.getY());
-            bodyDef.type = BodyDef.BodyType.DynamicBody;
-            b2dbody.body = world.createBody(bodyDef);
-            b2dbody.body.setFixedRotation(true);
-            // Define la hitbox rectangular
-            PolygonShape shape = new PolygonShape();
-            shape.setAsBox(enemyPrototype.hitboxX / TwilightHeroes.PPM, enemyPrototype.hitboxY / TwilightHeroes.PPM); // Tamaño de la hitbox
+                BodyDef bodyDef = new BodyDef();
+                bodyDef.position.set(texture.sprite.getX(), texture.sprite.getY());
+                bodyDef.type = BodyDef.BodyType.DynamicBody;
+                b2dbody.body = world.createBody(bodyDef);
+                b2dbody.body.setFixedRotation(true);
+                // Define la hitbox rectangular
+                PolygonShape shape = new PolygonShape();
+                shape.setAsBox(enemyPrototype.hitboxX / TwilightHeroes.PPM, enemyPrototype.hitboxY / TwilightHeroes.PPM); // Tamaño de la hitbox
 
-            FixtureDef fixtureDef = new FixtureDef();
-            fixtureDef.friction = 0;
-            fixtureDef.shape = shape;
-            fixtureDef.filter.categoryBits = TwilightHeroes.ENEMY_BIT;
-            fixtureDef.filter.maskBits = TwilightHeroes.SOLID_BIT | TwilightHeroes.HITBOX_BIT | TwilightHeroes.PLAYER_BIT | TwilightHeroes.BULLET_BIT;
-            b2dbody.body.createFixture(fixtureDef);
+                FixtureDef fixtureDef = new FixtureDef();
+                fixtureDef.friction = 0;
+                fixtureDef.shape = shape;
+                fixtureDef.filter.categoryBits = TwilightHeroes.ENEMY_BIT;
+                fixtureDef.filter.maskBits = TwilightHeroes.SOLID_BIT | TwilightHeroes.HITBOX_BIT | TwilightHeroes.PLAYER_BIT | TwilightHeroes.BULLET_BIT;
+                b2dbody.body.createFixture(fixtureDef);
 
-            FixtureDef fdef2 = new FixtureDef();
-            EdgeShape feet = new EdgeShape();
+                FixtureDef fdef2 = new FixtureDef();
+                EdgeShape feet = new EdgeShape();
 
-            feet.set(new Vector2(-4 / TwilightHeroes.PPM, -12 / TwilightHeroes.PPM), new Vector2(4 / TwilightHeroes.PPM, -12 / TwilightHeroes.PPM));
-            fdef2.shape = feet;
-            fdef2.friction = 1;
-            fdef2.filter.categoryBits = TwilightHeroes.ENEMY_BIT;
-            fdef2.filter.maskBits = TwilightHeroes.SOLID_BIT | TwilightHeroes.PLAYER_BIT;
-            b2dbody.body.createFixture(fdef2);
-
-
-            // Libera los recursos del shape
-            shape.dispose();
-            b2dbody.body.setUserData(entity);
+                feet.set(new Vector2(-4 / TwilightHeroes.PPM, -12 / TwilightHeroes.PPM), new Vector2(4 / TwilightHeroes.PPM, -12 / TwilightHeroes.PPM));
+                fdef2.shape = feet;
+                fdef2.friction = 1;
+                fdef2.filter.categoryBits = TwilightHeroes.ENEMY_BIT;
+                fdef2.filter.maskBits = TwilightHeroes.SOLID_BIT | TwilightHeroes.PLAYER_BIT;
+                b2dbody.body.createFixture(fdef2);
 
 
-            screen.bodies.add(b2dbody.body);
+                // Libera los recursos del shape
+                shape.dispose();
+                b2dbody.body.setUserData(entity);
 
-            // Create the animation and add it to AnimationComponent
+
+                screen.bodies.add(b2dbody.body);
+
+                // Create the animation and add it to AnimationComponent
 
 
-            animCom.animations.put(StateComponent.STATE_IDLE, AnimationMaker.crearAnimacion(enemyPrototype.atlas, "IDLE", enemyPrototype.idleFrames, enemyPrototype.idleFrames));
-            animCom.animations.put(StateComponent.STATE_ENEMY_ATTACK, AnimationMaker.crearAnimacion(enemyPrototype.atlas, "ATTACK", enemyPrototype.attackFrames, enemyPrototype.attackFrames));
-            animCom.animations.put(StateComponent.STATE_CHASING, AnimationMaker.crearAnimacion(enemyPrototype.atlas, "WALK", enemyPrototype.walkFrames, enemyPrototype.walkFrames));
+                animCom.animations.put(StateComponent.STATE_IDLE, AnimationMaker.crearAnimacion(enemyPrototype.atlas, "IDLE", enemyPrototype.idleFrames, enemyPrototype.idleFrames));
+                animCom.animations.put(StateComponent.STATE_ENEMY_ATTACK, AnimationMaker.crearAnimacion(enemyPrototype.atlas, "ATTACK", enemyPrototype.attackFrames, enemyPrototype.attackFrames));
+                animCom.animations.put(StateComponent.STATE_CHASING, AnimationMaker.crearAnimacion(enemyPrototype.atlas, "WALK", enemyPrototype.walkFrames, enemyPrototype.walkFrames));
 
-            statsComponent.damage = enemyPrototype.attackDamage;
+                statsComponent.damage = enemyPrototype.attackDamage;
 
-            enemyComponent.name = enemyPrototype.name;
-            enemyComponent.attackCooldown = enemyPrototype.attackCooldown;
-            enemyComponent.attackDistance = enemyPrototype.attackDistance;
-            enemyComponent.attackFrame = enemyPrototype.attackFrame;
-            enemyComponent.viewDistance = enemyPrototype.viewDistance;
-            enemyComponent.attackMethod = enemyPrototype.attackMethod;
-            enemyComponent.spells = enemyPrototype.spells;
+                enemyComponent.name = enemyPrototype.name;
+                enemyComponent.attackCooldown = enemyPrototype.attackCooldown;
+                enemyComponent.attackDistance = enemyPrototype.attackDistance;
+                enemyComponent.attackFrame = enemyPrototype.attackFrame;
+                enemyComponent.viewDistance = enemyPrototype.viewDistance;
+                enemyComponent.attackMethod = enemyPrototype.attackMethod;
+                enemyComponent.spells = enemyPrototype.spells;
 
-            statsComponent.speed = enemyPrototype.speed;
-            statsComponent.hp = enemyPrototype.hp;
+                statsComponent.speed = enemyPrototype.speed;
+                statsComponent.hp = enemyPrototype.hp;
 
-            entity.add(b2dbody);
-            entity.add(texture);
-            entity.add(enemyComponent);  // Add PlayerComponent to the entity
-            entity.add(colComp);
-            entity.add(type);
-            entity.add(stateCom);
-            entity.add(animCom);
-            entity.add(attackComponent);
-            entity.add(statsComponent);
-            entity.add(statusComponent);
-            entity.add(spellComponent);
+                entity.add(b2dbody);
+                entity.add(texture);
+                entity.add(enemyComponent);  // Add PlayerComponent to the entity
+                entity.add(colComp);
+                entity.add(type);
+                entity.add(stateCom);
+                entity.add(animCom);
+                entity.add(attackComponent);
+                entity.add(statsComponent);
+                entity.add(statusComponent);
+                entity.add(spellComponent);
 
 // add the entity to the engine
-            engine.addEntity(entity);
+                engine.addEntity(entity);
+            }
         }
     }
 

@@ -46,6 +46,7 @@ import com.twilightheroes.game.tools.B2WorldCreator;
 import com.twilightheroes.game.tools.B2dContactListener;
 import com.twilightheroes.game.tools.BodyFactory;
 import com.twilightheroes.game.tools.Mappers;
+import com.twilightheroes.game.tools.RoomSize;
 import com.twilightheroes.game.tools.WidgetContainer;
 
 import sun.security.util.Debug;
@@ -118,7 +119,6 @@ private     float viewportWidth,viewportHeight;
         viewport = new ExtendViewport(viewportWidth/TwilightHeroes.PPM,viewportHeight/TwilightHeroes.PPM,gameCam);
 
         mapLoader = new TmxMapLoader();
-        map = mapLoader.load("maps/mapa0.tmx");
         mapRenderer = new OrthogonalTiledMapRenderer(map,1/TwilightHeroes.PPM);
 
         gameCam.position.set(viewport.getWorldWidth()/2 ,viewport.getWorldHeight()/2,0);
@@ -229,7 +229,7 @@ hud.stage.setDebugAll(true);
         pantallaNegro.setVisible(false);
         hud.stage.addActor(pantallaNegro);
 
-        newMap = parent.playerSettings.level;
+        newMap = 0;
 changeMap();
         parent.widgets.add(widgetContainer);
 
@@ -259,7 +259,7 @@ changeMap();
 
     }
 
-    private String[] maps = {"mapa0","mapa1","mapa2","mapa3"};
+    private String[] maps = {"map0","mapa1","mapa2","mapa3"};
     public Array<Body> bodies = new Array<>();
     public boolean change = false;
     public int newMap;
@@ -267,6 +267,8 @@ changeMap();
     private float alpha = 0;
     // true if fade in, false if fade out
     private boolean fadeDirection = true;
+
+    private RoomSize roomSize;
 
     private void changeMap(){
         auxChangeMap = 5;
@@ -297,7 +299,8 @@ changeMap();
 
 
             map = mapLoader.load(new String("maps/"+maps[newMap] + ".tmx"));
-            b2WorldCreator.generateLevel(map,playerEntity);
+          roomSize =  b2WorldCreator.generateLevel(map,playerEntity);
+            renderingSystem.updateRoom(roomSize);
             mapRenderer.setMap(map);
 
             parent.playerSettings.level = newMap;
