@@ -2,27 +2,17 @@ package com.twilightheroes.game;
 
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Graphics;
 import com.badlogic.gdx.Preferences;
-import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.files.FileHandle;
-import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.g2d.Sprite;
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
-import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.scenes.scene2d.Actor;
-import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
-import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
-import com.badlogic.gdx.scenes.scene2d.ui.Touchpad;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonReader;
 import com.badlogic.gdx.utils.JsonValue;
 import com.badlogic.gdx.utils.JsonWriter;
-import com.twilightheroes.game.screens.AchivmentsScreen;
+import com.twilightheroes.game.screens.BestiaryScreen;
 import com.twilightheroes.game.screens.EndScreen;
 import com.twilightheroes.game.screens.MagicScreen;
 import com.twilightheroes.game.screens.MainScreen;
@@ -31,11 +21,6 @@ import com.twilightheroes.game.tools.B2AssetManager;
 import com.twilightheroes.game.tools.KillCounter;
 import com.twilightheroes.game.tools.PlayerSettings;
 import com.twilightheroes.game.tools.WidgetContainer;
-
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.ObjectOutputStream;
 
 public class TwilightHeroes extends Game {
 
@@ -64,14 +49,14 @@ public class TwilightHeroes extends Game {
 	public final static int APPLICATION = 2;
 	public final static int MAGIC = 3;
 	public final static int ENDGAME = 4;
-	public final static int ACHIVEMENTS = 5;
+	public final static int BESTIARY = 5;
 
 	public MainScreen mainScreen;
 	private com.twilightheroes.game.screens.MenuScreen menuScreen;
 	private MagicScreen magicScreen;
 	private EndScreen endScreen;
 	private OptionScreen optionScreen;
-	private AchivmentsScreen achivmentsScreen;
+	private BestiaryScreen bestiaryScreen;
 
 	public PlayerSettings playerSettings = new PlayerSettings();
 
@@ -208,9 +193,9 @@ if (fileHandle.exists()) {
 				previousScreen = ENDGAME;
 				this.setScreen(endScreen);
 				break;
-			case ACHIVEMENTS:
-				if(achivmentsScreen == null) achivmentsScreen = new AchivmentsScreen(this);
-				this.setScreen(achivmentsScreen);
+			case BESTIARY:
+				if(bestiaryScreen == null) bestiaryScreen = new BestiaryScreen(this);
+				this.setScreen(bestiaryScreen);
 				break;
 		}
 	}

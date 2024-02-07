@@ -51,8 +51,8 @@
   "personaje":{
   "nombre": "Therion Leywin",
     "atlas": "player.atlas",
-    "width": 35,
-    "height": 47,
+    "width": 50,
+    "height": 30,
     "hitboxX": 4,
     "hitboxY": 8,
     "hp":100,

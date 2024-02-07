@@ -17,7 +17,13 @@ public class StatsComponent implements Component, Pool.Poolable {
 
     @Override
     public void reset() {
-
+    damage = 0;
+    speed = 0;
+    hp = 0;
+    atkSpeed = 0;
+    damageReduction = 0;
+    hpRegen = 0;
+    lifeSteal = 0;
 
     }
 }

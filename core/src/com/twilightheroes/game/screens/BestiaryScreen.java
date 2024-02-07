@@ -9,7 +9,6 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
@@ -22,13 +21,12 @@ import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.JsonReader;
 import com.badlogic.gdx.utils.JsonValue;
 import com.badlogic.gdx.utils.Scaling;
-import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.badlogic.gdx.utils.viewport.StretchViewport;
 import com.twilightheroes.game.TwilightHeroes;
 import com.twilightheroes.game.tools.KillCounter;
 
 
-public class AchivmentsScreen implements Screen {
+public class BestiaryScreen implements Screen {
 
         private Stage stage;
         private Table table;
@@ -43,7 +41,7 @@ public class AchivmentsScreen implements Screen {
         private TwilightHeroes parent;
         private ImageButton backButton;
 
-        public AchivmentsScreen(final TwilightHeroes parent) {
+        public BestiaryScreen(final TwilightHeroes parent) {
             this.parent = parent;
             stage = new Stage(new StretchViewport(1920, 1080)); // Utilizando StretchViewport
             this.mainTable = new Table();

@@ -3,7 +3,7 @@
     "menu":{
       "play":"Jugar",
       "options":"Opciones",
-      "achievements":"Logros",
+      "bestiary":"Bestiario",
       "credits":"Creditos",
       "controls":"Controles"
     },
@@ -27,7 +27,7 @@
     "menu":{
       "play": "Play",
       "options":"Options",
-      "achievements": "Achievements",
+      "bestiary": "Bestiary",
       "credits": "Credits",
       "controls": "Controls"
     },

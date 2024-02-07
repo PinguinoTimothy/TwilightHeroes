@@ -25,6 +25,9 @@ public class PlayerComponent implements Component,Pool.Poolable {
     @Override
     public void reset() {
         knockback = false;
-
+        isDead = false;
+        canJump = true;
+        canDodge = true;
+        inmune = false;
     }
 }

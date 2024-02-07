@@ -12,6 +12,7 @@ public class TextureComponent implements Component , Pool.Poolable{
 
     @Override
     public void reset() {
-
+    sprite = new Sprite();
+    runningRight = false;
     }
 }

@@ -74,7 +74,7 @@ public class EnemySystem extends IteratingSystem {
             boolean enemyRegistered = false;
             for (KillCounter kc:screen.parent.playerSettings.killCounter)
             {
-             if (kc.enemyName == enemyCom.name){
+             if (kc.enemyName.equals(enemyCom.name)){
                 kc.killCount++;
                 enemyRegistered = true;
              }

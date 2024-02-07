@@ -26,6 +26,11 @@ public class EnemyComponent implements Component, Pool.Poolable {
     public void reset() {
 
         isDead = false;
+        spells = null;
+        viewDistance = 0;
+        attackDistance = 0;
+        attackCooldown = 0;
+        attackFrame = 0;
 
     }
 }

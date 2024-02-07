@@ -119,7 +119,7 @@ public class B2WorldCreator {
         FixtureDef fixtureDef = new FixtureDef();
         Body body;
         //Crear el suelo
-        for (MapObject object : map.getLayers().get(2).getObjects().getByType(RectangleMapObject.class)) {
+        for (MapObject object : map.getLayers().get("ground").getObjects().getByType(RectangleMapObject.class)) {
             if (object != null) {
                 Rectangle rectangle = ((RectangleMapObject) object).getRectangle();
                 bodyDef.type = BodyDef.BodyType.StaticBody;
@@ -154,7 +154,7 @@ public class B2WorldCreator {
         Body body;
 
         //Crear las habitaciones
-        for (MapObject object : map.getLayers().get(3).getObjects().getByType(RectangleMapObject.class)) {
+        for (MapObject object : map.getLayers().get("exit").getObjects().getByType(RectangleMapObject.class)) {
 
             // Create the Entity and all the components that will go in the entity
             Entity entity = engine.createEntity();
@@ -289,13 +289,12 @@ public class B2WorldCreator {
 
             animCom.animations.put(StateComponent.STATE_IDLE, AnimationMaker.crearAnimacion(atlas, "Idle", 7, 7));
             animCom.animations.put(StateComponent.STATE_MOVING, AnimationMaker.crearAnimacion(atlas, "Run", 8, 8));
-            animCom.animations.put(StateComponent.STATE_ATTACK01, AnimationMaker.crearAnimacion(atlas, "Attack_1", 5, 18));
-            animCom.animations.put(StateComponent.STATE_ATTACK02, AnimationMaker.crearAnimacion(atlas, "Attack_2", 4, 16));
-            animCom.animations.put(StateComponent.STATE_ATTACK03, AnimationMaker.crearAnimacion(atlas, "Attack_3", 4, 14));
+            animCom.animations.put(StateComponent.STATE_ATTACK01, AnimationMaker.crearAnimacion(atlas, "Attack_1", 4, 12));
+            animCom.animations.put(StateComponent.STATE_ATTACK02, AnimationMaker.crearAnimacion(atlas, "Attack_2", 4, 12));
+            animCom.animations.put(StateComponent.STATE_ATTACK03, AnimationMaker.crearAnimacion(atlas, "Attack_3", 4, 12));
             animCom.animations.put(StateComponent.STATE_DAMAGED, AnimationMaker.crearAnimacion(atlas, "Hurt", 4, 4));
-            animCom.animations.put(StateComponent.STATE_DODGING, AnimationMaker.crearAnimacion(atlas, "Roll", 7, 14));
-            animCom.animations.put(StateComponent.STATE_JUMPING, AnimationMaker.crearAnimacion(atlas, "Jump", 7, 14));
-            animCom.animations.put(StateComponent.STATE_CASTING, AnimationMaker.crearAnimacion(atlas, "Casting", 8, 16));
+            animCom.animations.put(StateComponent.STATE_DODGING, AnimationMaker.crearAnimacion(atlas, "Rest", 7, 14));
+            animCom.animations.put(StateComponent.STATE_CASTING, AnimationMaker.crearAnimacion(atlas, "Casting", 8, 8));
 
 
             statsComponent.speed = jsonPlayer.get("speed").asFloat();
@@ -370,7 +369,7 @@ public class B2WorldCreator {
 
     public void createEnemy() {
 
-        for (MapObject object : map.getLayers().get(4).getObjects().getByType(RectangleMapObject.class)) {
+        for (MapObject object : map.getLayers().get("enemies").getObjects().getByType(RectangleMapObject.class)) {
             Rectangle rectangle = ((RectangleMapObject) object).getRectangle();
             EnemyPrototype enemyPrototype = enemigos.get(object.getProperties().get("enemigo"));
             // Create the Entity and all the components that will go in the entity

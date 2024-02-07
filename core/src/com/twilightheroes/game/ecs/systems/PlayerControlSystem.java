@@ -50,6 +50,7 @@ public class PlayerControlSystem extends IteratingSystem {
     private int numAtaqueActual = 0;
     private int numAtaquesDeseados = 0;
     private int numAtaquesLimite = 0;
+    private int numAtaquesCompletados = 0;
     private boolean knockback;
     private float dequeueTime = 0f;
     private Queue<Integer> inputBuffer = new Queue<>();
@@ -116,6 +117,9 @@ public class PlayerControlSystem extends IteratingSystem {
                     numAtaquesLimite++;
                     numAtaquesDeseados++;
                     attacking = true;
+                    if (numAtaquesLimite > 3){
+                        attacking = true;
+                    }
                 }
 
 
@@ -321,13 +325,18 @@ public class PlayerControlSystem extends IteratingSystem {
                                 case 3:
                                     state.set(StateComponent.STATE_ATTACK03);
                                     createAttackFixture(texture, b2body, attackComponent, 12f, 8, 16f, 0f);
-                                    attackCooldown = 0.2f;
+                                    attackCooldown = 0.5f;
                                     break;
                             }
                             state.time = 0f;
 
                             if (numAtaqueActual >= numAtaquesDeseados) {
-                                numAtaquesDeseados = 0;
+                                numAtaquesCompletados++;
+                                if (numAtaquesCompletados >= numAtaquesDeseados) {
+                                    // Restablecer las variables después de completar todos los ataques
+                                    numAtaquesDeseados = 0;
+                                    numAtaquesCompletados = 0;
+                                }
                             }
 
                         } else {

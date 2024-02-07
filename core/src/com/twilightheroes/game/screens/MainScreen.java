@@ -48,6 +48,8 @@ import com.twilightheroes.game.tools.BodyFactory;
 import com.twilightheroes.game.tools.Mappers;
 import com.twilightheroes.game.tools.WidgetContainer;
 
+import sun.security.util.Debug;
+
 
 public class MainScreen implements Screen {
 
@@ -348,6 +350,8 @@ changeMap();
             pantallaNegro.setVisible(false);
 
         }
+
+
     }
     private float transitionTime = 0f;
 
@@ -367,7 +371,6 @@ changeMap();
     @Override
     public void resume() {
         hud.stage.unfocusAll();
-        gameCam.position.set(Mappers.b2dCom.get(playerEntity).body.getPosition(),0);
 
     }
 
@@ -378,6 +381,10 @@ changeMap();
 
     @Override
     public void dispose() {
+        engine.clearPools();
+        engine.removeAllEntities();
+        map.dispose();
+        mapRenderer.dispose();
 
 
     }
