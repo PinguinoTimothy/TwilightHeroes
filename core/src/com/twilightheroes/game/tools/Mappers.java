@@ -11,15 +11,14 @@ import com.twilightheroes.game.ecs.components.EnemyComponent;
 import com.twilightheroes.game.ecs.components.ExitComponent;
 import com.twilightheroes.game.ecs.components.InteractiveObjectComponent;
 import com.twilightheroes.game.ecs.components.PlayerComponent;
-import com.twilightheroes.game.ecs.components.spells.SpellComponent;
 import com.twilightheroes.game.ecs.components.StateComponent;
 import com.twilightheroes.game.ecs.components.StatsComponent;
 import com.twilightheroes.game.ecs.components.TextureComponent;
 import com.twilightheroes.game.ecs.components.TypeComponent;
 import com.twilightheroes.game.ecs.components.effectComponents.StatusComponent;
+import com.twilightheroes.game.ecs.components.spells.SpellComponent;
 
 public class Mappers {
-
 
 
     public static final ComponentMapper<AnimationComponent> animCom = ComponentMapper.getFor(AnimationComponent.class);

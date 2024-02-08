@@ -1,10 +1,9 @@
 package com.twilightheroes.game.tools;
 
-import com.badlogic.gdx.ai.utils.Collision;
-import com.badlogic.gdx.physics.box2d.ContactListener;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.gdx.physics.box2d.Contact;
 import com.badlogic.gdx.physics.box2d.ContactImpulse;
+import com.badlogic.gdx.physics.box2d.ContactListener;
 import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.Manifold;
 import com.twilightheroes.game.ecs.components.CollisionComponent;

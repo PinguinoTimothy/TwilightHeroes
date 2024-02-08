@@ -1,7 +1,5 @@
 package com.twilightheroes.game.ecs.components.effectComponents;
 
-import com.badlogic.ashley.core.Entity;
-
 public class StatusEffect {
 
     public int type;

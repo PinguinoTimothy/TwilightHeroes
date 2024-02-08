@@ -1,15 +1,13 @@
 package com.twilightheroes.game.ecs.components.spells;
 
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
-
 public class Spell {
 
     public int id;
     public float manaCost;
     public float castingTime;
-public SpellVFX vfx;
+    public SpellVFX vfx;
 
-    public Spell( int id, float manaCost, float castingTime,SpellVFX spellVFX) {
+    public Spell(int id, float manaCost, float castingTime, SpellVFX spellVFX) {
 
         this.id = id;
         this.manaCost = manaCost;

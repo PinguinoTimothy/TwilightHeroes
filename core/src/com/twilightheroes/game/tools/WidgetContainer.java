@@ -9,4 +9,4 @@ public class WidgetContainer {
     public String nameScreen;
     public Array<Actor> widgets = new Array<>();
 
-    }
+}

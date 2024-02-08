@@ -13,5 +13,4 @@ public class PlayerSettings {
     public Array<KillCounter> killCounter = new Array<>();
 
 
-
 }

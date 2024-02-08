@@ -12,9 +12,4 @@ public class StatusType {
     public static final int LIFE_STEAL = 5;
 
 
-
-
-
-
-
 }

@@ -5,10 +5,10 @@ import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Pool;
 
 public class StatusComponent implements Component, Pool.Poolable {
-   public Array<StatusEffect> effects = new Array<>();
+    public Array<StatusEffect> effects = new Array<>();
 
-   @Override
-   public void reset() {
-      effects.clear();
-   }
+    @Override
+    public void reset() {
+        effects.clear();
+    }
 }

@@ -15,22 +15,18 @@ import com.twilightheroes.game.ecs.components.EnemyComponent;
 import com.twilightheroes.game.ecs.components.StateComponent;
 import com.twilightheroes.game.ecs.components.StatsComponent;
 import com.twilightheroes.game.ecs.components.TextureComponent;
-import com.twilightheroes.game.ecs.components.spells.Spell;
 import com.twilightheroes.game.ecs.components.spells.SpellComponent;
 import com.twilightheroes.game.screens.MainScreen;
 import com.twilightheroes.game.tools.KillCounter;
 import com.twilightheroes.game.tools.Mappers;
 
-import java.util.Map;
 import java.util.Random;
 
 public class EnemySystem extends IteratingSystem {
 
 
+    private final MainScreen screen;
 
-    private MainScreen screen;
-
-    @SuppressWarnings("unchecked")
     public EnemySystem(MainScreen screen) {
         super(Family.all(EnemyComponent.class).get());
         this.screen = screen;
@@ -72,19 +68,18 @@ public class EnemySystem extends IteratingSystem {
             bodyCom.isDead = true;
 
             boolean enemyRegistered = false;
-            for (KillCounter kc:screen.parent.playerSettings.killCounter)
-            {
-             if (kc.enemyName.equals(enemyCom.name)){
-                kc.killCount++;
-                enemyRegistered = true;
-             }
+            for (KillCounter kc : screen.parent.playerSettings.killCounter) {
+                if (kc.enemyName.equals(enemyCom.name)) {
+                    kc.killCount++;
+                    enemyRegistered = true;
+                }
             }
 
-            if (!enemyRegistered){
-        KillCounter killCounter = new KillCounter();
-        killCounter.enemyName = enemyCom.name;
-        killCounter.killCount = 1;
-        screen.parent.playerSettings.killCounter.add(killCounter);
+            if (!enemyRegistered) {
+                KillCounter killCounter = new KillCounter();
+                killCounter.enemyName = enemyCom.name;
+                killCounter.killCount = 1;
+                screen.parent.playerSettings.killCounter.add(killCounter);
             }
 
         } else {
@@ -100,14 +95,18 @@ public class EnemySystem extends IteratingSystem {
 
             if (enemyStateComponent.get() == StateComponent.STATE_ENEMY_ATTACK && !animationComponent.animations.get(enemyStateComponent.get()).isAnimationFinished(enemyStateComponent.time)) {
                 if (animationComponent.currentFrame == enemyCom.attackFrame && attackComponent.performAttack) {
-                    if (enemyCom.attackMethod.equals("melee")) {
-                        createAttackFixture(textureComponent, bodyCom, attackComponent);
-                    } else if (enemyCom.attackMethod.equals("range")) {
-                        float xVel = textureComponent.runningRight ? 1f : -1f;
-                        
-                        screen.b2WorldCreator.createBullet(bodyCom.body.getPosition().x, bodyCom.body.getPosition().y, xVel, BulletComponent.Owner.ENEMY, textureComponent.runningRight, statsComponent.damage,"frostSpear");
-                    } else if (enemyCom.attackMethod.equals("spellCaster")) {
-                    spellComponent.spellToCast = enemyCom.spells[new Random().nextInt(enemyCom.spells.length)];
+                    switch (enemyCom.attackMethod) {
+                        case "melee":
+                            createAttackFixture(textureComponent, bodyCom, attackComponent);
+                            break;
+                        case "range":
+                            float xVel = textureComponent.runningRight ? 1f : -1f;
+
+                            screen.b2WorldCreator.createBullet(bodyCom.body.getPosition().x, bodyCom.body.getPosition().y, xVel, BulletComponent.Owner.ENEMY, textureComponent.runningRight, statsComponent.damage, "frostSpear");
+                            break;
+                        case "spellCaster":
+                            spellComponent.spellToCast = enemyCom.spells[new Random().nextInt(enemyCom.spells.length)];
+                            break;
                     }
                     attackComponent.performAttack = false;
 
@@ -178,10 +177,10 @@ public class EnemySystem extends IteratingSystem {
     }
 
 
-    private void createAttackFixture(TextureComponent texture, B2dBodyComponent b2dbody,AttackComponent attackComponent) {
+    private void createAttackFixture(TextureComponent texture, B2dBodyComponent b2dbody, AttackComponent attackComponent) {
         PolygonShape attackShape = new PolygonShape();
         float offsetX = texture.runningRight ? 16 / TwilightHeroes.PPM : -16 / TwilightHeroes.PPM;
-        attackShape.setAsBox( 16 / TwilightHeroes.PPM, 8 / TwilightHeroes.PPM, new Vector2(offsetX, 0), 0);
+        attackShape.setAsBox(16 / TwilightHeroes.PPM, 8 / TwilightHeroes.PPM, new Vector2(offsetX, 0), 0);
         FixtureDef attackFixtureDef = new FixtureDef();
         attackFixtureDef.shape = attackShape;
         attackFixtureDef.isSensor = true; // Configurar la fixture como un sensor
@@ -189,8 +188,7 @@ public class EnemySystem extends IteratingSystem {
         attackComponent.attackFixture.setUserData("enemyAttackSensor");
         // Liberar los recursos del shape
         attackShape.dispose();
-        b2dbody.body.applyForce(new Vector2((texture.runningRight ? 1f : -1f),0f),b2dbody.body.getWorldCenter(),true);
-
+        b2dbody.body.applyForce(new Vector2((texture.runningRight ? 1f : -1f), 0f), b2dbody.body.getWorldCenter(), true);
 
 
     }

@@ -1,5 +1,4 @@
-
-        package com.twilightheroes.game.screens;
+package com.twilightheroes.game.screens;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
@@ -22,7 +21,6 @@ import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.JsonReader;
 import com.badlogic.gdx.utils.JsonValue;
-import com.badlogic.gdx.utils.JsonWriter;
 import com.badlogic.gdx.utils.Scaling;
 import com.badlogic.gdx.utils.viewport.StretchViewport;
 import com.twilightheroes.game.TwilightHeroes;
@@ -33,32 +31,23 @@ import com.twilightheroes.game.ecs.components.spells.SpellVFX;
 import com.twilightheroes.game.tools.Mappers;
 import com.twilightheroes.game.tools.WidgetContainer;
 
-        public class MagicScreen implements Screen {
+public class MagicScreen implements Screen {
 
-    private Skin skin;
-    private Stage stage;
-    private TwilightHeroes parent;
-
+    private final Stage stage;
+    private final TwilightHeroes parent;
+    private final ImageButton btnSpell1;
+    private final ImageButton btnSpell2;
+    private final Array<ImageButton> btnSpells = new Array<>();
     public ImageButton selectedSlot;
     public ImageButton lastSelected;
-
     public Label name;
     public Label description;
 
-    private ImageButton btnSpell1;
-    private ImageButton btnSpell2;
-
-    private Array<ImageButton> btnSpells = new Array<>();
-
-    private JsonValue language;
-
-    private WidgetContainer widgetContainer = new WidgetContainer();
-
     public MagicScreen(TwilightHeroes twilightHeroes) {
         parent = twilightHeroes;
-        stage = new Stage(new StretchViewport(1920,1080));
-        skin = new Skin(Gdx.files.internal("skin.json"));
-        language = parent.jsonMultilanguage.get("magic");
+        stage = new Stage(new StretchViewport(1920, 1080));
+        Skin skin = new Skin(Gdx.files.internal("skin.json"));
+        JsonValue language = parent.jsonMultilanguage.get("magic");
 
 
         final Table table = new Table();
@@ -93,7 +82,7 @@ import com.twilightheroes.game.tools.WidgetContainer;
 
         // Adding Hechizos and Opciones buttons to the top
         TextButton btnMenuHechizos = createTextButton(language.get("spells").asString(), textButtonStyle);
-        btnMenuHechizos.addListener(new ClickListener(){
+        btnMenuHechizos.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 super.clicked(event, x, y);
@@ -101,10 +90,11 @@ import com.twilightheroes.game.tools.WidgetContainer;
             }
         });
         btnMenuHechizos.setName("spells");
+        WidgetContainer widgetContainer = new WidgetContainer();
         widgetContainer.widgets.add(btnMenuHechizos);
 
         TextButton btnMenuOpciones = createTextButton(language.get("options").asString(), textButtonStyle);
-        btnMenuOpciones.addListener(new ClickListener(){
+        btnMenuOpciones.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 super.clicked(event, x, y);
@@ -140,7 +130,7 @@ import com.twilightheroes.game.tools.WidgetContainer;
         btnSpell2.setName("Button2");
         btnSpell2.addListener(new ClickListener() {
             @Override
-            public void clicked(InputEvent event, float x,float y) {
+            public void clicked(InputEvent event, float x, float y) {
                 super.clicked(event, x, y);
                 changeSelectedSlot(btnSpell2);
             }
@@ -155,11 +145,9 @@ import com.twilightheroes.game.tools.WidgetContainer;
         mainTable.add(topButtonTable).colspan(2).center().padBottom(20.0f).row();
 
 
-
         // Adding a scrollable table with 50 buttons below
         Table buttonTable = new Table();
         buttonTable.setDebug(true);
-
 
 
         JsonValue json = new JsonReader().parse(Gdx.files.internal("config/spells.json"));
@@ -169,7 +157,6 @@ import com.twilightheroes.game.tools.WidgetContainer;
             aux.setName(json.get(j).get("spellId").asString());
             buttonTable.add(aux).padBottom(15.0f).size(150f).padLeft(30f).padBottom(30f);
             btnSpells.add(aux);
-            final int finalJ = j;
             aux.addListener(new ClickListener() {
                 @Override
                 public void clicked(InputEvent event, float x, float y) {
@@ -224,9 +211,8 @@ import com.twilightheroes.game.tools.WidgetContainer;
     public void show() {
         Gdx.input.setInputProcessor(stage);
 
-        for (ImageButton btn : btnSpells)
-        {
-            if (btn.getName().equals(parent.playerSettings.spell1)){
+        for (ImageButton btn : btnSpells) {
+            if (btn.getName().equals(parent.playerSettings.spell1)) {
                 changeSelectedSlot(btnSpell1);
                 changeSelectedSpell(btn);
             }
@@ -248,39 +234,38 @@ import com.twilightheroes.game.tools.WidgetContainer;
 
     }
 
-    private void changeSelectedSpell(ImageButton selectedSpell){
+    private void changeSelectedSpell(ImageButton selectedSpell) {
         JsonValue json = new JsonReader().parse(Gdx.files.internal("config/spells.json"));
         JsonValue jsonSpell = json.get(selectedSpell.getName());
 
-        if (lastSelected != null){
+        if (lastSelected != null) {
             lastSelected.setChecked(false);
         }
         lastSelected = selectedSpell;
         if (selectedSlot != null) {
-            if (selectedSlot.getStyle() != selectedSpell.getStyle()){
+            if (selectedSlot.getStyle() != selectedSpell.getStyle()) {
                 selectedSlot.setStyle(selectedSpell.getStyle());
                 selectedSlot.setChecked(false);
             }
 
         }
-        name.setText(jsonSpell.get("spellName"+parent.language).asString());
-        description.setText(jsonSpell.get("description"+parent.language).asString());
+        name.setText(jsonSpell.get("spellName" + parent.language).asString());
+        description.setText(jsonSpell.get("description" + parent.language).asString());
 
 
         SpellComponent spellComponent = Mappers.spellCom.get(parent.mainScreen.playerEntity);
 
 
-
-        if (selectedSlot.getName().equals("Button1")){
-            spellComponent.spell1 = new Spell(SpellList.spells.valueOf(jsonSpell.get("spellId").asString()).ordinal(),jsonSpell.get("manaCost").asInt(), jsonSpell.get("castingTime").asFloat(),new SpellVFX(4,4));
+        if (selectedSlot.getName().equals("Button1")) {
+            spellComponent.spell1 = new Spell(SpellList.spells.valueOf(jsonSpell.get("spellId").asString()).ordinal(), jsonSpell.get("manaCost").asInt(), jsonSpell.get("castingTime").asFloat(), new SpellVFX(4, 4));
             parent.playerSettings.spell1 = jsonSpell.get("spellId").asString();
-        }else{
-            spellComponent.spell2 = new Spell(SpellList.spells.valueOf(jsonSpell.get("spellId").asString()).ordinal(),jsonSpell.get("manaCost").asInt(), jsonSpell.get("castingTime").asFloat(),new SpellVFX(4,4));
+        } else {
+            spellComponent.spell2 = new Spell(SpellList.spells.valueOf(jsonSpell.get("spellId").asString()).ordinal(), jsonSpell.get("manaCost").asInt(), jsonSpell.get("castingTime").asFloat(), new SpellVFX(4, 4));
             parent.playerSettings.spell2 = jsonSpell.get("spellId").asString();
 
         }
 
-      parent.mainScreen.actualizarBotones();
+        parent.mainScreen.actualizarBotones();
     }
 
     // Helper method to create TextButton

@@ -4,17 +4,12 @@ import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.PooledEngine;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.assets.AssetManager;
-import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.ParticleEffect;
-import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.maps.MapObject;
 import com.badlogic.gdx.maps.objects.RectangleMapObject;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.CircleShape;
 import com.badlogic.gdx.physics.box2d.EdgeShape;
@@ -35,13 +30,13 @@ import com.twilightheroes.game.ecs.components.EnemyComponent;
 import com.twilightheroes.game.ecs.components.ExitComponent;
 import com.twilightheroes.game.ecs.components.InteractiveObjectComponent;
 import com.twilightheroes.game.ecs.components.PlayerComponent;
-import com.twilightheroes.game.ecs.components.spells.Spell;
-import com.twilightheroes.game.ecs.components.spells.SpellComponent;
 import com.twilightheroes.game.ecs.components.StateComponent;
 import com.twilightheroes.game.ecs.components.StatsComponent;
 import com.twilightheroes.game.ecs.components.TextureComponent;
 import com.twilightheroes.game.ecs.components.TypeComponent;
 import com.twilightheroes.game.ecs.components.effectComponents.StatusComponent;
+import com.twilightheroes.game.ecs.components.spells.Spell;
+import com.twilightheroes.game.ecs.components.spells.SpellComponent;
 import com.twilightheroes.game.ecs.components.spells.SpellList;
 import com.twilightheroes.game.ecs.components.spells.SpellVFX;
 import com.twilightheroes.game.screens.MainScreen;
@@ -50,89 +45,81 @@ import java.util.HashMap;
 
 public class B2WorldCreator {
 
-    private PooledEngine engine;
-    private World world;
+    private final PooledEngine engine;
+    private final World world;
 
-    private BodyFactory bodyFactory;
-    private MainScreen screen;
+    private final MainScreen screen;
+    private final HashMap<String, EnemyPrototype> enemigos = new HashMap<>();
+    private final AssetManager manager;
+    private final JsonValue jsonSpells = new JsonReader().parse(Gdx.files.internal("config/spells.json"));
+    private final JsonValue jsonConfig = new JsonReader().parse(Gdx.files.internal("config/configuraciones.json"));
+    public TextureRegion aux;
     private TiledMap map;
-
-    private HashMap<String,EnemyPrototype> enemigos = new HashMap<String,EnemyPrototype>();
-    private AssetManager manager;
-
-    private JsonValue jsonSpells = new JsonReader().parse(Gdx.files.internal("config/spells.json"));
-    private JsonValue jsonConfig =  new JsonReader().parse(Gdx.files.internal("config/configuraciones.json"));
 
     public B2WorldCreator(World world, PooledEngine engine, MainScreen screen, AssetManager manager) {
 
         this.engine = engine;
         this.world = world;
 
-        bodyFactory = BodyFactory.getInstance(world);
         this.screen = screen;
         this.manager = manager;
 
         JsonValue jsonEnemigos = jsonConfig.get("enemigos");
         for (int i = 0; i < jsonEnemigos.size; i++) {
             JsonValue enemigoActual = jsonEnemigos.get(i);
-             TextureAtlas atlas = manager.get("enemies/"+enemigoActual.get("atlas").asString());
-             String name = enemigoActual.get("name").asString();
-             int width = enemigoActual.get("width").asInt();
-             int height = enemigoActual.get("height").asInt();
-             int hitboxX = enemigoActual.get("hitboxX").asInt();
-             int hitboxY = enemigoActual.get("hitboxY").asInt();
-             int hp = enemigoActual.get("hp").asInt();
-             int idleFrames = enemigoActual.get("animaciones").get("IDLE").asInt();
-             int walkFrames = enemigoActual.get("animaciones").get("WALK").asInt();
-             int attackFrames =enemigoActual.get("animaciones").get("ATTACK").asInt();
+            TextureAtlas atlas = manager.get("enemies/" + enemigoActual.get("atlas").asString());
+            String name = enemigoActual.get("name").asString();
+            int width = enemigoActual.get("width").asInt();
+            int height = enemigoActual.get("height").asInt();
+            int hitboxX = enemigoActual.get("hitboxX").asInt();
+            int hitboxY = enemigoActual.get("hitboxY").asInt();
+            int hp = enemigoActual.get("hp").asInt();
+            int idleFrames = enemigoActual.get("animaciones").get("IDLE").asInt();
+            int walkFrames = enemigoActual.get("animaciones").get("WALK").asInt();
+            int attackFrames = enemigoActual.get("animaciones").get("ATTACK").asInt();
 
-             float viewDistance = enemigoActual.get("viewDistance").asFloat();
-             float attackDistance = enemigoActual.get("attackDistance").asFloat();
-             float attackCooldown = enemigoActual.get("attackCooldown").asFloat();
-             float speed = enemigoActual.get("speed").asFloat();
-             int attackFrame = enemigoActual.get("attackFrame").asInt();
+            float viewDistance = enemigoActual.get("viewDistance").asFloat();
+            float attackDistance = enemigoActual.get("attackDistance").asFloat();
+            float attackCooldown = enemigoActual.get("attackCooldown").asFloat();
+            float speed = enemigoActual.get("speed").asFloat();
+            int attackFrame = enemigoActual.get("attackFrame").asInt();
             int attackDamage = enemigoActual.get("attackDamage").asInt();
             String attackMethod = enemigoActual.get("attackMethod").asString();
             Spell[] spells = null;
-            if (attackMethod.equals("spellCaster")){
+            if (attackMethod.equals("spellCaster")) {
                 String[] auxSpellString = enemigoActual.get("spells").asStringArray();
                 Spell[] auxSpells = new Spell[auxSpellString.length];
                 for (int j = 0; j < auxSpellString.length; j++) {
                     JsonValue jsonSpell = jsonSpells.get(auxSpellString[j]);
-                    auxSpells[j] = new Spell(SpellList.spells.valueOf(jsonSpell.get("spellId").asString()).ordinal(),jsonSpell.get("manaCost").asInt(), jsonSpell.get("castingTime").asFloat(),new SpellVFX(4,4));
+                    auxSpells[j] = new Spell(SpellList.spells.valueOf(jsonSpell.get("spellId").asString()).ordinal(), jsonSpell.get("manaCost").asInt(), jsonSpell.get("castingTime").asFloat(), new SpellVFX(4, 4));
                 }
                 spells = auxSpells;
             }
 
-        enemigos.put(enemigoActual.get("name").asString(),new EnemyPrototype(atlas,name,width,height,hitboxX,hitboxY,hp,idleFrames,walkFrames,attackFrames,viewDistance,attackDistance,attackCooldown,speed,attackFrame,attackDamage,attackMethod,spells));
+            enemigos.put(enemigoActual.get("name").asString(), new EnemyPrototype(atlas, name, width, height, hitboxX, hitboxY, hp, idleFrames, walkFrames, attackFrames, viewDistance, attackDistance, attackCooldown, speed, attackFrame, attackDamage, attackMethod, spells));
         }
-
 
 
     }
 
     public RoomSize generateLevel(TiledMap map, Entity playerEntity) {
-        if (this.map != null){
+        if (this.map != null) {
             this.map.dispose();
 
         }
         this.map = map;
 
         //Crear el suelo
-       crearTerreno();
+        crearTerreno();
         crearSalidas();
         crearInteracciones();
 
 
-
-        createPlayer(manager.get("player/player.atlas",TextureAtlas.class),playerEntity);
+        createPlayer(manager.get("player/player.atlas", TextureAtlas.class), playerEntity);
 
         createEnemy();
         Rectangle rectangleRoom = ((RectangleMapObject) map.getLayers().get("room").getObjects().get(0)).getRectangle();
         return new RoomSize(rectangleRoom.width, rectangleRoom.height, rectangleRoom.x, rectangleRoom.y);
-        // createEnemy(playerAtlas.findRegion("Idle-Sheet"),5f,1,4,8,atlasEnemigo);
-        // createEnemy(playerAtlas.findRegion("Idle-Sheet"),6f,1,4,8,atlasEnemigo);
-        //createEnemy(playerAtlas.findRegion("Idle-Sheet"),7f,1,4,8,atlasEnemigo);
 
 
     }
@@ -143,7 +130,7 @@ public class B2WorldCreator {
         FixtureDef fixtureDef = new FixtureDef();
 
         //Crear el terreno
-        for (MapObject object : map.getLayers().get("ground").getObjects().getByType(RectangleMapObject.class)) {
+        for (RectangleMapObject object : map.getLayers().get("ground").getObjects().getByType(RectangleMapObject.class)) {
 
             // Create the Entity and all the components that will go in the entity
             Entity entity = engine.createEntity();
@@ -153,7 +140,7 @@ public class B2WorldCreator {
 
             type.type = TypeComponent.FLOOR;
 
-            Rectangle rectangle = ((RectangleMapObject) object).getRectangle();
+            Rectangle rectangle = object.getRectangle();
             bodyDef.type = BodyDef.BodyType.StaticBody;
             bodyDef.position.set((rectangle.getX() + rectangle.getWidth() / 2) / TwilightHeroes.PPM, (rectangle.getY() + rectangle.getHeight() / 2) / TwilightHeroes.PPM);
 
@@ -177,14 +164,13 @@ public class B2WorldCreator {
         shape.dispose();
     }
 
-
     public void crearSalidas() {
         BodyDef bodyDef = new BodyDef();
         PolygonShape shape = new PolygonShape();
         FixtureDef fixtureDef = new FixtureDef();
 
         //Crear las habitaciones
-        for (MapObject object : map.getLayers().get("exit").getObjects().getByType(RectangleMapObject.class)) {
+        for (RectangleMapObject object : map.getLayers().get("exit").getObjects().getByType(RectangleMapObject.class)) {
 
             // Create the Entity and all the components that will go in the entity
             Entity entity = engine.createEntity();
@@ -199,7 +185,7 @@ public class B2WorldCreator {
 
             type.type = TypeComponent.EXIT;
 
-            Rectangle rectangle = ((RectangleMapObject) object).getRectangle();
+            Rectangle rectangle = object.getRectangle();
             bodyDef.type = BodyDef.BodyType.StaticBody;
             bodyDef.position.set((rectangle.getX() + rectangle.getWidth() / 2) / TwilightHeroes.PPM, (rectangle.getY() + rectangle.getHeight() / 2) / TwilightHeroes.PPM);
 
@@ -238,7 +224,7 @@ public class B2WorldCreator {
         FixtureDef fixtureDef = new FixtureDef();
 
         //Crear las habitaciones
-        for (MapObject object : map.getLayers().get("interactiveObject").getObjects().getByType(RectangleMapObject.class)) {
+        for (RectangleMapObject object : map.getLayers().get("interactiveObject").getObjects().getByType(RectangleMapObject.class)) {
 
             // Create the Entity and all the components that will go in the entity
             Entity entity = engine.createEntity();
@@ -252,7 +238,7 @@ public class B2WorldCreator {
 
             type.type = TypeComponent.INTERACTABLE;
 
-            Rectangle rectangle = ((RectangleMapObject) object).getRectangle();
+            Rectangle rectangle = object.getRectangle();
             bodyDef.type = BodyDef.BodyType.StaticBody;
             bodyDef.position.set((rectangle.getX() + rectangle.getWidth() / 2) / TwilightHeroes.PPM, (rectangle.getY() + rectangle.getHeight() / 2) / TwilightHeroes.PPM);
 
@@ -285,7 +271,6 @@ public class B2WorldCreator {
         shape.dispose();
     }
 
-    public TextureRegion aux;
     public void createPlayer(TextureAtlas atlas, Entity playerEntity) {
         JsonValue jsonPlayer = jsonConfig.get("personaje");
 
@@ -307,10 +292,10 @@ public class B2WorldCreator {
 
 
             // create the data for the components and add them to the components
-           aux = atlas.findRegion("Idle");
+            aux = atlas.findRegion("Idle");
             texture.sprite.setRegion(aux);
 
-            texture.sprite.setBounds( ((RectangleMapObject)  map.getLayers().get("spawn").getObjects().get(0)).getRectangle().x/TwilightHeroes.PPM, ((RectangleMapObject)  map.getLayers().get("spawn").getObjects().get(0)).getRectangle().y/TwilightHeroes.PPM, jsonPlayer.get("width").asFloat() / TwilightHeroes.PPM, jsonPlayer.get("height").asFloat() / TwilightHeroes.PPM);
+            texture.sprite.setBounds(((RectangleMapObject) map.getLayers().get("spawn").getObjects().get(0)).getRectangle().x / TwilightHeroes.PPM, ((RectangleMapObject) map.getLayers().get("spawn").getObjects().get(0)).getRectangle().y / TwilightHeroes.PPM, jsonPlayer.get("width").asFloat() / TwilightHeroes.PPM, jsonPlayer.get("height").asFloat() / TwilightHeroes.PPM);
 
             type.type = TypeComponent.PLAYER;
             stateCom.set(StateComponent.STATE_IDLE);
@@ -324,7 +309,7 @@ public class B2WorldCreator {
 
             // Define la hitbox rectangular
             PolygonShape shape = new PolygonShape();
-            shape.setAsBox(jsonPlayer.get("hitboxX").asFloat()  / TwilightHeroes.PPM, jsonPlayer.get("hitboxY").asFloat()  / TwilightHeroes.PPM); // Tamaño de la hitbox
+            shape.setAsBox(jsonPlayer.get("hitboxX").asFloat() / TwilightHeroes.PPM, jsonPlayer.get("hitboxY").asFloat() / TwilightHeroes.PPM); // Tamaño de la hitbox
 
             FixtureDef fixtureDef = new FixtureDef();
             fixtureDef.friction = 0;
@@ -389,11 +374,10 @@ public class B2WorldCreator {
 
 
             JsonValue auxSpell = jsonSpells.get(screen.parent.playerSettings.spell1);
-            spellComponent.spell1 = new Spell(SpellList.spells.valueOf(auxSpell.get("spellId").asString()).ordinal(),auxSpell.get("manaCost").asInt(), auxSpell.get("castingTime").asFloat(),new SpellVFX(4,12));
+            spellComponent.spell1 = new Spell(SpellList.spells.valueOf(auxSpell.get("spellId").asString()).ordinal(), auxSpell.get("manaCost").asInt(), auxSpell.get("castingTime").asFloat(), new SpellVFX(4, 12));
 
             auxSpell = jsonSpells.get(screen.parent.playerSettings.spell2);
-            spellComponent.spell2 = new Spell(SpellList.spells.valueOf(auxSpell.get("spellId").asString()).ordinal(),auxSpell.get("manaCost").asInt(), auxSpell.get("castingTime").asFloat(),new SpellVFX(4,12));
-
+            spellComponent.spell2 = new Spell(SpellList.spells.valueOf(auxSpell.get("spellId").asString()).ordinal(), auxSpell.get("manaCost").asInt(), auxSpell.get("castingTime").asFloat(), new SpellVFX(4, 12));
 
 
             entity.add(b2dbody);
@@ -413,19 +397,18 @@ public class B2WorldCreator {
 
             engine.addEntity(entity);
             screen.playerEntity = entity;
-        }
-        else{
+        } else {
             playerEntity.remove(B2dBodyComponent.class);
             B2dBodyComponent b2dbody = engine.createComponent(B2dBodyComponent.class);
             BodyDef bodyDef = new BodyDef();
-            bodyDef.position.set(2,1);
+            bodyDef.position.set(2, 1);
             bodyDef.type = BodyDef.BodyType.DynamicBody;
             b2dbody.body = world.createBody(bodyDef);
             b2dbody.body.setFixedRotation(true);
 
             // Define la hitbox rectangular
             PolygonShape shape = new PolygonShape();
-            shape.setAsBox(jsonPlayer.get("hitboxX").asFloat()  / TwilightHeroes.PPM, jsonPlayer.get("hitboxY").asFloat()  / TwilightHeroes.PPM); // Tamaño de la hitbox
+            shape.setAsBox(jsonPlayer.get("hitboxX").asFloat() / TwilightHeroes.PPM, jsonPlayer.get("hitboxY").asFloat() / TwilightHeroes.PPM); // Tamaño de la hitbox
 
             FixtureDef fixtureDef = new FixtureDef();
             fixtureDef.friction = 0;
@@ -446,18 +429,18 @@ public class B2WorldCreator {
 
 
             screen.bodies.add(b2dbody.body);
-        playerEntity.add(b2dbody);
+            playerEntity.add(b2dbody);
         }
     }
-
 
 
     public void createEnemy() {
 
         if (map.getLayers().get("enemies") != null) {
-            for (MapObject object : map.getLayers().get("enemies").getObjects().getByType(RectangleMapObject.class)) {
-                Rectangle rectangle = ((RectangleMapObject) object).getRectangle();
-                EnemyPrototype enemyPrototype = enemigos.get(object.getProperties().get("enemigo"));
+            for (RectangleMapObject object : map.getLayers().get("enemies").getObjects().getByType(RectangleMapObject.class)) {
+                Rectangle rectangle = object.getRectangle();
+                String enemyName = (String) object.getProperties().get("enemigo");
+                EnemyPrototype enemyPrototype = enemigos.get(enemyName);
                 // Create the Entity and all the components that will go in the entity
                 Entity entity = engine.createEntity();
                 B2dBodyComponent b2dbody = engine.createComponent(B2dBodyComponent.class);
@@ -554,7 +537,7 @@ public class B2WorldCreator {
     }
 
 
-    public Entity createBullet(float x, float y, float xVel, BulletComponent.Owner own, boolean runningRight, float damage,String spellName ) {
+    public void createBullet(float x, float y, float xVel, BulletComponent.Owner own, boolean runningRight, float damage, String spellName) {
         Entity entity = engine.createEntity();
         B2dBodyComponent b2dbody = engine.createComponent(B2dBodyComponent.class);
         TextureComponent texture = engine.createComponent(TextureComponent.class);
@@ -563,21 +546,21 @@ public class B2WorldCreator {
         BulletComponent bul = engine.createComponent(BulletComponent.class);
         AnimationComponent animationComponent = engine.createComponent(AnimationComponent.class);
         StateComponent stateComponent = engine.createComponent(StateComponent.class);
-         TextureAtlas spellAtlas = manager.get("spells/spells.atlas");
+        TextureAtlas spellAtlas = manager.get("spells/spells.atlas");
 
 
         bul.owner = own;
         bul.damage = damage;
 
         BodyDef bodyDef = new BodyDef();
-        bodyDef.position.set(x,y);
+        bodyDef.position.set(x, y);
         bodyDef.type = BodyDef.BodyType.KinematicBody;
         b2dbody.body = world.createBody(bodyDef);
         b2dbody.body.setFixedRotation(true);
 
         // Define la hitbox rectangular
         CircleShape shape = new CircleShape();
-        shape.setRadius(4f/TwilightHeroes.PPM); // Tamaño de la hitbox
+        shape.setRadius(4f / TwilightHeroes.PPM); // Tamaño de la hitbox
 
         FixtureDef fixtureDef = new FixtureDef();
         fixtureDef.friction = 0;
@@ -588,20 +571,17 @@ public class B2WorldCreator {
         shape.dispose();
 
 
-
-
         JsonValue json = new JsonReader().parse(Gdx.files.internal("config/spells.json"));
         JsonValue jsonSpell = json.get(spellName);
 
 
-
-        animationComponent.animations.put(StateComponent.STATE_SPELL_STARTING, AnimationMaker.crearAnimacion(spellAtlas, spellName+"Start", jsonSpell.get("startFrames").asInt(),  jsonSpell.get("startFrames").asInt()));
-        animationComponent.animations.put(StateComponent.STATE_SPELL_GOING, AnimationMaker.crearAnimacion(spellAtlas, spellName+"Going",   jsonSpell.get("goingFrames").asInt(), jsonSpell.get("goingFrames").asInt()));
-        animationComponent.animations.put(StateComponent.STATE_SPELL_ENDING, AnimationMaker.crearAnimacion(spellAtlas, spellName+"Ending",  jsonSpell.get("endingFrames").asInt(), jsonSpell.get("endingFrames").asInt()));
+        animationComponent.animations.put(StateComponent.STATE_SPELL_STARTING, AnimationMaker.crearAnimacion(spellAtlas, spellName + "Start", jsonSpell.get("startFrames").asInt(), jsonSpell.get("startFrames").asInt()));
+        animationComponent.animations.put(StateComponent.STATE_SPELL_GOING, AnimationMaker.crearAnimacion(spellAtlas, spellName + "Going", jsonSpell.get("goingFrames").asInt(), jsonSpell.get("goingFrames").asInt()));
+        animationComponent.animations.put(StateComponent.STATE_SPELL_ENDING, AnimationMaker.crearAnimacion(spellAtlas, spellName + "Ending", jsonSpell.get("endingFrames").asInt(), jsonSpell.get("endingFrames").asInt()));
         stateComponent.set(StateComponent.STATE_SPELL_STARTING);
 
         texture.sprite.setRegion(animationComponent.animations.get(stateComponent.get()).getKeyFrame(stateComponent.time, stateComponent.isLooping));
-        texture.sprite.setBounds(x,y,10/TwilightHeroes.PPM,10/TwilightHeroes.PPM);
+        texture.sprite.setBounds(x, y, 10 / TwilightHeroes.PPM, 10 / TwilightHeroes.PPM);
         texture.runningRight = runningRight;
 
         type.type = TypeComponent.BULLET;
@@ -618,10 +598,7 @@ public class B2WorldCreator {
         entity.add(stateComponent);
 
         engine.addEntity(entity);
-        return entity;
     }
-
-
 
 
 }

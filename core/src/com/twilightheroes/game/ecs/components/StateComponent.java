@@ -3,7 +3,7 @@ package com.twilightheroes.game.ecs.components;
 import com.badlogic.ashley.core.Component;
 import com.badlogic.gdx.utils.Pool;
 
-public class StateComponent implements Component , Pool.Poolable{
+public class StateComponent implements Component, Pool.Poolable {
     public static final int STATE_IDLE = 0;
     public static final int STATE_JUMPING = 1;
     public static final int STATE_FALLING = 2;
@@ -24,26 +24,19 @@ public class StateComponent implements Component , Pool.Poolable{
     public static final int STATE_SPELL_ENDING = 15;
     public static final int STATE_CASTING = 16;
     public static final int STATE_VFX = 17;
-
-
-
-
-
-    private int state = 0;
     public int previousState = 0;
-
     public float time = 0.0f;
     public boolean isLooping = true;
+    private int state = 0;
 
-
-    public void set(int newState){
+    public void set(int newState) {
         previousState = state;
         state = newState;
 
 
     }
 
-    public int get(){
+    public int get() {
         return state;
     }
 

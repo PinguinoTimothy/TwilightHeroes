@@ -7,7 +7,7 @@ public class RoomSize {
     public float roomStartX;
     public float roomStartY;
 
-    public RoomSize(float roomWidth, float roomHeight, float roomStartX, float roomStartY){
+    public RoomSize(float roomWidth, float roomHeight, float roomStartX, float roomStartY) {
         this.roomWidth = roomWidth;
         this.roomHeight = roomHeight;
         this.roomStartX = roomStartX;

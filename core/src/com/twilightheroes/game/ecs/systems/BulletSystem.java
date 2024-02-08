@@ -11,7 +11,8 @@ import com.twilightheroes.game.screens.MainScreen;
 import com.twilightheroes.game.tools.Mappers;
 
 public class BulletSystem extends IteratingSystem {
-    private MainScreen screen;
+    private final MainScreen screen;
+
     public BulletSystem(MainScreen screen) {
         super(Family.all(BulletComponent.class).get());
         this.screen = screen;
@@ -38,10 +39,10 @@ public class BulletSystem extends IteratingSystem {
             float by = b2body.body.getPosition().y;
 
             // if bullet is away from player on any axis then it is probably off screen
-            if(bx - px > 3 || by - py > 5){
+            if (bx - px > 3 || by - py > 5) {
                 bullet.isDead = true;
             }
-        }else{
+        } else {
             b2body.body.setLinearVelocity(0, 0f);
 
 
@@ -49,18 +50,17 @@ public class BulletSystem extends IteratingSystem {
         //
         StateComponent stateComponent = Mappers.stateCom.get(entity);
         AnimationComponent animationComponent = Mappers.animCom.get(entity);
-        if (stateComponent.get() == StateComponent.STATE_SPELL_STARTING && animationComponent.animations.get(stateComponent.get()).isAnimationFinished(stateComponent.time)){
+        if (stateComponent.get() == StateComponent.STATE_SPELL_STARTING && animationComponent.animations.get(stateComponent.get()).isAnimationFinished(stateComponent.time)) {
             stateComponent.set(StateComponent.STATE_SPELL_GOING);
         } else if (stateComponent.get() == StateComponent.STATE_SPELL_ENDING && animationComponent.animations.get(stateComponent.get()).isAnimationFinished(stateComponent.time)) {
             b2body.isDead = true;
         }
 
 
-
         //check if bullet is dead
-        if(bullet.isDead && stateComponent.get() != StateComponent.STATE_SPELL_ENDING){
+        if (bullet.isDead && stateComponent.get() != StateComponent.STATE_SPELL_ENDING) {
             stateComponent.set(StateComponent.STATE_SPELL_ENDING);
-        stateComponent.time = 0f;
+            stateComponent.time = 0f;
         }
     }
 }

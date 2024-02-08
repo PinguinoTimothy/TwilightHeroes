@@ -1,7 +1,6 @@
 package com.twilightheroes.game.tools;
 
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
-import com.twilightheroes.game.ecs.components.EnemyComponent;
 import com.twilightheroes.game.ecs.components.spells.Spell;
 
 public class EnemyPrototype {
@@ -27,7 +26,7 @@ public class EnemyPrototype {
     public Spell[] spells;
 
 
-    public EnemyPrototype(TextureAtlas atlas, String name, int width, int height, int hitboxX, int hitboxY, int hp, int idleFrames, int walkFrames, int attackFrames, float viewDistance, float attackDistance, float attackCooldown, float speed, int attackFrame,int attackDamage, String attackMethod, Spell[] spells) {
+    public EnemyPrototype(TextureAtlas atlas, String name, int width, int height, int hitboxX, int hitboxY, int hp, int idleFrames, int walkFrames, int attackFrames, float viewDistance, float attackDistance, float attackCooldown, float speed, int attackFrame, int attackDamage, String attackMethod, Spell[] spells) {
         this.atlas = atlas;
         this.name = name;
         this.width = width;

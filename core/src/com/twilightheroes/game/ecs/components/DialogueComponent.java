@@ -12,7 +12,6 @@ public class DialogueComponent implements Component, Pool.Poolable {
     public boolean touchDown = false;
 
 
-
     @Override
     public void reset() {
         active = false;

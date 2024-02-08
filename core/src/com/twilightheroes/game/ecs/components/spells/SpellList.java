@@ -2,11 +2,11 @@ package com.twilightheroes.game.ecs.components.spells;
 
 public class SpellList {
 
-        public enum spells {
+    public enum spells {
         shockingGrasp,
-            healingSigil,
-            fury,
-            frostSpear
+        healingSigil,
+        fury,
+        frostSpear
     }
 
 }

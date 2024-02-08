@@ -9,7 +9,6 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.actions.DelegateAction;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
@@ -17,7 +16,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.Stack;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
-import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.JsonValue;
 import com.badlogic.gdx.utils.Scaling;
 import com.badlogic.gdx.utils.viewport.StretchViewport;
@@ -25,13 +23,11 @@ import com.twilightheroes.game.TwilightHeroes;
 import com.twilightheroes.game.tools.WidgetContainer;
 
 public class MenuScreen implements Screen {
-    private Skin skin;
+    private final Skin skin;
 
-    private Stage stage;
+    private final Stage stage;
     TwilightHeroes parent;
     JsonValue language;
-
-    private WidgetContainer widgetContainer = new WidgetContainer();
 
     public MenuScreen(TwilightHeroes TH) {
         this.parent = TH;
@@ -76,6 +72,7 @@ public class MenuScreen implements Screen {
 
         TextButton textButton = new TextButton(language.get("play").asString(), textButtonStyle);
         textButton.setName("play");
+        WidgetContainer widgetContainer = new WidgetContainer();
         widgetContainer.widgets.add(textButton);
         table1.add(textButton).padBottom(30.0f);
         textButton.addListener(new ClickListener() {
@@ -105,15 +102,13 @@ public class MenuScreen implements Screen {
         textButton.setName("bestiary");
         widgetContainer.widgets.add(textButton);
         table1.add(textButton).padBottom(30.0f);
-        textButton.addListener(new ClickListener(){
+        textButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 super.clicked(event, x, y);
                 parent.changeScreen(TwilightHeroes.BESTIARY);
             }
         });
-
-
 
 
         table1.row();

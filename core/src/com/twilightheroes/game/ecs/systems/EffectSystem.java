@@ -11,39 +11,39 @@ import com.twilightheroes.game.tools.Mappers;
 
 public class EffectSystem extends IteratingSystem {
 
+    private final Array<StatusEffect> statusABorrar = new Array<>();
+
     public EffectSystem() {
 
         super(Family.all(StatusComponent.class).get());
     }
 
-    private Array<StatusEffect> statusABorrar = new Array<>();
-
     @Override
     protected void processEntity(Entity entity, float deltaTime) {
         StatusComponent statusComponent = Mappers.statusCom.get(entity);
 
-        for (StatusEffect status: statusComponent.effects) {
-            if (!status.getUsed()){
-                applyEffect(status,entity);
+        for (StatusEffect status : statusComponent.effects) {
+            if (!status.getUsed()) {
+                applyEffect(status, entity);
                 status.setUsed(true);
-            }else{
-                status.setTimeRemaining(status.getTimeRemaining()-deltaTime);
-                if (status.getTimeRemaining() <= 0){
+            } else {
+                status.setTimeRemaining(status.getTimeRemaining() - deltaTime);
+                if (status.getTimeRemaining() <= 0) {
                     status.buffOrDebuff = !status.buffOrDebuff;
-                    applyEffect(status,entity);
-            statusABorrar.add(status);
+                    applyEffect(status, entity);
+                    statusABorrar.add(status);
                 }
             }
         }
 
         for (int i = 0; i < statusABorrar.size; i++) {
-            statusComponent.effects.removeValue(statusABorrar.get(i),true);
+            statusComponent.effects.removeValue(statusABorrar.get(i), true);
         }
     }
 
-    void applyEffect(StatusEffect effect, Entity entity){
+    void applyEffect(StatusEffect effect, Entity entity) {
 
-        switch (effect.type){
+        switch (effect.type) {
             case StatusType.DAMAGE:
                 Mappers.statsCom.get(entity).damage += effect.buffOrDebuff ? effect.getValue() : -effect.getValue();
                 break;
@@ -70,7 +70,6 @@ public class EffectSystem extends IteratingSystem {
 
         }
     }
-
 
 
 }

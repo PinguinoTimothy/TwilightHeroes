@@ -13,42 +13,35 @@ import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.ui.Dialog;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
-import com.badlogic.gdx.scenes.scene2d.ui.Window;
-import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
-import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
-import com.twilightheroes.game.TwilightHeroes;
 import com.twilightheroes.game.ecs.components.DialogueComponent;
-import com.twilightheroes.game.ecs.components.effectComponents.StatusComponent;
 import com.twilightheroes.game.screens.MainScreen;
 import com.twilightheroes.game.tools.Mappers;
 
 public class DialogueSystem extends IteratingSystem {
 
-    private MainScreen screen;
-    private BitmapFont font;
+    private final MainScreen screen;
+    private final Label label;
     private boolean touchDown = false;
-
-    private   Label.LabelStyle labelStyle;
-    private   Label label;
+    private Dialog dialog;
 
     public DialogueSystem(MainScreen screen) {
         super(Family.all(DialogueComponent.class).get());
-    this.screen = screen;
+        this.screen = screen;
         FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("Retro Gaming.ttf"));
         final FreeTypeFontGenerator.FreeTypeFontParameter parameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
 
-        parameter.size = (int)Math.ceil(12);
+        parameter.size = (int) Math.ceil(12);
         parameter.minFilter = Texture.TextureFilter.Nearest;
         parameter.magFilter = Texture.TextureFilter.Nearest;
 
-        generator.scaleForPixelHeight((int)Math.ceil(12));
-         font = generator.generateFont(parameter);
-         generator.dispose();
+        generator.scaleForPixelHeight((int) Math.ceil(12));
+        BitmapFont font = generator.generateFont(parameter);
+        generator.dispose();
 
-      labelStyle = new Label.LabelStyle();
+        Label.LabelStyle labelStyle = new Label.LabelStyle();
         labelStyle.font = font;
         labelStyle.fontColor = Color.BLACK;
-        label = new Label("",labelStyle);
+        label = new Label("", labelStyle);
 
         // Agregar un listener para detectar el toque en la pantalla
         screen.hud.stage.addListener(new InputListener() {
@@ -56,7 +49,7 @@ public class DialogueSystem extends IteratingSystem {
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
                 // Marcar que se ha tocado la pantalla
 
-                    touchDown = true;
+                touchDown = true;
 
 
                 return super.touchDown(event, x, y, pointer, button);
@@ -85,7 +78,6 @@ public class DialogueSystem extends IteratingSystem {
         }
     }
 
-
     // Método para mostrar el siguiente texto del diálogo
     public void showDialogue(DialogueComponent dialogueComponent) {
         if (!dialogueComponent.dialogueTexts.isEmpty()) {
@@ -96,7 +88,6 @@ public class DialogueSystem extends IteratingSystem {
         }
     }
 
-    private Dialog dialog;
     // Método para activar el diálogo
     public void showDialogue(String text) {
         // Obtener la entidad que tiene el componente de diálogo
@@ -104,7 +95,7 @@ public class DialogueSystem extends IteratingSystem {
         // Puedes implementar la lógica para obtener la entidad según tus necesidades
         label.setText(text);
 
-        if (dialog == null){
+        if (dialog == null) {
 
             dialog = new Dialog("", screen.parent.assMan.manager.get("hud/dialogSkin.json", Skin.class));
             dialog.text(label);

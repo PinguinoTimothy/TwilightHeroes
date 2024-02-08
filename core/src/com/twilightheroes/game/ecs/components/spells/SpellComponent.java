@@ -5,8 +5,8 @@ import com.badlogic.gdx.utils.Pool;
 
 public class SpellComponent implements Component, Pool.Poolable {
 
-   public Spell spell1;
-  public Spell spell2;
+    public Spell spell1;
+    public Spell spell2;
 
     public Spell spellToCast = null;
 
@@ -16,10 +16,10 @@ public class SpellComponent implements Component, Pool.Poolable {
 
     @Override
     public void reset() {
-    spell1 = null;
-    spell2 = null;
-    spellToCast = null;
-    casting = false;
-    castingTime = 0f;
+        spell1 = null;
+        spell2 = null;
+        spellToCast = null;
+        casting = false;
+        castingTime = 0f;
     }
 }

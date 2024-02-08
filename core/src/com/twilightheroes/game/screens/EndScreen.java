@@ -6,51 +6,39 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
-import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
-import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
-import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
-import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
-import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
-import com.badlogic.gdx.scenes.scene2d.utils.TiledDrawable;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
-import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.twilightheroes.game.TwilightHeroes;
-
-import org.w3c.dom.Text;
 
 public class EndScreen implements Screen {
 
-    private TwilightHeroes parent;
-    private Skin skin;
+    private final TwilightHeroes parent;
     private Stage stage;
-    private Texture background;
 
-    public EndScreen(TwilightHeroes twilightHeroes){
+    public EndScreen(TwilightHeroes twilightHeroes) {
         parent = twilightHeroes;
     }
 
     @Override
     public void show() {
         // get skin
-        skin = new Skin();
-        skin.add("play",parent.assMan.manager.get("hud/play01.png"));
-        background = parent.assMan.manager.get("background.png");
+        Skin skin = new Skin();
+        skin.add("play", parent.assMan.manager.get("hud/play01.png"));
+        Texture background = parent.assMan.manager.get("background.png");
 
 
         // create stage and set it as input processor
-        stage = new Stage(new ExtendViewport(1920,1080));
+        stage = new Stage(new ExtendViewport(1920, 1080));
         Gdx.input.setInputProcessor(stage);
 
         // create table to layout iutems we will add
@@ -67,18 +55,17 @@ public class EndScreen implements Screen {
 
 
         Label.LabelStyle label1Style = new Label.LabelStyle();
-        BitmapFont myFont = font12;
-        label1Style.font = myFont;
+        label1Style.font = font12;
         label1Style.fontColor = Color.RED;
 
 
-        Label deadLabel = new Label("Has muerto",label1Style);
+        Label deadLabel = new Label("Has muerto", label1Style);
 
         Button btn1 = new Button();
 
         // Create a ButtonStyle and set its 'up' field with a Drawable
         Button.ButtonStyle btnStyle = new Button.ButtonStyle();
-        btnStyle.up = new TextureRegionDrawable(new TextureRegion(parent.assMan.manager.get("hud/play01.png",Texture.class)));
+        btnStyle.up = new TextureRegionDrawable(new TextureRegion(parent.assMan.manager.get("hud/play01.png", Texture.class)));
         btn1.setStyle(btnStyle);
         btn1.setSkin(skin);
         btn1.addListener(new ClickListener() {
@@ -123,14 +110,18 @@ public class EndScreen implements Screen {
     }
 
     @Override
-    public void pause() {}
+    public void pause() {
+    }
 
     @Override
-    public void resume() {}
+    public void resume() {
+    }
 
     @Override
-    public void hide() {}
+    public void hide() {
+    }
 
     @Override
-    public void dispose() {}
+    public void dispose() {
+    }
 }
