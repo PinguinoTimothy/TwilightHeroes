@@ -4,20 +4,29 @@ import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.systems.IteratingSystem;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Filter;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
+import com.badlogic.gdx.scenes.scene2d.ui.Dialog;
 import com.badlogic.gdx.scenes.scene2d.ui.Touchpad;
+import com.badlogic.gdx.scenes.scene2d.ui.Window;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
+import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Queue;
 import com.twilightheroes.game.TwilightHeroes;
 import com.twilightheroes.game.ecs.components.AnimationComponent;
 import com.twilightheroes.game.ecs.components.AttackComponent;
 import com.twilightheroes.game.ecs.components.B2dBodyComponent;
 import com.twilightheroes.game.ecs.components.BulletComponent;
+import com.twilightheroes.game.ecs.components.DialogueComponent;
 import com.twilightheroes.game.ecs.components.PlayerComponent;
 import com.twilightheroes.game.ecs.components.spells.Spell;
 import com.twilightheroes.game.ecs.components.spells.SpellComponent;
@@ -30,8 +39,6 @@ import com.twilightheroes.game.ecs.components.effectComponents.StatusEffect;
 import com.twilightheroes.game.ecs.components.effectComponents.StatusType;
 import com.twilightheroes.game.screens.MainScreen;
 import com.twilightheroes.game.tools.Mappers;
-
-import java.awt.Color;
 
 public class PlayerControlSystem extends IteratingSystem {
 
@@ -68,11 +75,12 @@ public class PlayerControlSystem extends IteratingSystem {
     private StatsComponent stats;
     private StatusComponent status;
     private SpellComponent spellComponent;
+    private DialogueComponent dialogueComponent;
 
 
     private MainScreen screen;
 
-    public PlayerControlSystem(Touchpad touchpad, Button btnSaltar, Button btnAtacar, Button btnDodge, Button btnHabilidad1, Button btnHabilidad2, Button btnPause, final MainScreen screen) {
+    public PlayerControlSystem(Touchpad touchpad, Button btnSaltar, Button btnAtacar, Button btnDodge, Button btnHabilidad1, Button btnHabilidad2, Button interactButton, Button btnPause, final MainScreen screen) {
         super(Family.all(PlayerComponent.class).get());
         this.touchpad = touchpad;
         this.btnSaltar = btnSaltar;
@@ -189,6 +197,15 @@ public class PlayerControlSystem extends IteratingSystem {
             }
         });
 
+        interactButton.addListener(new ClickListener(){
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                super.clicked(event, x, y);
+                createInteractFixture(texture, b2body, attackComponent, 20f, 8, 0f, 0f);
+
+            }
+        });
+
 
     }
 
@@ -217,7 +234,15 @@ public class PlayerControlSystem extends IteratingSystem {
         stats = Mappers.statsCom.get(entity);
         status = Mappers.statusCom.get(entity);
         spellComponent = Mappers.spellCom.get(entity);
+        dialogueComponent = Mappers.dialogueCom.get(entity);
+
         playerComponent.canJump = true;
+
+        if (dialogueComponent.active){
+
+
+
+        }else{
 
         if (stats.hp <= 0) {
             playerComponent.isDead = true;
@@ -228,6 +253,10 @@ public class PlayerControlSystem extends IteratingSystem {
         }
         if (playerComponent.mana > 100) {
             playerComponent.mana = 100;
+        }
+        if (playerComponent.interactFixture !=null){
+            b2body.body.destroyFixture(playerComponent.interactFixture);
+            playerComponent.interactFixture = null;
         }
         knockback = playerComponent.knockback;
         speed = stats.speed;
@@ -435,6 +464,7 @@ public class PlayerControlSystem extends IteratingSystem {
                     dequeueTime = 0f;
                 }
             }
+            }
         }
     }
 
@@ -470,6 +500,31 @@ public class PlayerControlSystem extends IteratingSystem {
         b2dbody.body.setLinearVelocity(new Vector2((texture.runningRight ? 1f : -1f), 0f));
 
     }
+
+    private void createInteractFixture(TextureComponent texture, B2dBodyComponent b2dbody, AttackComponent attackComponent, float hx, float hy, float offsetX, float offsetY) {
+        PolygonShape interactShape = new PolygonShape();
+        float auxOffsetX = offsetX;
+        float auxOffsetY = offsetY;
+        float auxHx = hx;
+        float auxHy = hy;
+
+
+
+        interactShape.setAsBox(auxHx / TwilightHeroes.PPM, auxHy / TwilightHeroes.PPM, new Vector2(auxOffsetX / TwilightHeroes.PPM, auxOffsetY / TwilightHeroes.PPM), 0);
+        FixtureDef interactFixture = new FixtureDef();
+        interactFixture.shape = interactShape;
+        interactFixture.filter.categoryBits = TwilightHeroes.HITBOX_BIT;
+        interactFixture.isSensor = true; // Configurar la fixture como un sensor
+        playerComponent.interactFixture = b2dbody.body.createFixture(interactFixture);
+        playerComponent.interactFixture.setUserData("playerInteractSensor");
+        // Liberar los recursos del shape
+        interactShape.dispose();
+
+
+        b2dbody.body.setLinearVelocity(new Vector2((texture.runningRight ? 1f : -1f), 0f));
+
+    }
+
 
 
 }

@@ -6,10 +6,14 @@ import com.badlogic.ashley.systems.IteratingSystem;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Filter;
+import com.badlogic.gdx.scenes.scene2d.ui.Dialog;
+import com.badlogic.gdx.utils.JsonReader;
+import com.badlogic.gdx.utils.JsonValue;
 import com.twilightheroes.game.TwilightHeroes;
 import com.twilightheroes.game.ecs.components.B2dBodyComponent;
 import com.twilightheroes.game.ecs.components.BulletComponent;
 import com.twilightheroes.game.ecs.components.CollisionComponent;
+import com.twilightheroes.game.ecs.components.DialogueComponent;
 import com.twilightheroes.game.ecs.components.EnemyComponent;
 import com.twilightheroes.game.ecs.components.ExitComponent;
 import com.twilightheroes.game.ecs.components.PlayerComponent;
@@ -20,12 +24,16 @@ import com.twilightheroes.game.screens.MainScreen;
 import com.twilightheroes.game.tools.Collisions;
 import com.twilightheroes.game.tools.Mappers;
 
+import java.util.Map;
+
 public class CollisionSystem extends IteratingSystem {
 
     RenderingSystem renderingSystem;
     MainScreen screen;
 
     private Filter inmuneFilter = new Filter();
+
+    private JsonValue jsonText = new JsonReader().parse(Gdx.files.internal("config/dialogues.json"));
 
     public CollisionSystem(RenderingSystem renderingSystem, MainScreen screen) {
         // only need to worry about player collisions;
@@ -53,6 +61,7 @@ public class CollisionSystem extends IteratingSystem {
             boolean isHitbox = auxCollision.isAttackHitbox;
             boolean isEnemyHitbox = auxCollision.isEnemyHitbox;
             boolean canBeReduced = auxCollision.canBeReduced;
+            boolean isInteractHitbox = auxCollision.isInteractHitbox;
 
             TypeComponent thisType = Mappers.typeCom.get(entity);
 
@@ -91,6 +100,9 @@ public class CollisionSystem extends IteratingSystem {
 
                             case TypeComponent.EXIT:
 
+
+
+
                                 if (!screen.change && screen.auxChangeMap == 0) {
                                     ExitComponent exitComponent = Mappers.exitCom.get(collidedEntity);
 
@@ -100,10 +112,27 @@ public class CollisionSystem extends IteratingSystem {
 
                                 }
 
+
+
+
                                 break;
+
                             case TypeComponent.WALL:
                                 //do player hit other thing
-                                break; //technically this isn't needed
+                                break;
+                                case TypeComponent.INTERACTABLE:
+                            if (isInteractHitbox){
+                                DialogueComponent dialogueComponent = Mappers.dialogueCom.get(entity);
+                                dialogueComponent.active = true;
+
+                             JsonValue text =   jsonText.get(Mappers.interactiveCom.get(collidedEntity).id);
+
+                                for (int j = 0; j < text.size; j++) {
+                                    dialogueComponent.dialogueTexts.add(text.getString(j));
+                                }
+
+                            }
+                                    break;
                         }
                         cc.collisionEntities.removeIndex(i); // collision handled reset component
 

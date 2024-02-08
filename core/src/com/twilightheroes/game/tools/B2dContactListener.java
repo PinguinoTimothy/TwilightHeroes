@@ -24,6 +24,7 @@ public class B2dContactListener implements ContactListener {
         boolean isHitbox = false;
         boolean isEnemyHitbox = false;
         boolean canBeReduced = false;
+        boolean isInteractHitbox = false;
 
             if ("playerAttackSensor".contains(fa.getUserData() == null ? "null":fa.getUserData().toString()) || "playerAttackSensor".contains(fb.getUserData() == null ? "null":fb.getUserData().toString())) {
                 isHitbox = true;
@@ -34,18 +35,22 @@ public class B2dContactListener implements ContactListener {
             if ("canBeReduced".contains(fa.getUserData() == null ? "null":fa.getUserData().toString()) || "canBeReduced".contains(fb.getUserData() == null ? "null":fb.getUserData().toString())) {
                 canBeReduced = true;
             }
+        if ("playerInteractSensor".contains(fa.getUserData() == null ? "null":fa.getUserData().toString()) || "playerInteractSensor".contains(fb.getUserData() == null ? "null":fb.getUserData().toString())) {
+            isInteractHitbox = true;
+
+        }
 
         if(fa.getBody().getUserData() instanceof Entity){
             Entity ent = (Entity) fa.getBody().getUserData();
-            entityCollision(ent,fb,true,isHitbox,isEnemyHitbox,canBeReduced);
+            entityCollision(ent,fb,true,isHitbox,isEnemyHitbox,canBeReduced,isInteractHitbox);
         }else if(fb.getBody().getUserData() instanceof Entity){
             Entity ent = (Entity) fb.getBody().getUserData();
-            entityCollision(ent,fa,true,isHitbox,isEnemyHitbox,canBeReduced);
+            entityCollision(ent,fa,true,isHitbox,isEnemyHitbox,canBeReduced,isInteractHitbox);
 
         }
     }
 
-    private void entityCollision(Entity ent, Fixture fb, boolean touching, boolean isHitbox, boolean isEnemyHitbox,boolean canBeReduced) {
+    private void entityCollision(Entity ent, Fixture fb, boolean touching, boolean isHitbox, boolean isEnemyHitbox,boolean canBeReduced,boolean isInteractHitbox) {
         if (fb.getBody().getUserData() instanceof Entity) {
             Entity colEnt = (Entity) fb.getBody().getUserData();
 
@@ -58,6 +63,7 @@ public class B2dContactListener implements ContactListener {
                 collisionsAux.isAttackHitbox = isHitbox;
                 collisionsAux.isEnemyHitbox = isEnemyHitbox;
                 collisionsAux.canBeReduced = canBeReduced;
+                collisionsAux.isInteractHitbox = isInteractHitbox;
 
                 if (touching) {
                     // Si las entidades están en contacto, añade la entidad a la lista de colisiones
@@ -75,6 +81,8 @@ public class B2dContactListener implements ContactListener {
                 collisionsAux.isAttackHitbox = isHitbox;
                 collisionsAux.isEnemyHitbox = isEnemyHitbox;
             collisionsAux.canBeReduced = canBeReduced;
+                collisionsAux.isInteractHitbox = isInteractHitbox;
+
                 if (touching) {
                     colb.collisionEntities.add(collisionsAux);
                 } else {

@@ -30,8 +30,10 @@ import com.twilightheroes.game.ecs.components.AttackComponent;
 import com.twilightheroes.game.ecs.components.B2dBodyComponent;
 import com.twilightheroes.game.ecs.components.BulletComponent;
 import com.twilightheroes.game.ecs.components.CollisionComponent;
+import com.twilightheroes.game.ecs.components.DialogueComponent;
 import com.twilightheroes.game.ecs.components.EnemyComponent;
 import com.twilightheroes.game.ecs.components.ExitComponent;
+import com.twilightheroes.game.ecs.components.InteractiveObjectComponent;
 import com.twilightheroes.game.ecs.components.PlayerComponent;
 import com.twilightheroes.game.ecs.components.spells.Spell;
 import com.twilightheroes.game.ecs.components.spells.SpellComponent;
@@ -41,6 +43,7 @@ import com.twilightheroes.game.ecs.components.TextureComponent;
 import com.twilightheroes.game.ecs.components.TypeComponent;
 import com.twilightheroes.game.ecs.components.effectComponents.StatusComponent;
 import com.twilightheroes.game.ecs.components.spells.SpellList;
+import com.twilightheroes.game.ecs.components.spells.SpellVFX;
 import com.twilightheroes.game.screens.MainScreen;
 
 import java.util.HashMap;
@@ -96,7 +99,7 @@ public class B2WorldCreator {
                 Spell[] auxSpells = new Spell[auxSpellString.length];
                 for (int j = 0; j < auxSpellString.length; j++) {
                     JsonValue jsonSpell = jsonSpells.get(auxSpellString[j]);
-                    auxSpells[j] = new Spell(SpellList.spells.valueOf(jsonSpell.get("spellId").asString()).ordinal(),jsonSpell.get("manaCost").asInt(), jsonSpell.get("castingTime").asFloat());
+                    auxSpells[j] = new Spell(SpellList.spells.valueOf(jsonSpell.get("spellId").asString()).ordinal(),jsonSpell.get("manaCost").asInt(), jsonSpell.get("castingTime").asFloat(),new SpellVFX(4,4));
                 }
                 spells = auxSpells;
             }
@@ -136,6 +139,7 @@ public class B2WorldCreator {
 
         shape.dispose();
         crearSalidas();
+        crearInteracciones();
 
 
 
@@ -205,6 +209,59 @@ public class B2WorldCreator {
         }
     }
 
+    public void crearInteracciones() {
+        BodyDef bodyDef = new BodyDef();
+        PolygonShape shape = new PolygonShape();
+        FixtureDef fixtureDef = new FixtureDef();
+        Body body;
+
+        //Crear las habitaciones
+        for (MapObject object : map.getLayers().get("interactiveObject").getObjects().getByType(RectangleMapObject.class)) {
+
+            // Create the Entity and all the components that will go in the entity
+            Entity entity = engine.createEntity();
+            B2dBodyComponent b2dbody = engine.createComponent(B2dBodyComponent.class);
+            InteractiveObjectComponent interactiveObjectComponent = engine.createComponent(InteractiveObjectComponent.class);
+
+
+            CollisionComponent colComp = engine.createComponent(CollisionComponent.class);
+            TypeComponent type = engine.createComponent(TypeComponent.class);
+
+
+            type.type = TypeComponent.INTERACTABLE;
+
+            Rectangle rectangle = ((RectangleMapObject) object).getRectangle();
+            bodyDef.type = BodyDef.BodyType.StaticBody;
+            bodyDef.position.set((rectangle.getX() + rectangle.getWidth() / 2) / TwilightHeroes.PPM, (rectangle.getY() + rectangle.getHeight() / 2) / TwilightHeroes.PPM);
+
+            b2dbody.body = world.createBody(bodyDef);
+            shape.setAsBox(rectangle.getWidth() / 2 / TwilightHeroes.PPM, rectangle.getHeight() / 2 / TwilightHeroes.PPM);
+            fixtureDef.shape = shape;
+            fixtureDef.isSensor = true;
+            fixtureDef.filter.categoryBits = TwilightHeroes.EXIT_BIT;
+            fixtureDef.filter.maskBits = TwilightHeroes.PLAYER_BIT | TwilightHeroes.INMUNE_BIT;
+            b2dbody.body.createFixture(fixtureDef);
+            b2dbody.body.setUserData(entity);
+            b2dbody.width = rectangle.getWidth();
+            b2dbody.height = rectangle.getHeight();
+            b2dbody.startX = rectangle.getX();
+            b2dbody.startY = rectangle.getY();
+
+            interactiveObjectComponent.id = (int) object.getProperties().get("id");
+
+            // add the components to the entity
+            entity.add(b2dbody);
+            entity.add(colComp);
+            entity.add(type);
+            entity.add(interactiveObjectComponent);
+
+            engine.addEntity(entity);
+            screen.bodies.add(b2dbody.body);
+
+
+        }
+    }
+
     public TextureRegion aux;
     public void createPlayer(TextureAtlas atlas, Entity playerEntity) {
         JsonValue jsonPlayer = jsonConfig.get("personaje");
@@ -223,7 +280,7 @@ public class B2WorldCreator {
             StatsComponent statsComponent = engine.createComponent(StatsComponent.class);
             StatusComponent statusComponent = engine.createComponent(StatusComponent.class);
             SpellComponent spellComponent = engine.createComponent(SpellComponent.class);
-
+            DialogueComponent dialogueComponent = engine.createComponent(DialogueComponent.class);
 
 
             // create the data for the components and add them to the components
@@ -309,10 +366,10 @@ public class B2WorldCreator {
 
 
             JsonValue auxSpell = jsonSpells.get(screen.parent.playerSettings.spell1);
-            spellComponent.spell1 = new Spell(SpellList.spells.valueOf(auxSpell.get("spellId").asString()).ordinal(),auxSpell.get("manaCost").asInt(), auxSpell.get("castingTime").asFloat());
+            spellComponent.spell1 = new Spell(SpellList.spells.valueOf(auxSpell.get("spellId").asString()).ordinal(),auxSpell.get("manaCost").asInt(), auxSpell.get("castingTime").asFloat(),new SpellVFX(4,12));
 
             auxSpell = jsonSpells.get(screen.parent.playerSettings.spell2);
-            spellComponent.spell2 = new Spell(SpellList.spells.valueOf(auxSpell.get("spellId").asString()).ordinal(),auxSpell.get("manaCost").asInt(), auxSpell.get("castingTime").asFloat());
+            spellComponent.spell2 = new Spell(SpellList.spells.valueOf(auxSpell.get("spellId").asString()).ordinal(),auxSpell.get("manaCost").asInt(), auxSpell.get("castingTime").asFloat(),new SpellVFX(4,12));
 
 
 
@@ -327,6 +384,7 @@ public class B2WorldCreator {
             entity.add(statsComponent);
             entity.add(statusComponent);
             entity.add(spellComponent);
+            entity.add(dialogueComponent);
 
 // add the entity to the engine
 

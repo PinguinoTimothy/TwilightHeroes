@@ -2,6 +2,7 @@ package com.twilightheroes.game.ecs.components;
 
 import com.badlogic.ashley.core.Component;
 import com.badlogic.ashley.core.Entity;
+import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Pool;
 
@@ -20,6 +21,8 @@ public class PlayerComponent implements Component,Pool.Poolable {
     public boolean canDodge = true;
     public boolean canJump = true;
     public float coyoteTime;
+    public Fixture interactFixture;
+
 
 
     @Override
@@ -29,5 +32,6 @@ public class PlayerComponent implements Component,Pool.Poolable {
         canJump = true;
         canDodge = true;
         inmune = false;
+
     }
 }

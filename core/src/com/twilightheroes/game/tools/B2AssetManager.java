@@ -62,6 +62,11 @@ public class B2AssetManager {
         manager.load("spells/healingSigilChecked.png",Texture.class);
         manager.load("spells/frostSpear.png",Texture.class);
         manager.load("spells/frostSpearChecked.png",Texture.class);
+        manager.load("spells/shockingGrasp.png",Texture.class);
+        manager.load("spells/shockingGraspChecked.png",Texture.class);
+        manager.load("spells/spellsVFX/spellsVFX.atlas",TextureAtlas.class);
+        manager.load("spells/spellsVFX/shockingGrasp.png",Texture.class);
+
 
         manager.load("arrow.atlas", TextureAtlas.class);
         manager.load("arrow.png", Texture.class);
@@ -88,6 +93,9 @@ public class B2AssetManager {
         SkinLoader.SkinParameter params3 = new SkinLoader.SkinParameter("hud/orbeManaPequeño.atlas");
         manager.load(skinMana, Skin.class,params3);
 
+        String skinDialogo = "hud/dialogSkin.json";
+        SkinLoader.SkinParameter params4 = new SkinLoader.SkinParameter("hud/dialogSkin.atlas");
+        manager.load(skinDialogo, Skin.class,params4);
 
     }
 

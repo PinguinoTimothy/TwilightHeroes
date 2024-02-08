@@ -29,6 +29,7 @@ import com.twilightheroes.game.TwilightHeroes;
 import com.twilightheroes.game.ecs.components.spells.Spell;
 import com.twilightheroes.game.ecs.components.spells.SpellComponent;
 import com.twilightheroes.game.ecs.components.spells.SpellList;
+import com.twilightheroes.game.ecs.components.spells.SpellVFX;
 import com.twilightheroes.game.tools.Mappers;
 import com.twilightheroes.game.tools.WidgetContainer;
 
@@ -271,10 +272,10 @@ import com.twilightheroes.game.tools.WidgetContainer;
 
 
         if (selectedSlot.getName().equals("Button1")){
-            spellComponent.spell1 = new Spell(SpellList.spells.valueOf(jsonSpell.get("spellId").asString()).ordinal(),jsonSpell.get("manaCost").asInt(), jsonSpell.get("castingTime").asFloat());
+            spellComponent.spell1 = new Spell(SpellList.spells.valueOf(jsonSpell.get("spellId").asString()).ordinal(),jsonSpell.get("manaCost").asInt(), jsonSpell.get("castingTime").asFloat(),new SpellVFX(4,4));
             parent.playerSettings.spell1 = jsonSpell.get("spellId").asString();
         }else{
-            spellComponent.spell2 = new Spell(SpellList.spells.valueOf(jsonSpell.get("spellId").asString()).ordinal(),jsonSpell.get("manaCost").asInt(), jsonSpell.get("castingTime").asFloat());
+            spellComponent.spell2 = new Spell(SpellList.spells.valueOf(jsonSpell.get("spellId").asString()).ordinal(),jsonSpell.get("manaCost").asInt(), jsonSpell.get("castingTime").asFloat(),new SpellVFX(4,4));
             parent.playerSettings.spell2 = jsonSpell.get("spellId").asString();
 
         }

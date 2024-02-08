@@ -33,6 +33,12 @@ public class AnimationSystem extends IteratingSystem {
             tex.sprite.setRegion(ani.animations.get(state.get()).getKeyFrame(state.time, state.isLooping));
         ani.currentFrame = ani.animations.get(state.get()).getKeyFrameIndex(state.time);
         }
+
+        if (state.get() == StateComponent.STATE_VFX && ani.animations.get(state.get()).isAnimationFinished(state.time)){
+            getEngine().removeEntity(entity);
+        }
+
         state.time += deltaTime;
+
     }
 }

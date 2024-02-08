@@ -26,5 +26,18 @@
         "startFrames": 3,
         "goingFrames":10,
         "endingFrames":7
+    },
+    "shockingGrasp":
+    {
+        "spellId": "shockingGrasp",
+        "spellNameES": "Shocking Grasp",
+        "descriptionES": "Coste: 25 mana \nCura a su lanzador",
+        "spellNameEN": "Healing Sigil",
+        "descriptionEN": "Cost: 25 mana \nHeals the user",
+        "castingTime": 3,
+        "manaCost": 25,
+        "startFrames": 3,
+        "goingFrames":10,
+        "endingFrames":7
     }
 }

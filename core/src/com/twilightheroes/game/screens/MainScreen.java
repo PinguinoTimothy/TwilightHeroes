@@ -34,6 +34,7 @@ import com.twilightheroes.game.ecs.components.PlayerComponent;
 import com.twilightheroes.game.ecs.systems.AnimationSystem;
 import com.twilightheroes.game.ecs.systems.BulletSystem;
 import com.twilightheroes.game.ecs.systems.CollisionSystem;
+import com.twilightheroes.game.ecs.systems.DialogueSystem;
 import com.twilightheroes.game.ecs.systems.EffectSystem;
 import com.twilightheroes.game.ecs.systems.EnemySystem;
 import com.twilightheroes.game.ecs.systems.PhysicsDebugSystem;
@@ -65,7 +66,7 @@ public class MainScreen implements Screen {
 
  //   private float viewportWidth,viewportHeight;
 
-    private Hud hud;
+    public Hud hud;
 
     private Touchpad touchpad;
     private Skin touchpadSkin;
@@ -77,7 +78,7 @@ public class MainScreen implements Screen {
 
     private Viewport viewport;
 private     float viewportWidth,viewportHeight;
-    private OrthographicCamera gameCam;
+    public OrthographicCamera gameCam;
 
     private float dt;
     private     Skin btnJumpSkin;
@@ -203,6 +204,11 @@ hud.stage.setDebugAll(true);
         btnPause.setBounds(350, 170, 30, 30);
         hud.stage.addActor(btnPause);
 
+       ImageButton btnInteract = new ImageButton(new TextureRegionDrawable(new TextureRegion(manager.get("hud/pauseButton.png", Texture.class))));
+        btnInteract.setScale(1.5f,1.5f);
+        btnInteract.setBounds(300, 70, 30, 30);
+        hud.stage.addActor(btnInteract);
+
 
 
 
@@ -212,11 +218,12 @@ hud.stage.setDebugAll(true);
         engine.addSystem(new PhysicsSystem(world,engine,this));
         engine.addSystem(new PhysicsDebugSystem(world, renderingSystem.getCamera()));
         engine.addSystem(new CollisionSystem(renderingSystem,this));
-        engine.addSystem(new PlayerControlSystem(touchpad,btnJump,btnAttack,btnDodge, btnSpell1, btnSpell2,btnPause,this));
+        engine.addSystem(new PlayerControlSystem(touchpad,btnJump,btnAttack,btnDodge, btnSpell1, btnSpell2,btnInteract,btnPause,this));
         engine.addSystem(new EnemySystem(this));
         engine.addSystem(new EffectSystem());
         engine.addSystem(new BulletSystem(this));
         engine.addSystem(new SpellSystem(this));
+        engine.addSystem(new DialogueSystem(this));
 
 
         b2WorldCreator = new B2WorldCreator(world,engine,this,manager);
@@ -319,8 +326,7 @@ changeMap();
             parent.changeScreen(TwilightHeroes.ENDGAME);
         }
 
-        Gdx.gl.glClearColor(0f, 0f, 0f, 1);
-        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT | (Gdx.graphics.getBufferFormat().coverageSampling?GL20.GL_COVERAGE_BUFFER_BIT_NV:0));
 
 
 

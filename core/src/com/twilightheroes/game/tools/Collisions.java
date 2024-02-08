@@ -7,6 +7,7 @@ public class Collisions {
     public boolean isAttackHitbox;
     public boolean isEnemyHitbox;
     public boolean canBeReduced;
+    public boolean isInteractHitbox;
 
 
 }
