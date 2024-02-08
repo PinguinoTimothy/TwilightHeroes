@@ -26,6 +26,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.twilightheroes.game.TwilightHeroes;
@@ -213,10 +214,10 @@ hud.stage.setDebugAll(true);
 
 
         // add all the relevant systems our engine should run
-        engine.addSystem(new AnimationSystem());
         engine.addSystem(renderingSystem);
         engine.addSystem(new PhysicsSystem(world,engine,this));
         engine.addSystem(new PhysicsDebugSystem(world, renderingSystem.getCamera()));
+        engine.addSystem(new AnimationSystem());
         engine.addSystem(new CollisionSystem(renderingSystem,this));
         engine.addSystem(new PlayerControlSystem(touchpad,btnJump,btnAttack,btnDodge, btnSpell1, btnSpell2,btnInteract,btnPause,this));
         engine.addSystem(new EnemySystem(this));
@@ -326,8 +327,7 @@ changeMap();
             parent.changeScreen(TwilightHeroes.ENDGAME);
         }
 
-        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT | (Gdx.graphics.getBufferFormat().coverageSampling?GL20.GL_COVERAGE_BUFFER_BIT_NV:0));
-
+        ScreenUtils.clear(0.1f, 0.1f, 0.1f, 1, true);
 
 
         // Render the background (tiled map) first

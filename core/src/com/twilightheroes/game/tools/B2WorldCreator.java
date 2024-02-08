@@ -117,27 +117,9 @@ public class B2WorldCreator {
 
         }
         this.map = map;
-        BodyDef bodyDef = new BodyDef();
-        PolygonShape shape = new PolygonShape();
-        FixtureDef fixtureDef = new FixtureDef();
-        Body body;
+
         //Crear el suelo
-        for (MapObject object : map.getLayers().get("ground").getObjects().getByType(RectangleMapObject.class)) {
-            if (object != null) {
-                Rectangle rectangle = ((RectangleMapObject) object).getRectangle();
-                bodyDef.type = BodyDef.BodyType.StaticBody;
-                bodyDef.position.set((rectangle.getX() + rectangle.getWidth() / 2) / TwilightHeroes.PPM, (rectangle.getY() + rectangle.getHeight() / 2) / TwilightHeroes.PPM);
-
-                body = world.createBody(bodyDef);
-                shape.setAsBox(rectangle.getWidth() / 2 / TwilightHeroes.PPM, rectangle.getHeight() / 2 / TwilightHeroes.PPM);
-                fixtureDef.shape = shape;
-                fixtureDef.filter.categoryBits = TwilightHeroes.SOLID_BIT;
-                body.createFixture(fixtureDef);
-                screen.bodies.add(body);
-            }
-        }
-
-        shape.dispose();
+       crearTerreno();
         crearSalidas();
         crearInteracciones();
 
@@ -155,11 +137,51 @@ public class B2WorldCreator {
 
     }
 
+    public void crearTerreno() {
+        BodyDef bodyDef = new BodyDef();
+        PolygonShape shape = new PolygonShape();
+        FixtureDef fixtureDef = new FixtureDef();
+
+        //Crear el terreno
+        for (MapObject object : map.getLayers().get("ground").getObjects().getByType(RectangleMapObject.class)) {
+
+            // Create the Entity and all the components that will go in the entity
+            Entity entity = engine.createEntity();
+            B2dBodyComponent b2dbody = engine.createComponent(B2dBodyComponent.class);
+            TypeComponent type = engine.createComponent(TypeComponent.class);
+
+
+            type.type = TypeComponent.FLOOR;
+
+            Rectangle rectangle = ((RectangleMapObject) object).getRectangle();
+            bodyDef.type = BodyDef.BodyType.StaticBody;
+            bodyDef.position.set((rectangle.getX() + rectangle.getWidth() / 2) / TwilightHeroes.PPM, (rectangle.getY() + rectangle.getHeight() / 2) / TwilightHeroes.PPM);
+
+            b2dbody.body = world.createBody(bodyDef);
+            shape.setAsBox(rectangle.getWidth() / 2 / TwilightHeroes.PPM, rectangle.getHeight() / 2 / TwilightHeroes.PPM);
+            fixtureDef.shape = shape;
+            fixtureDef.filter.categoryBits = TwilightHeroes.SOLID_BIT;
+            b2dbody.body.createFixture(fixtureDef);
+            b2dbody.body.setUserData(entity);
+
+
+            // add the components to the entity
+            entity.add(b2dbody);
+            entity.add(type);
+
+            engine.addEntity(entity);
+            screen.bodies.add(b2dbody.body);
+
+
+        }
+        shape.dispose();
+    }
+
+
     public void crearSalidas() {
         BodyDef bodyDef = new BodyDef();
         PolygonShape shape = new PolygonShape();
         FixtureDef fixtureDef = new FixtureDef();
-        Body body;
 
         //Crear las habitaciones
         for (MapObject object : map.getLayers().get("exit").getObjects().getByType(RectangleMapObject.class)) {
@@ -207,13 +229,13 @@ public class B2WorldCreator {
 
 
         }
+        shape.dispose();
     }
 
     public void crearInteracciones() {
         BodyDef bodyDef = new BodyDef();
         PolygonShape shape = new PolygonShape();
         FixtureDef fixtureDef = new FixtureDef();
-        Body body;
 
         //Crear las habitaciones
         for (MapObject object : map.getLayers().get("interactiveObject").getObjects().getByType(RectangleMapObject.class)) {
@@ -238,8 +260,8 @@ public class B2WorldCreator {
             shape.setAsBox(rectangle.getWidth() / 2 / TwilightHeroes.PPM, rectangle.getHeight() / 2 / TwilightHeroes.PPM);
             fixtureDef.shape = shape;
             fixtureDef.isSensor = true;
-            fixtureDef.filter.categoryBits = TwilightHeroes.EXIT_BIT;
-            fixtureDef.filter.maskBits = TwilightHeroes.PLAYER_BIT | TwilightHeroes.INMUNE_BIT;
+            fixtureDef.filter.categoryBits = TwilightHeroes.INTERACTIVE_BIT;
+            fixtureDef.filter.maskBits = TwilightHeroes.HITBOX_BIT;
             b2dbody.body.createFixture(fixtureDef);
             b2dbody.body.setUserData(entity);
             b2dbody.width = rectangle.getWidth();
@@ -260,6 +282,7 @@ public class B2WorldCreator {
 
 
         }
+        shape.dispose();
     }
 
     public TextureRegion aux;
@@ -564,9 +587,7 @@ public class B2WorldCreator {
         b2dbody.body.createFixture(fixtureDef);
         shape.dispose();
 
-        texture.sprite.setRegion(manager.get("arrow.png",Texture.class));
-        texture.sprite.setBounds(x,y,10/TwilightHeroes.PPM,10/TwilightHeroes.PPM);
-        texture.runningRight = runningRight;
+
 
 
         JsonValue json = new JsonReader().parse(Gdx.files.internal("config/spells.json"));
@@ -578,6 +599,10 @@ public class B2WorldCreator {
         animationComponent.animations.put(StateComponent.STATE_SPELL_GOING, AnimationMaker.crearAnimacion(spellAtlas, spellName+"Going",   jsonSpell.get("goingFrames").asInt(), jsonSpell.get("goingFrames").asInt()));
         animationComponent.animations.put(StateComponent.STATE_SPELL_ENDING, AnimationMaker.crearAnimacion(spellAtlas, spellName+"Ending",  jsonSpell.get("endingFrames").asInt(), jsonSpell.get("endingFrames").asInt()));
         stateComponent.set(StateComponent.STATE_SPELL_STARTING);
+
+        texture.sprite.setRegion(animationComponent.animations.get(stateComponent.get()).getKeyFrame(stateComponent.time, stateComponent.isLooping));
+        texture.sprite.setBounds(x,y,10/TwilightHeroes.PPM,10/TwilightHeroes.PPM);
+        texture.runningRight = runningRight;
 
         type.type = TypeComponent.BULLET;
         b2dbody.body.setUserData(entity);

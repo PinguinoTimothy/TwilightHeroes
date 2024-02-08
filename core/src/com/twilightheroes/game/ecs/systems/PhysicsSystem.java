@@ -35,7 +35,6 @@ public class PhysicsSystem extends IteratingSystem {
     @Override
     public void update(float deltaTime) {
         super.update(deltaTime);
-        float frameTime = Math.min(deltaTime, 0.25f);
             world.step(1/61f, 6, 2);
 
 

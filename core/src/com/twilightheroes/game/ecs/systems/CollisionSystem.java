@@ -93,7 +93,6 @@ public class CollisionSystem extends IteratingSystem {
                                 break;
                             case TypeComponent.FLOOR:
                                 //do player hit scenery thing
-                                player.canDodge = true;
                                 player.canJump = true;
                                 player.coyoteTime = 0f;
                                 break;

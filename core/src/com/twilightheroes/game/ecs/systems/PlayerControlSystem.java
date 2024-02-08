@@ -119,14 +119,14 @@ public class PlayerControlSystem extends IteratingSystem {
             @Override
             public void clicked(InputEvent event, float x, float y) {
 
+                if (playerComponent.canAttack) {
 
-                if (numAtaquesLimite < 3 && !knockback && attackCooldown <= 0f) {
+                    if (numAtaquesLimite < 3 && !knockback && attackCooldown <= 0f) {
 
-                    numAtaquesLimite++;
-                    numAtaquesDeseados++;
-                    attacking = true;
-                    if (numAtaquesLimite > 3){
+                        numAtaquesLimite++;
+                        numAtaquesDeseados++;
                         attacking = true;
+
                     }
                 }
 
@@ -138,9 +138,11 @@ public class PlayerControlSystem extends IteratingSystem {
         btnDodge.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                if (dodgeCooldown <= 0 && !knockback && playerComponent.canDodge) {
+                if (dodgeCooldown <= 0 && !knockback && playerComponent.canDodge && !attacking) {
                     makeDodge = true;
+                    playerComponent.canAttack = false;
                     playerComponent.canDodge = false;
+                    playerComponent.canJump = false;
                     dodgeCooldown = 0.7f;
 
                 }
@@ -163,7 +165,9 @@ public class PlayerControlSystem extends IteratingSystem {
 
 
                     spellComponent.spellToCast = spellComponent.spell1;
-
+                    playerComponent.canAttack = false;
+                    playerComponent.canDodge = false;
+                    playerComponent.canJump = false;
                 }
 
 
@@ -178,9 +182,10 @@ public class PlayerControlSystem extends IteratingSystem {
 
                 if (playerComponent.mana >= spellComponent.spell2.manaCost && spellComponent.spellToCast == null) {
                     playerComponent.mana -= spellComponent.spell2.manaCost;
-
-
                     spellComponent.spellToCast = spellComponent.spell2;
+                    playerComponent.canAttack = false;
+                    playerComponent.canDodge = false;
+                    playerComponent.canJump = false;
 
                 }
 
@@ -210,7 +215,7 @@ public class PlayerControlSystem extends IteratingSystem {
     }
 
     public void saltar() {
-        if ((playerComponent.canJump || playerComponent.coyoteTime < 0.1f) && !knockback) {
+        if ((playerComponent.canJump || playerComponent.coyoteTime < 0.1f) && !knockback && !attacking) {
             playerComponent.canJump = false;
             playerComponent.coyoteTime += 1f;
             b2body.body.setLinearVelocity(b2body.body.getLinearVelocity().x, 0);
@@ -236,13 +241,8 @@ public class PlayerControlSystem extends IteratingSystem {
         spellComponent = Mappers.spellCom.get(entity);
         dialogueComponent = Mappers.dialogueCom.get(entity);
 
-        playerComponent.canJump = true;
-
-        if (dialogueComponent.active){
 
 
-
-        }else{
 
         if (stats.hp <= 0) {
             playerComponent.isDead = true;
@@ -276,7 +276,6 @@ public class PlayerControlSystem extends IteratingSystem {
             dodging = true;
             playerComponent.inmuneTime = 0.5f;
             dodgeTime = 0.1f;
-            state.set(StateComponent.STATE_DODGING);
             float dodgeForceX;
             if (touchpad.getKnobPercentX() > 0) {
                 dodgeForceX = 3f;
@@ -314,6 +313,10 @@ public class PlayerControlSystem extends IteratingSystem {
             }
         } else {
             dodgeCooldown -= deltaTime;
+            if (dodgeCooldown <= 0){
+                playerComponent.canDodge = true;
+
+            }
             texture.sprite.setAlpha(1);
             if (knockback) {
 
@@ -380,6 +383,7 @@ public class PlayerControlSystem extends IteratingSystem {
                             numAtaquesLimite = 0;
                             numAtaquesDeseados = 0;
                             attacking = false;
+                            playerComponent.canAttack = true;
 
                             if (b2body.body.getLinearVelocity().y < 0) {
                                 playerComponent.coyoteTime += deltaTime;
@@ -411,7 +415,7 @@ public class PlayerControlSystem extends IteratingSystem {
 
 
                             // Actualiza la dirección del sprite según la velocidad
-                            if (!knockback) {
+                            if (!knockback && !dodging) {
                                 if (b2body.body.getLinearVelocity().x > 0 && !texture.runningRight) {
                                     texture.runningRight = true;
 
@@ -425,6 +429,7 @@ public class PlayerControlSystem extends IteratingSystem {
                         }
                     }else{
                         playerComponent.canJump = false;
+                        playerComponent.canDodge = false;
 
                     }
                 }
@@ -466,7 +471,7 @@ public class PlayerControlSystem extends IteratingSystem {
             }
             }
         }
-    }
+
 
 
     private void createAttackFixture(TextureComponent texture, B2dBodyComponent b2dbody, AttackComponent attackComponent, float hx, float hy, float offsetX, float offsetY) {
@@ -497,7 +502,7 @@ public class PlayerControlSystem extends IteratingSystem {
         attackShape.dispose();
 
 
-        b2dbody.body.setLinearVelocity(new Vector2((texture.runningRight ? 1f : -1f), 0f));
+        b2body.body.applyLinearImpulse(new Vector2(0.001f, 0), b2body.body.getWorldCenter(), true);
 
     }
 
@@ -520,8 +525,8 @@ public class PlayerControlSystem extends IteratingSystem {
         // Liberar los recursos del shape
         interactShape.dispose();
 
+        b2body.body.applyLinearImpulse(new Vector2(0.001f, 0), b2body.body.getWorldCenter(), true);
 
-        b2dbody.body.setLinearVelocity(new Vector2((texture.runningRight ? 1f : -1f), 0f));
 
     }
 

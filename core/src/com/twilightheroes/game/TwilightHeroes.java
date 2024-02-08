@@ -41,6 +41,7 @@ public class TwilightHeroes extends Game {
 	public static final short EXIT_BIT = 32;
 	public static final short INMUNE_BIT = 64;
 	public static final short BULLET_BIT = 128;
+	public static final short INTERACTIVE_BIT = 256;
 
 
 

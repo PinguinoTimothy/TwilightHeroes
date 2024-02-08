@@ -20,6 +20,7 @@ public class PlayerComponent implements Component,Pool.Poolable {
     public boolean isDead = false;
     public boolean canDodge = true;
     public boolean canJump = true;
+    public boolean canAttack = true;
     public float coyoteTime;
     public Fixture interactFixture;
 
@@ -31,6 +32,7 @@ public class PlayerComponent implements Component,Pool.Poolable {
         isDead = false;
         canJump = true;
         canDodge = true;
+        canAttack = true;
         inmune = false;
 
     }

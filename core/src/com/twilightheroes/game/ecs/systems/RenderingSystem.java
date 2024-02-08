@@ -20,7 +20,7 @@
 
         public class RenderingSystem extends IteratingSystem {
 
-            public static final float PPM = 100f;
+            public static final float PPM = 99.9f;
 
 
             public static final float PIXELS_TO_METRES = 1.0f / PPM;
@@ -100,7 +100,7 @@
 
                     if (entity.getComponents().contains(Mappers.playerCom.get(entity),true)){
 
-                        float lerp = 0.1f; // Ajusta este valor según sea necesario
+                        float lerp = 0.1f ; // Ajusta este valor según sea necesario
                         float targetX = MathUtils.clamp(tex.sprite.getX(),  PixelsToMeters(roomStartX) + cam.viewportWidth / 2, PixelsToMeters(roomStartX) +PixelsToMeters(roomWidth) - cam.viewportWidth / 2);
                      float targetY = MathUtils.clamp(tex.sprite.getY(),  PixelsToMeters(roomStartY) + cam.viewportHeight / 2, PixelsToMeters(roomStartY) +PixelsToMeters(roomHeight) - cam.viewportHeight / 2);
 
@@ -127,6 +127,7 @@
 
             @Override
             public void processEntity(Entity entity, float deltaTime) {
+
                 renderQueue.add(entity);
 
                 TextureComponent tex = Mappers.texCom.get(entity);

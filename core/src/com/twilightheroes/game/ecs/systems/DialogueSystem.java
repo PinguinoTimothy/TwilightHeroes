@@ -55,7 +55,10 @@ public class DialogueSystem extends IteratingSystem {
             @Override
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
                 // Marcar que se ha tocado la pantalla
-                touchDown = true;
+
+                    touchDown = true;
+
+
                 return super.touchDown(event, x, y, pointer, button);
             }
         });
@@ -69,7 +72,9 @@ public class DialogueSystem extends IteratingSystem {
         if (dialogueComponent.active) {
             if (dialogueComponent.dialogueTexts.isEmpty()) {
                 // No hay más textos, ocultar el cuadro de diálogo
-                hideDialogue(dialogueComponent);
+                if (touchDown) {
+                    hideDialogue(dialogueComponent);
+                }
             } else {
                 // Verificar si se tocó la pantalla para avanzar al siguiente texto
                 if (touchDown) {
@@ -77,9 +82,6 @@ public class DialogueSystem extends IteratingSystem {
                     touchDown = false;  // Reiniciar la bandera de toque
                 }
             }
-        } else {
-            // Ocultar cuadro de diálogo
-            System.out.println("Ocultar Diálogo");
         }
     }
 
@@ -87,7 +89,7 @@ public class DialogueSystem extends IteratingSystem {
     // Método para mostrar el siguiente texto del diálogo
     public void showDialogue(DialogueComponent dialogueComponent) {
         if (!dialogueComponent.dialogueTexts.isEmpty()) {
-            String nextText = dialogueComponent.dialogueTexts.pop();
+            String nextText = dialogueComponent.dialogueTexts.removeIndex(0);
             showDialogue(nextText);
         } else {
             hideDialogue(dialogueComponent);

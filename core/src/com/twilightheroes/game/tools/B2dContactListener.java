@@ -11,7 +11,7 @@ import com.twilightheroes.game.ecs.components.CollisionComponent;
 
 public class B2dContactListener implements ContactListener {
 
-    public B2dContactListener(){
+    public B2dContactListener() {
     }
 
     @Override
@@ -19,38 +19,38 @@ public class B2dContactListener implements ContactListener {
         System.out.println("Contact");
         Fixture fa = contact.getFixtureA();
         Fixture fb = contact.getFixtureB();
-        System.out.println(fa.getBody().getType()+" has hit "+ fb.getBody().getType());
+        System.out.println(fa.getBody().getType() + " has hit " + fb.getBody().getType());
 
         boolean isHitbox = false;
         boolean isEnemyHitbox = false;
         boolean canBeReduced = false;
         boolean isInteractHitbox = false;
 
-            if ("playerAttackSensor".contains(fa.getUserData() == null ? "null":fa.getUserData().toString()) || "playerAttackSensor".contains(fb.getUserData() == null ? "null":fb.getUserData().toString())) {
-                isHitbox = true;
-            }
-            if ("enemyAttackSensor".contains(fa.getUserData() == null ? "null":fa.getUserData().toString()) || "enemyAttackSensor".contains(fb.getUserData() == null ? "null":fb.getUserData().toString())) {
-                isEnemyHitbox = true;
-            }
-            if ("canBeReduced".contains(fa.getUserData() == null ? "null":fa.getUserData().toString()) || "canBeReduced".contains(fb.getUserData() == null ? "null":fb.getUserData().toString())) {
-                canBeReduced = true;
-            }
-        if ("playerInteractSensor".contains(fa.getUserData() == null ? "null":fa.getUserData().toString()) || "playerInteractSensor".contains(fb.getUserData() == null ? "null":fb.getUserData().toString())) {
+        if ("playerAttackSensor".contains(fa.getUserData() == null ? "null" : fa.getUserData().toString()) || "playerAttackSensor".contains(fb.getUserData() == null ? "null" : fb.getUserData().toString())) {
+            isHitbox = true;
+        }
+        if ("enemyAttackSensor".contains(fa.getUserData() == null ? "null" : fa.getUserData().toString()) || "enemyAttackSensor".contains(fb.getUserData() == null ? "null" : fb.getUserData().toString())) {
+            isEnemyHitbox = true;
+        }
+        if ("canBeReduced".contains(fa.getUserData() == null ? "null" : fa.getUserData().toString()) || "canBeReduced".contains(fb.getUserData() == null ? "null" : fb.getUserData().toString())) {
+            canBeReduced = true;
+        }
+        if ("playerInteractSensor".contains(fa.getUserData() == null ? "null" : fa.getUserData().toString()) || "playerInteractSensor".contains(fb.getUserData() == null ? "null" : fb.getUserData().toString())) {
             isInteractHitbox = true;
 
         }
 
-        if(fa.getBody().getUserData() instanceof Entity){
+        if (fa.getBody().getUserData() instanceof Entity) {
             Entity ent = (Entity) fa.getBody().getUserData();
-            entityCollision(ent,fb,true,isHitbox,isEnemyHitbox,canBeReduced,isInteractHitbox);
-        }else if(fb.getBody().getUserData() instanceof Entity){
+            entityCollision(ent, fb, true, isHitbox, isEnemyHitbox, canBeReduced, isInteractHitbox);
+        } else if (fb.getBody().getUserData() instanceof Entity) {
             Entity ent = (Entity) fb.getBody().getUserData();
-            entityCollision(ent,fa,true,isHitbox,isEnemyHitbox,canBeReduced,isInteractHitbox);
+            entityCollision(ent, fa, true, isHitbox, isEnemyHitbox, canBeReduced, isInteractHitbox);
 
         }
     }
 
-    private void entityCollision(Entity ent, Fixture fb, boolean touching, boolean isHitbox, boolean isEnemyHitbox,boolean canBeReduced,boolean isInteractHitbox) {
+    private void entityCollision(Entity ent, Fixture fb, boolean touching, boolean isHitbox, boolean isEnemyHitbox, boolean canBeReduced, boolean isInteractHitbox) {
         if (fb.getBody().getUserData() instanceof Entity) {
             Entity colEnt = (Entity) fb.getBody().getUserData();
 
@@ -80,7 +80,7 @@ public class B2dContactListener implements ContactListener {
                 collisionsAux.collisionEntity = ent;
                 collisionsAux.isAttackHitbox = isHitbox;
                 collisionsAux.isEnemyHitbox = isEnemyHitbox;
-            collisionsAux.canBeReduced = canBeReduced;
+                collisionsAux.canBeReduced = canBeReduced;
                 collisionsAux.isInteractHitbox = isInteractHitbox;
 
                 if (touching) {
@@ -91,6 +91,7 @@ public class B2dContactListener implements ContactListener {
             }
         }
     }
+
     @Override
     public void endContact(Contact contact) {
 /*
@@ -117,9 +118,11 @@ public class B2dContactListener implements ContactListener {
 
  */
     }
+
     @Override
     public void preSolve(Contact contact, Manifold oldManifold) {
     }
+
     @Override
     public void postSolve(Contact contact, ContactImpulse impulse) {
     }
