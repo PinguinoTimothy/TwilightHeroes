@@ -55,6 +55,7 @@ public class PlayerControlSystem extends IteratingSystem {
     private SpellComponent spellComponent;
     private boolean attacking = false;
     private float attackCooldown = 0f;
+    private float interactCooldown = 0f;
 
 
     public PlayerControlSystem(Touchpad touchpad, Button btnSaltar, Button btnAtacar, Button btnDodge, Button btnHabilidad1, Button btnHabilidad2, Button interactButton, Button btnPause, final MainScreen screen) {
@@ -205,10 +206,15 @@ public class PlayerControlSystem extends IteratingSystem {
         if (playerComponent.mana > 100) {
             playerComponent.mana = 100;
         }
-        if (playerComponent.interactFixture != null) {
-            b2body.body.destroyFixture(playerComponent.interactFixture);
-            playerComponent.interactFixture = null;
+        if (interactCooldown <= 0) {
+            if (playerComponent.interactFixture != null) {
+                b2body.body.destroyFixture(playerComponent.interactFixture);
+                playerComponent.interactFixture = null;
+            }
+        }else {
+            interactCooldown-=deltaTime;
         }
+
         knockback = playerComponent.knockback;
         float speed = stats.speed;
 
@@ -342,7 +348,8 @@ public class PlayerControlSystem extends IteratingSystem {
 
 
                             } else if (b2body.body.getLinearVelocity().y == 0 && state.get() != StateComponent.STATE_JUMPING) {
-
+                                playerComponent.canJump = true;
+                                playerComponent.coyoteTime = 0f;
 
                                 if (b2body.body.getLinearVelocity().x != 0 && state.get() != StateComponent.STATE_JUMPING) {
                                     state.set(StateComponent.STATE_MOVING);
@@ -456,7 +463,9 @@ public class PlayerControlSystem extends IteratingSystem {
         // Liberar los recursos del shape
         interactShape.dispose();
 
-        b2body.body.applyLinearImpulse(new Vector2(0.001f, 0), b2body.body.getWorldCenter(), true);
+        interactCooldown = 0.001f;
+
+        b2body.body.applyLinearImpulse(new Vector2(0f, -0.1f), b2body.body.getWorldCenter(), true);
 
 
     }

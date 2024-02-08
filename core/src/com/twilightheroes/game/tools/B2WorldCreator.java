@@ -319,7 +319,8 @@ public class B2WorldCreator {
 
             FixtureDef fdef2 = new FixtureDef();
             EdgeShape feet = new EdgeShape();
-            feet.set(new Vector2(-4 / TwilightHeroes.PPM, -12 / TwilightHeroes.PPM), new Vector2(4 / TwilightHeroes.PPM, -12 / TwilightHeroes.PPM));
+
+            feet.set(new Vector2(-2 / TwilightHeroes.PPM, -12 / TwilightHeroes.PPM), new Vector2(2 / TwilightHeroes.PPM, -12 / TwilightHeroes.PPM));
             fdef2.shape = feet;
             fdef2.friction = 1;
             b2dbody.body.createFixture(fdef2);

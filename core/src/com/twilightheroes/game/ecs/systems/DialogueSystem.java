@@ -10,9 +10,9 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
-import com.badlogic.gdx.scenes.scene2d.ui.Dialog;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.badlogic.gdx.scenes.scene2d.ui.Window;
 import com.twilightheroes.game.ecs.components.DialogueComponent;
 import com.twilightheroes.game.screens.MainScreen;
 import com.twilightheroes.game.tools.Mappers;
@@ -22,7 +22,7 @@ public class DialogueSystem extends IteratingSystem {
     private final MainScreen screen;
     private final Label label;
     private boolean touchDown = false;
-    private Dialog dialog;
+    private Window dialog;
 
     public DialogueSystem(MainScreen screen) {
         super(Family.all(DialogueComponent.class).get());
@@ -95,11 +95,16 @@ public class DialogueSystem extends IteratingSystem {
         // Puedes implementar la lógica para obtener la entidad según tus necesidades
         label.setText(text);
 
+
         if (dialog == null) {
 
-            dialog = new Dialog("", screen.parent.assMan.manager.get("hud/dialogSkin.json", Skin.class));
-            dialog.text(label);
-            dialog.show(screen.hud.stage).setBounds(0, screen.hud.stage.getHeight(), screen.hud.stage.getWidth(), 75);
+            dialog = new Window("", screen.parent.assMan.manager.get("hud/dialogSkin.json", Skin.class));
+            dialog.setBounds(10, screen.hud.stage.getHeight()/2, screen.hud.stage.getWidth()-20, 75);
+            label.setBounds(10,dialog.getHeight(),dialog.getWidth(),dialog.getWidth());
+            dialog.add(label);
+
+            screen.hud.hideHudElements();
+            screen.hud.stage.addActor(dialog);
         }
     }
 
@@ -110,9 +115,10 @@ public class DialogueSystem extends IteratingSystem {
             // Si el diálogo está activo, ocúltalo y destrúyelo
             dialogueComponent.active = false;
             if (dialog != null) {
-                dialog.hide(); // Oculta el diálogo
                 dialog.remove(); // Remueve el diálogo de la Stage
                 dialog = null; // Establece la referencia del diálogo a null
+                screen.hud.showHudElements();
+
             }
         }
     }

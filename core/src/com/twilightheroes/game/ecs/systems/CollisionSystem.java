@@ -21,6 +21,7 @@ import com.twilightheroes.game.screens.MainScreen;
 import com.twilightheroes.game.tools.Collisions;
 import com.twilightheroes.game.tools.Mappers;
 
+
 public class CollisionSystem extends IteratingSystem {
 
     private final Filter inmuneFilter = new Filter();
@@ -86,8 +87,8 @@ public class CollisionSystem extends IteratingSystem {
                                 break;
                             case TypeComponent.FLOOR:
                                 //do player hit scenery thing
-                                player.canJump = true;
-                                player.coyoteTime = 0f;
+
+
                                 break;
 
                             case TypeComponent.EXIT:

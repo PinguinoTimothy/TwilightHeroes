@@ -5,6 +5,7 @@ import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.ProgressBar;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
@@ -53,6 +54,21 @@ public class Hud implements Disposable {
         stage.addActor(table);
 
 
+
+    }
+
+    public void hideHudElements() {
+
+
+        for (Actor act: stage.getActors()) {
+            act.setVisible(false);
+        }
+    }
+
+    public void showHudElements() {
+        for (Actor act: stage.getActors()) {
+            act.setVisible(true);
+        }
     }
 
 
