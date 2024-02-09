@@ -14,6 +14,7 @@ import com.twilightheroes.game.ecs.components.BulletComponent;
 import com.twilightheroes.game.ecs.components.CollisionComponent;
 import com.twilightheroes.game.ecs.components.DialogueComponent;
 import com.twilightheroes.game.ecs.components.ExitComponent;
+import com.twilightheroes.game.ecs.components.InteractiveObjectComponent;
 import com.twilightheroes.game.ecs.components.PlayerComponent;
 import com.twilightheroes.game.ecs.components.StatsComponent;
 import com.twilightheroes.game.ecs.components.TypeComponent;
@@ -21,7 +22,7 @@ import com.twilightheroes.game.screens.MainScreen;
 import com.twilightheroes.game.tools.Collisions;
 import com.twilightheroes.game.tools.Mappers;
 
-
+ 
 public class CollisionSystem extends IteratingSystem {
 
     private final Filter inmuneFilter = new Filter();
@@ -111,14 +112,21 @@ public class CollisionSystem extends IteratingSystem {
                                 break;
                             case TypeComponent.INTERACTABLE:
                                 if (isInteractHitbox) {
-                                    DialogueComponent dialogueComponent = Mappers.dialogueCom.get(entity);
-                                    dialogueComponent.active = true;
+                                    InteractiveObjectComponent interactiveObjectComponent = Mappers.interactiveCom.get(collidedEntity);
+                                    if (interactiveObjectComponent.isLever){
+                                        screen.parent.playerSettings.doorsOpened[interactiveObjectComponent.id] = true;
+                                        screen.b2WorldCreator.openDoors();
+                                    }else{
+                                        DialogueComponent dialogueComponent = Mappers.dialogueCom.get(entity);
+                                        dialogueComponent.active = true;
 
-                                    JsonValue text = jsonText.get(Mappers.interactiveCom.get(collidedEntity).id);
+                                        JsonValue text = jsonText.get(interactiveObjectComponent.id);
 
-                                    for (int j = 0; j < text.size; j++) {
-                                        dialogueComponent.dialogueTexts.add(text.getString(j));
+                                        for (int j = 0; j < text.size; j++) {
+                                            dialogueComponent.dialogueTexts.add(text.getString(j));
+                                        }
                                     }
+
 
                                 }
                                 break;

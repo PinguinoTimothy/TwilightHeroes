@@ -75,7 +75,9 @@ public class TwilightHeroes extends Game {
         playerSettings.spell2 = prefs.getString("spell2", "healingSigil");
         playerSettings.level = prefs.getInteger("level", 0);
         playerSettings.money = prefs.getInteger("money", 0);
-
+        for (int i = 0; i < playerSettings.doorsOpened.length; i++) {
+            playerSettings.doorsOpened[i] = prefs.getBoolean("door_"+i,false);
+        }
 
         jsonMultilanguage = new JsonReader().parse(Gdx.files.internal("config/language.json")).get(language.name());
         killCounterHandler(true);
@@ -202,6 +204,9 @@ public class TwilightHeroes extends Game {
         prefs.putString("spell2", playerSettings.spell2);
         prefs.putInteger("level", playerSettings.level);
         prefs.putInteger("money", playerSettings.money);
+        for (int i = 0; i < playerSettings.doorsOpened.length; i++) {
+            prefs.putBoolean("door"+i,playerSettings.doorsOpened[i]);
+        }
         prefs.flush();
         killCounterHandler(false);
     }

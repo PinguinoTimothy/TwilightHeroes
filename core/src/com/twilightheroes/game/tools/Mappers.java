@@ -7,6 +7,7 @@ import com.twilightheroes.game.ecs.components.B2dBodyComponent;
 import com.twilightheroes.game.ecs.components.BulletComponent;
 import com.twilightheroes.game.ecs.components.CollisionComponent;
 import com.twilightheroes.game.ecs.components.DialogueComponent;
+import com.twilightheroes.game.ecs.components.DoorComponent;
 import com.twilightheroes.game.ecs.components.EnemyComponent;
 import com.twilightheroes.game.ecs.components.ExitComponent;
 import com.twilightheroes.game.ecs.components.InteractiveObjectComponent;
@@ -39,6 +40,7 @@ public class Mappers {
     public static final ComponentMapper<BulletComponent> bullCom = ComponentMapper.getFor(BulletComponent.class);
     public static final ComponentMapper<DialogueComponent> dialogueCom = ComponentMapper.getFor(DialogueComponent.class);
     public static final ComponentMapper<InteractiveObjectComponent> interactiveCom = ComponentMapper.getFor(InteractiveObjectComponent.class);
+    public static final ComponentMapper<DoorComponent> doorCom = ComponentMapper.getFor(DoorComponent.class);
 
 
 }

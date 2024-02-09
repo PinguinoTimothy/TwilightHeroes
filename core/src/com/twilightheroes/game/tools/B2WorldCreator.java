@@ -1,13 +1,20 @@
 package com.twilightheroes.game.tools;
 
 import com.badlogic.ashley.core.Entity;
+import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.core.PooledEngine;
+import com.badlogic.ashley.utils.ImmutableArray;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.maps.objects.RectangleMapObject;
 import com.badlogic.gdx.maps.tiled.TiledMap;
+import com.badlogic.gdx.maps.tiled.TiledMapTile;
+import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
+import com.badlogic.gdx.maps.tiled.TiledMapTileSet;
+import com.badlogic.gdx.maps.tiled.TiledMapTileSets;
+import com.badlogic.gdx.maps.tiled.tiles.StaticTiledMapTile;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.BodyDef;
@@ -26,6 +33,7 @@ import com.twilightheroes.game.ecs.components.B2dBodyComponent;
 import com.twilightheroes.game.ecs.components.BulletComponent;
 import com.twilightheroes.game.ecs.components.CollisionComponent;
 import com.twilightheroes.game.ecs.components.DialogueComponent;
+import com.twilightheroes.game.ecs.components.DoorComponent;
 import com.twilightheroes.game.ecs.components.EnemyComponent;
 import com.twilightheroes.game.ecs.components.ExitComponent;
 import com.twilightheroes.game.ecs.components.InteractiveObjectComponent;
@@ -113,6 +121,7 @@ public class B2WorldCreator {
         crearTerreno();
         crearSalidas();
         crearInteracciones();
+        crearPuertas();
 
 
         createPlayer(manager.get("player/player.atlas", TextureAtlas.class), playerEntity);
@@ -255,7 +264,15 @@ public class B2WorldCreator {
             b2dbody.startX = rectangle.getX();
             b2dbody.startY = rectangle.getY();
 
-            interactiveObjectComponent.id = (int) object.getProperties().get("id");
+
+            if (object.getProperties().get("type") != null){
+                if (object.getProperties().get("type").equals("lever")) {
+                    interactiveObjectComponent.isLever = true;
+                }else{
+                    interactiveObjectComponent.isLever = false;
+                }
+                interactiveObjectComponent.id = (int) object.getProperties().get("id");
+            }
 
             // add the components to the entity
             entity.add(b2dbody);
@@ -269,6 +286,111 @@ public class B2WorldCreator {
 
         }
         shape.dispose();
+    }
+
+    public void crearPuertas(){
+        BodyDef bodyDef = new BodyDef();
+        PolygonShape shape = new PolygonShape();
+        FixtureDef fixtureDef = new FixtureDef();
+
+        //Crear las habitaciones
+        for (RectangleMapObject object : map.getLayers().get("door").getObjects().getByType(RectangleMapObject.class)) {
+
+            // Create the Entity and all the components that will go in the entity
+            Entity entity = engine.createEntity();
+            B2dBodyComponent b2dbody = engine.createComponent(B2dBodyComponent.class);
+            TypeComponent type = engine.createComponent(TypeComponent.class);
+            DoorComponent doorComponent = engine.createComponent(DoorComponent.class);
+
+            type.type = TypeComponent.DOOR;
+
+            Rectangle rectangle = object.getRectangle();
+            bodyDef.type = BodyDef.BodyType.StaticBody;
+            bodyDef.position.set((rectangle.getX() + rectangle.getWidth() / 2) / TwilightHeroes.PPM, (rectangle.getY() + rectangle.getHeight() / 2) / TwilightHeroes.PPM);
+
+            b2dbody.body = world.createBody(bodyDef);
+            shape.setAsBox(rectangle.getWidth() / 2 / TwilightHeroes.PPM, rectangle.getHeight() / 2 / TwilightHeroes.PPM);
+            fixtureDef.shape = shape;
+            fixtureDef.isSensor = false;
+            fixtureDef.filter.categoryBits = TwilightHeroes.SOLID_BIT;
+            b2dbody.body.createFixture(fixtureDef);
+            b2dbody.body.setUserData(entity);
+            b2dbody.width = rectangle.getWidth();
+            b2dbody.height = rectangle.getHeight();
+            b2dbody.startX = rectangle.getX();
+            b2dbody.startY = rectangle.getY();
+
+            doorComponent.id = (int) object.getProperties().get("id");
+
+            openDoors();
+
+            // add the components to the entity
+            entity.add(b2dbody);
+            entity.add(doorComponent);
+            entity.add(type);
+
+            engine.addEntity(entity);
+            screen.bodies.add(b2dbody.body);
+
+
+        }
+        shape.dispose();
+    }
+
+    public void openDoors() {
+        ImmutableArray<Entity> doors = engine.getEntitiesFor(Family.all(DoorComponent.class).get());
+        for (Entity door : doors) {
+            DoorComponent doorComponent = Mappers.doorCom.get(door);
+
+            if (screen.parent.playerSettings.doorsOpened[doorComponent.id]) {
+                // La puerta está abierta, elimina la entidad y cambia las tiles
+                destroyDoor(door);
+                changeTilesForOpenedDoor(door);
+            }
+        }
+    }
+
+    private void destroyDoor(Entity door) {
+        // Obtén el componente B2dBodyComponent asociado a la entidad
+        B2dBodyComponent b2dbody = Mappers.b2dCom.get(door);
+
+        // Elimina el cuerpo del mundo físico y la entidad del motor
+        screen.bodies.removeValue(b2dbody.body,true);
+        world.destroyBody(b2dbody.body);
+        engine.removeEntity(door);
+    }
+
+    private void changeTilesForOpenedDoor(Entity door) {
+        // Obtén el componente B2dBodyComponent asociado a la entidad
+        B2dBodyComponent b2dbody = Mappers.b2dCom.get(door);
+
+        // Puedes cambiar las tiles asociadas a la puerta abierta aquí.
+        // Por ejemplo, podrías cambiar el tipo de tile en el mapa o eliminar la capa de tiles asociada a la puerta cerrada.
+        // Asegúrate de tener acceso al mapa y sus capas para realizar estos cambios.
+        // Puedes usar TiledMapTileLayer para manipular las capas de tiles.
+
+        // Ejemplo de cambio de tipo de tile en una capa llamada "puertas"
+        TiledMapTileLayer puertasLayer = (TiledMapTileLayer) map.getLayers().get("doorTexture");
+
+        // Calcula las coordenadas de las tiles cubiertas por la puerta abierta
+        int tileStartX = (int) (b2dbody.startX / puertasLayer.getTileWidth());
+        int tileStartY = (int) (b2dbody.startY / puertasLayer.getTileHeight());
+        int tileEndX = (int) ((b2dbody.startX + b2dbody.width) / puertasLayer.getTileWidth());
+        int tileEndY = (int) ((b2dbody.startY + b2dbody.height) / puertasLayer.getTileHeight());
+
+        TiledMapTileSet newTileSets = map.getTileSets().getTileSet("Dungeon Tile Set");
+
+        TiledMapTile[]  newDoorTile = new TiledMapTile[]{newTileSets.getTile(10527+162) ,newTileSets.getTile(10527+177)  };
+        int i= 0;
+
+        // Itera sobre todas las tiles dentro del área cubierta por la puerta y cámbialas
+        for (int tileX = tileStartX; tileX < tileEndX; tileX++) {
+            for (int tileY = tileStartY; tileY < tileEndY; tileY++) {
+
+                puertasLayer.getCell(tileX, tileY).setTile(newDoorTile[i]); // o cualquier cambio que necesites hacer
+                i++;
+            }
+        }
     }
 
     public void createPlayer(TextureAtlas atlas, Entity playerEntity) {
