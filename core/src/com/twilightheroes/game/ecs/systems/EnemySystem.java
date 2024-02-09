@@ -4,6 +4,7 @@ import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.systems.IteratingSystem;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.twilightheroes.game.TwilightHeroes;
@@ -87,11 +88,21 @@ public class EnemySystem extends IteratingSystem {
 
             Vector2 distanceToPlayer = calculateDistance(entity);
 
-            if (attackComponent.attackFixture != null) {
-                // Si la fixture de ataque ya existe, la eliminamos antes de recrearla
-                bodyCom.body.destroyFixture(attackComponent.attackFixture);
-                attackComponent.attackFixture = null;
-            }
+
+                for (int i = 0; i < attackComponent.lifetimes.size; i++) {
+                    float lifetime = attackComponent.lifetimes.get(i);
+                    lifetime += deltaTime;
+                    attackComponent.lifetimes.set(i, lifetime);
+
+                    if (lifetime >= 0.1f) {
+                        Fixture atkFix = attackComponent.attackFixtures.get(i);
+                        bodyCom.body.destroyFixture(atkFix);
+                        attackComponent.attackFixtures.removeIndex(i);
+                        attackComponent.lifetimes.removeIndex(i);
+                        i--;  // Ajusta el índice después de eliminar un elemento
+                    }
+                }
+
 
             if (enemyStateComponent.get() == StateComponent.STATE_ENEMY_ATTACK && !animationComponent.animations.get(enemyStateComponent.get()).isAnimationFinished(enemyStateComponent.time)) {
                 if (animationComponent.currentFrame == enemyCom.attackFrame && attackComponent.performAttack) {
@@ -184,8 +195,10 @@ public class EnemySystem extends IteratingSystem {
         FixtureDef attackFixtureDef = new FixtureDef();
         attackFixtureDef.shape = attackShape;
         attackFixtureDef.isSensor = true; // Configurar la fixture como un sensor
-        attackComponent.attackFixture = b2dbody.body.createFixture(attackFixtureDef);
-        attackComponent.attackFixture.setUserData("enemyAttackSensor");
+        Fixture fix = b2dbody.body.createFixture(attackFixtureDef);
+        fix.setUserData("enemyAttackSensor");
+        attackComponent.attackFixtures.add(fix);
+        attackComponent.lifetimes.add(0f);
         // Liberar los recursos del shape
         attackShape.dispose();
         b2dbody.body.applyForce(new Vector2((texture.runningRight ? 1f : -1f), 0f), b2dbody.body.getWorldCenter(), true);

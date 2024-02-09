@@ -49,7 +49,7 @@ public class B2AssetManager {
         manager.load("spells/frostSpearChecked.png", Texture.class);
         manager.load("spells/shockingGrasp.png", Texture.class);
         manager.load("spells/shockingGraspChecked.png", Texture.class);
-        manager.load("spells/spellsVFX/spellsVFX.atlas", TextureAtlas.class);
+        manager.load("spells/spellsVFX/spells.atlas", TextureAtlas.class);
         manager.load("spells/spellsVFX/shockingGrasp.png", Texture.class);
 
 

@@ -115,7 +115,7 @@ public class CollisionSystem extends IteratingSystem {
                                     InteractiveObjectComponent interactiveObjectComponent = Mappers.interactiveCom.get(collidedEntity);
                                     if (interactiveObjectComponent.isLever){
                                         screen.parent.playerSettings.doorsOpened[interactiveObjectComponent.id] = true;
-                                        screen.b2WorldCreator.openDoors();
+                                        screen.b2WorldCreator.openDoors(collidedEntity);
                                     }else{
                                         DialogueComponent dialogueComponent = Mappers.dialogueCom.get(entity);
                                         dialogueComponent.active = true;

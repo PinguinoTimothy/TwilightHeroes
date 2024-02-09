@@ -25,6 +25,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.Timer;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.twilightheroes.game.TwilightHeroes;
@@ -73,6 +74,8 @@ public class MainScreen implements Screen {
     Image pantallaNegro;
     private TiledMap map;
     private float transitionTime = 0f;
+
+    public Timer timer;
     public MainScreen(TwilightHeroes twilightHeroes) {
         parent = twilightHeroes;
         world = new World(new Vector2(0, -9.8f), true);
@@ -176,6 +179,7 @@ public class MainScreen implements Screen {
 
 
         // add all the relevant systems our engine should run
+        engine.addSystem(new SpellSystem(this));
         engine.addSystem(new PlayerControlSystem(touchpad, btnJump, btnAttack, btnDodge, btnSpell1, btnSpell2, btnInteract, btnPause, this));
         engine.addSystem(new AnimationSystem());
         engine.addSystem(new PhysicsDebugSystem(world, renderingSystem.getCamera()));
@@ -185,7 +189,6 @@ public class MainScreen implements Screen {
         engine.addSystem(new EnemySystem(this));
         engine.addSystem(new EffectSystem());
         engine.addSystem(new BulletSystem(this));
-        engine.addSystem(new SpellSystem(this));
         engine.addSystem(new DialogueSystem(this));
 
 
@@ -203,6 +206,9 @@ public class MainScreen implements Screen {
         changeMap();
         WidgetContainer widgetContainer = new WidgetContainer();
         parent.widgets.add(widgetContainer);
+
+         timer = new Timer();
+         timer.start();
 
 
     }

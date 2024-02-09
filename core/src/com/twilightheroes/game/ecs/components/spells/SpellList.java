@@ -6,7 +6,8 @@ public class SpellList {
         shockingGrasp,
         healingSigil,
         fury,
-        frostSpear
+        frostSpear,
+        earthSpike
     }
 
 }

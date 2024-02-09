@@ -6,6 +6,7 @@ import com.badlogic.ashley.systems.IteratingSystem;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Filter;
+import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
@@ -207,6 +208,7 @@ public class PlayerControlSystem extends IteratingSystem {
             playerComponent.mana = 100;
         }
         if (interactCooldown <= 0) {
+
             if (playerComponent.interactFixture != null) {
                 b2body.body.destroyFixture(playerComponent.interactFixture);
                 playerComponent.interactFixture = null;
@@ -292,12 +294,20 @@ public class PlayerControlSystem extends IteratingSystem {
                 } else {
                     if (spellComponent.castingTime <= 0) {
                         state.isLooping = true;
-                        if (attackComponent.attackFixture != null) {
-                            // Si la fixture de ataque ya existe, la eliminamos antes de recrearla
-                            b2body.body.destroyFixture(attackComponent.attackFixture);
-                            attackComponent.attackFixture = null;
-                        }
 
+                        for (int i = 0; i < attackComponent.lifetimes.size; i++) {
+                            float lifetime = attackComponent.lifetimes.get(i);
+                            lifetime += deltaTime;
+                            attackComponent.lifetimes.set(i, lifetime);
+
+                            if (lifetime >= 0.1f) {
+                                Fixture atkFix = attackComponent.attackFixtures.get(i);
+                                b2body.body.destroyFixture(atkFix);
+                                attackComponent.attackFixtures.removeIndex(i);
+                                attackComponent.lifetimes.removeIndex(i);
+                                i--;  // Ajusta el índice después de eliminar un elemento
+                            }
+                        }
 
                         // Crear una nueva fixture de ataque
                         if (numAtaquesDeseados > 0) {
@@ -439,8 +449,10 @@ public class PlayerControlSystem extends IteratingSystem {
         attackFixtureDef.shape = attackShape;
         attackFixtureDef.filter.categoryBits = TwilightHeroes.HITBOX_BIT;
         attackFixtureDef.isSensor = true; // Configurar la fixture como un sensor
-        attackComponent.attackFixture = b2dbody.body.createFixture(attackFixtureDef);
-        attackComponent.attackFixture.setUserData("playerAttackSensor");
+        Fixture fix = b2dbody.body.createFixture(attackFixtureDef);
+        fix.setUserData("playerAttackSensor");
+        attackComponent.attackFixtures.add(fix);
+        attackComponent.lifetimes.add(0f);  // Inicializa el tiempo de vida para esta fixture a 0
         // Liberar los recursos del shape
         attackShape.dispose();
 

@@ -7,8 +7,10 @@ import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
+import com.badlogic.gdx.utils.Timer;
 import com.twilightheroes.game.TwilightHeroes;
 import com.twilightheroes.game.ecs.components.AnimationComponent;
 import com.twilightheroes.game.ecs.components.AttackComponent;
@@ -21,6 +23,7 @@ import com.twilightheroes.game.ecs.components.TextureComponent;
 import com.twilightheroes.game.ecs.components.effectComponents.StatusComponent;
 import com.twilightheroes.game.ecs.components.effectComponents.StatusEffect;
 import com.twilightheroes.game.ecs.components.effectComponents.StatusType;
+import com.twilightheroes.game.ecs.components.spells.Spell;
 import com.twilightheroes.game.ecs.components.spells.SpellComponent;
 import com.twilightheroes.game.ecs.components.spells.SpellList;
 import com.twilightheroes.game.screens.MainScreen;
@@ -40,9 +43,9 @@ public class SpellSystem extends IteratingSystem {
     }
 
     @Override
-    protected void processEntity(Entity entity, float deltaTime) {
+    protected void processEntity(final Entity entity, float deltaTime) {
 
-        SpellComponent spellComponent = Mappers.spellCom.get(entity);
+       final SpellComponent spellComponent = Mappers.spellCom.get(entity);
         TextureComponent texture = Mappers.texCom.get(entity);
         B2dBodyComponent b2body = Mappers.b2dCom.get(entity);
         AttackComponent attackComponent = Mappers.atkCom.get(entity);
@@ -71,9 +74,15 @@ public class SpellSystem extends IteratingSystem {
                 switch (spell) {
 
                     case shockingGrasp:
-                        createAttackFixture(texture, b2body, attackComponent, 20f, 6f, 16f, 0f, player);
-                        createVFX(spellComponent, entity);
+                        for (int i = 0; i < 5; i++) {
+                            float delay = i * 0.5f; // Ajusta el valor del retraso según tus necesidades
+                            createDelayedAttackAndVFX(texture, b2body, attackComponent, 5f, 6f, 16f * (i + 1), 0, player, spellComponent, entity, delay, i);
+                        }
                         break;
+
+                        //createAttackFixture(texture, b2body, attackComponent, 20f, 6f, 16f, 0f, player);
+                        //createVFX(spellComponent, entity);
+
 
                     case healingSigil:
                         statsComponent.hp += 25;
@@ -93,30 +102,59 @@ public class SpellSystem extends IteratingSystem {
                         float shooterY = b2body.body.getPosition().y; // get player location
                         screen.b2WorldCreator.createBullet(shooterX, shooterY, xVel, player ? BulletComponent.Owner.PLAYER : BulletComponent.Owner.ENEMY, texture.runningRight, 25, "frostSpear");
                         break;
+
+                    case earthSpike:
+
+
+                        break;
                 }
                 spellComponent.casting = false;
                 spellComponent.spellToCast = null;
 
+
             }
         }
     }
+    public Spell spellToCast;
+    private void createDelayedAttackAndVFX(final TextureComponent texture, final B2dBodyComponent b2dbody, final AttackComponent attackComponent, final float hx, final float hy, final float offsetX, final float offsetY, final boolean player, final SpellComponent spellComponent, final Entity casterEntity, float delay,final int i) {
+         spellToCast = spellComponent.spellToCast;
 
-    private void createVFX(SpellComponent spellComponent, Entity casterEntity) {
-        if (spellComponent.spellToCast.vfx != null) {
+        Timer.Task task = new Timer.Task() {
+            @Override
+            public void run() {
+                createAttackAndVFX(texture, b2dbody, attackComponent, hx, hy, offsetX, offsetY, player, spellToCast, casterEntity,i);
+            }
+        };
+
+        screen.timer.scheduleTask(task, delay);
+    }
+
+
+
+    private void createAttackAndVFX(final TextureComponent texture, final B2dBodyComponent b2dbody, final AttackComponent attackComponent, final float hx, final float hy, final float offsetX, final float offsetY, final boolean player, final Spell spell, final Entity casterEntity, int i) {
+        createAttackFixture(texture, b2dbody, attackComponent, hx, hy, offsetX, offsetY, player);
+        createVFX(spell, casterEntity, i);
+    }
+
+
+
+    private void createVFX(Spell spell, Entity casterEntity,int i) {
+        if (spell.vfx != null) {
             Entity entityVFX = getEngine().createEntity();
             TextureComponent texture = getEngine().createComponent(TextureComponent.class);
             AnimationComponent animationComponent = getEngine().createComponent(AnimationComponent.class);
             StateComponent stateComponent = getEngine().createComponent(StateComponent.class);
 
-
             TextureComponent textureCaster = Mappers.texCom.get(casterEntity);
             B2dBodyComponent b2body = Mappers.b2dCom.get(casterEntity);
 
 
-            texture.sprite.setTexture(manager.get("spells/spellsVFX/" + SpellList.spells.values()[spellComponent.spellToCast.id].name() + ".png", Texture.class));
-            float offsetX = textureCaster.runningRight ? 20f / TwilightHeroes.PPM : -20f / TwilightHeroes.PPM;
-            texture.sprite.setBounds(b2body.body.getPosition().x + offsetX, b2body.body.getPosition().y, 20 / TwilightHeroes.PPM, 20 / TwilightHeroes.PPM);
-            animationComponent.animations.put(StateComponent.STATE_VFX, AnimationMaker.crearAnimacion(manager.get("spells/spellsVFX/spellsVFX.atlas", TextureAtlas.class), SpellList.spells.values()[spellComponent.spellToCast.id].name(), spellComponent.spellToCast.vfx.nFrames, spellComponent.spellToCast.vfx.frameDuration));
+            texture.sprite.setTexture(manager.get("spells/spellsVFX/" + SpellList.spells.values()[spell.id].name() + ".png", Texture.class));
+            float offsetX = textureCaster.runningRight ? 30f / TwilightHeroes.PPM : -30f / TwilightHeroes.PPM;
+            offsetX *= i;
+            texture.sprite.setSize(40/TwilightHeroes.PPM,40/TwilightHeroes.PPM);
+            texture.sprite.setPosition(b2body.body.getPosition().x - b2body.width/TwilightHeroes.PPM + offsetX , b2body.body.getPosition().y - 10/TwilightHeroes.PPM);
+            animationComponent.animations.put(StateComponent.STATE_VFX, AnimationMaker.crearAnimacion(manager.get("spells/spellsVFX/spells.atlas", TextureAtlas.class), SpellList.spells.values()[spell.id].name(), spell.vfx.nFrames, spell.vfx.frameDuration));
             stateComponent.set(StateComponent.STATE_VFX);
 
             stateComponent.time = 0;
@@ -132,25 +170,24 @@ public class SpellSystem extends IteratingSystem {
         PolygonShape attackShape = new PolygonShape();
         float auxOffsetX = texture.runningRight ? offsetX : -offsetX;
 
-
         attackShape.setAsBox(hx / TwilightHeroes.PPM, hy / TwilightHeroes.PPM, new Vector2(auxOffsetX / TwilightHeroes.PPM, offsetY / TwilightHeroes.PPM), 0);
         FixtureDef attackFixtureDef = new FixtureDef();
         attackFixtureDef.shape = attackShape;
         attackFixtureDef.filter.categoryBits = TwilightHeroes.HITBOX_BIT;
         attackFixtureDef.isSensor = true;
-        attackComponent.attackFixture = b2dbody.body.createFixture(attackFixtureDef);
+        Fixture fix = b2dbody.body.createFixture(attackFixtureDef);
         if (player) {
-            attackComponent.attackFixture.setUserData("playerAttackSensor");
+            fix.setUserData("playerAttackSensor");
         } else {
-            attackComponent.attackFixture.setUserData("enemyAttackSensor");
-
+            fix.setUserData("enemyAttackSensor");
         }
-        // Liberar los recursos del shape
+
+       attackComponent.attackFixtures.add(fix); // Almacenar la fixture en la lista
+        attackComponent.lifetimes.add(0f);  // Inicializa el tiempo de vida para esta fixture a 0
+
         attackShape.dispose();
-
-
-        b2dbody.body.setLinearVelocity(new Vector2((texture.runningRight ? 1f : -1f), 0f));
-
+        b2dbody.body.applyLinearImpulse(new Vector2(0f, -0.1f), b2dbody.body.getWorldCenter(), true);
     }
+
 
 }

@@ -322,7 +322,7 @@ public class B2WorldCreator {
 
             doorComponent.id = (int) object.getProperties().get("id");
 
-            openDoors();
+
 
             // add the components to the entity
             entity.add(b2dbody);
@@ -331,24 +331,35 @@ public class B2WorldCreator {
 
             engine.addEntity(entity);
             screen.bodies.add(b2dbody.body);
-
+            openDoors(null);
 
         }
         shape.dispose();
     }
 
-    public void openDoors() {
+    public void openDoors(Entity lever) {
         ImmutableArray<Entity> doors = engine.getEntitiesFor(Family.all(DoorComponent.class).get());
         for (Entity door : doors) {
             DoorComponent doorComponent = Mappers.doorCom.get(door);
 
             if (screen.parent.playerSettings.doorsOpened[doorComponent.id]) {
                 // La puerta está abierta, elimina la entidad y cambia las tiles
+                changeTilesForOpenedDoor(door,true);
                 destroyDoor(door);
-                changeTilesForOpenedDoor(door);
+            }
+        }
+        ImmutableArray<Entity> levers = engine.getEntitiesFor(Family.all(InteractiveObjectComponent.class).get());
+        for (Entity lvr : levers) {
+            InteractiveObjectComponent interactiveObjectComponent = Mappers.interactiveCom.get(lvr);
+
+            if (interactiveObjectComponent.isLever && screen.parent.playerSettings.doorsOpened[interactiveObjectComponent.id]) {
+                // La puerta está abierta, elimina la entidad y cambia las tiles
+                changeTilesForOpenedDoor(lvr,false);
             }
         }
     }
+
+
 
     private void destroyDoor(Entity door) {
         // Obtén el componente B2dBodyComponent asociado a la entidad
@@ -360,38 +371,47 @@ public class B2WorldCreator {
         engine.removeEntity(door);
     }
 
-    private void changeTilesForOpenedDoor(Entity door) {
-        // Obtén el componente B2dBodyComponent asociado a la entidad
-        B2dBodyComponent b2dbody = Mappers.b2dCom.get(door);
+    private void changeTilesForOpenedDoor(Entity entity,Boolean door) {
+        B2dBodyComponent b2dbody = Mappers.b2dCom.get(entity);
+        TiledMapTileLayer layerToChange;
+        TiledMapTile[] newDoorTile = new TiledMapTile[0];
+        if (door) {
 
-        // Puedes cambiar las tiles asociadas a la puerta abierta aquí.
-        // Por ejemplo, podrías cambiar el tipo de tile en el mapa o eliminar la capa de tiles asociada a la puerta cerrada.
-        // Asegúrate de tener acceso al mapa y sus capas para realizar estos cambios.
-        // Puedes usar TiledMapTileLayer para manipular las capas de tiles.
-
-        // Ejemplo de cambio de tipo de tile en una capa llamada "puertas"
-        TiledMapTileLayer puertasLayer = (TiledMapTileLayer) map.getLayers().get("doorTexture");
+            layerToChange = (TiledMapTileLayer) map.getLayers().get("doorTexture");
+            TiledMapTileSet newTileSets = map.getTileSets().getTileSet("Dungeon Tile Set");
+            newDoorTile = new TiledMapTile[]{newTileSets.getTile(10527 + 162), newTileSets.getTile(10527 + 177)};
+        }else {
+            layerToChange = (TiledMapTileLayer) map.getLayers().get("leverTexture");
+        }
 
         // Calcula las coordenadas de las tiles cubiertas por la puerta abierta
-        int tileStartX = (int) (b2dbody.startX / puertasLayer.getTileWidth());
-        int tileStartY = (int) (b2dbody.startY / puertasLayer.getTileHeight());
-        int tileEndX = (int) ((b2dbody.startX + b2dbody.width) / puertasLayer.getTileWidth());
-        int tileEndY = (int) ((b2dbody.startY + b2dbody.height) / puertasLayer.getTileHeight());
+        int tileStartX = (int) (b2dbody.startX / layerToChange.getTileWidth());
+        int tileStartY = (int) (b2dbody.startY / layerToChange.getTileHeight());
+        int tileEndX = (int) ((b2dbody.startX + b2dbody.width) / layerToChange.getTileWidth());
+        int tileEndY = (int) ((b2dbody.startY + b2dbody.height) / layerToChange.getTileHeight());
 
-        TiledMapTileSet newTileSets = map.getTileSets().getTileSet("Dungeon Tile Set");
+            int i = 0;
 
-        TiledMapTile[]  newDoorTile = new TiledMapTile[]{newTileSets.getTile(10527+162) ,newTileSets.getTile(10527+177)  };
-        int i= 0;
+            // Itera sobre todas las tiles dentro del área cubierta por la puerta
+            for (int tileX = tileStartX; tileX < tileEndX; tileX++) {
+                for (int tileY = tileStartY; tileY < tileEndY; tileY++) {
 
-        // Itera sobre todas las tiles dentro del área cubierta por la puerta y cámbialas
-        for (int tileX = tileStartX; tileX < tileEndX; tileX++) {
-            for (int tileY = tileStartY; tileY < tileEndY; tileY++) {
+                    if (door){
+                        layerToChange.getCell(tileX, tileY).setTile(newDoorTile[i]);
+                        i++;
 
-                puertasLayer.getCell(tileX, tileY).setTile(newDoorTile[i]); // o cualquier cambio que necesites hacer
-                i++;
+                    }else{
+                        TiledMapTileLayer.Cell cell =  layerToChange.getCell(tileX, tileY);
+                        if (cell != null){
+                       cell.setFlipHorizontally(true);
+
+                        }
+
+                    }
+                }
             }
         }
-    }
+
 
     public void createPlayer(TextureAtlas atlas, Entity playerEntity) {
         JsonValue jsonPlayer = jsonConfig.get("personaje");
@@ -463,9 +483,11 @@ public class B2WorldCreator {
             attackFixtureDef.filter.categoryBits = TwilightHeroes.HITBOX_BIT;
 
             attackFixtureDef.filter.maskBits = TwilightHeroes.ENEMY_BIT;
-            attackFixture = b2dbody.body.createFixture(attackFixtureDef);
-            attackFixture.setUserData("playerAttackSensor");
-            attackComponent.attackFixture = attackFixture;
+
+            Fixture fix = b2dbody.body.createFixture(attackFixtureDef);
+            fix.setUserData("playerAttackSensor");
+            attackComponent.attackFixtures.add(fix);
+            attackComponent.lifetimes.add(0f);  // Inicializa el tiempo de vida para esta fixture a 0
             // Liberar los recursos del shape
             attackShape.dispose();
 
@@ -497,10 +519,10 @@ public class B2WorldCreator {
 
 
             JsonValue auxSpell = jsonSpells.get(screen.parent.playerSettings.spell1);
-            spellComponent.spell1 = new Spell(SpellList.spells.valueOf(auxSpell.get("spellId").asString()).ordinal(), auxSpell.get("manaCost").asInt(), auxSpell.get("castingTime").asFloat(), new SpellVFX(4, 12));
+            spellComponent.spell1 = new Spell(SpellList.spells.valueOf(auxSpell.get("spellId").asString()).ordinal(), auxSpell.get("manaCost").asInt(), auxSpell.get("castingTime").asFloat(), new SpellVFX(16, 16));
 
             auxSpell = jsonSpells.get(screen.parent.playerSettings.spell2);
-            spellComponent.spell2 = new Spell(SpellList.spells.valueOf(auxSpell.get("spellId").asString()).ordinal(), auxSpell.get("manaCost").asInt(), auxSpell.get("castingTime").asFloat(), new SpellVFX(4, 12));
+            spellComponent.spell2 = new Spell(SpellList.spells.valueOf(auxSpell.get("spellId").asString()).ordinal(), auxSpell.get("manaCost").asInt(), auxSpell.get("castingTime").asFloat(), new SpellVFX(16, 16));
 
 
             entity.add(b2dbody);

@@ -205,7 +205,7 @@ public class TwilightHeroes extends Game {
         prefs.putInteger("level", playerSettings.level);
         prefs.putInteger("money", playerSettings.money);
         for (int i = 0; i < playerSettings.doorsOpened.length; i++) {
-            prefs.putBoolean("door"+i,playerSettings.doorsOpened[i]);
+            prefs.putBoolean("door_"+i,playerSettings.doorsOpened[i]);
         }
         prefs.flush();
         killCounterHandler(false);
