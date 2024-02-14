@@ -257,10 +257,10 @@ public class MagicScreen implements Screen {
 
 
         if (selectedSlot.getName().equals("Button1")) {
-            spellComponent.spell1 = new Spell(SpellList.spells.valueOf(jsonSpell.get("spellId").asString()).ordinal(), jsonSpell.get("manaCost").asInt(), jsonSpell.get("castingTime").asFloat(), new SpellVFX(16, 64));
+            spellComponent.spell1 = new Spell(SpellList.spells.valueOf(jsonSpell.get("spellId").asString()).ordinal(), jsonSpell.get("manaCost").asInt(), jsonSpell.get("castingTime").asFloat(), new SpellVFX(9, 9));
             parent.playerSettings.spell1 = jsonSpell.get("spellId").asString();
         } else {
-            spellComponent.spell2 = new Spell(SpellList.spells.valueOf(jsonSpell.get("spellId").asString()).ordinal(), jsonSpell.get("manaCost").asInt(), jsonSpell.get("castingTime").asFloat(), new SpellVFX(16, 64));
+            spellComponent.spell2 = new Spell(SpellList.spells.valueOf(jsonSpell.get("spellId").asString()).ordinal(), jsonSpell.get("manaCost").asInt(), jsonSpell.get("castingTime").asFloat(), new SpellVFX(9, 9));
             parent.playerSettings.spell2 = jsonSpell.get("spellId").asString();
 
         }

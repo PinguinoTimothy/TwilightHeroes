@@ -1,5 +1,7 @@
 spells.png
 size:2048,128
 repeat:none
+earthSpike
+bounds:1156,10,576,64
 shockingGrasp
 bounds:2,2,1152,72

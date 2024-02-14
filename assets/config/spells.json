@@ -39,5 +39,18 @@
         "startFrames": 3,
         "goingFrames":10,
         "endingFrames":7
+    },
+    "earthSpike":
+    {
+        "spellId": "earthSpike",
+        "spellNameES": "earthSpike",
+        "descriptionES": "Coste: 25 mana \nCura a su lanzador",
+        "spellNameEN": "Healing Sigil",
+        "descriptionEN": "Cost: 25 mana \nHeals the user",
+        "castingTime": 0,
+        "manaCost": 0,
+        "startFrames": 3,
+        "goingFrames":10,
+        "endingFrames":7
     }
 }
