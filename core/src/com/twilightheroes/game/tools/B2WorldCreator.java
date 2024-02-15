@@ -13,8 +13,6 @@ import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapTile;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.TiledMapTileSet;
-import com.badlogic.gdx.maps.tiled.TiledMapTileSets;
-import com.badlogic.gdx.maps.tiled.tiles.StaticTiledMapTile;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.BodyDef;
@@ -36,12 +34,14 @@ import com.twilightheroes.game.ecs.components.DialogueComponent;
 import com.twilightheroes.game.ecs.components.DoorComponent;
 import com.twilightheroes.game.ecs.components.EnemyComponent;
 import com.twilightheroes.game.ecs.components.ExitComponent;
+import com.twilightheroes.game.ecs.components.HazardComponent;
 import com.twilightheroes.game.ecs.components.InteractiveObjectComponent;
 import com.twilightheroes.game.ecs.components.PlayerComponent;
 import com.twilightheroes.game.ecs.components.StateComponent;
 import com.twilightheroes.game.ecs.components.StatsComponent;
 import com.twilightheroes.game.ecs.components.TextureComponent;
 import com.twilightheroes.game.ecs.components.TypeComponent;
+import com.twilightheroes.game.ecs.components.tipoObjetoInteractivo;
 import com.twilightheroes.game.ecs.components.effectComponents.StatusComponent;
 import com.twilightheroes.game.ecs.components.spells.Spell;
 import com.twilightheroes.game.ecs.components.spells.SpellComponent;
@@ -122,6 +122,7 @@ public class B2WorldCreator {
         crearSalidas();
         crearInteracciones();
         crearPuertas();
+        crearPeligros();
 
 
         createPlayer(manager.get("player/player.atlas", TextureAtlas.class), playerEntity);
@@ -164,6 +165,50 @@ public class B2WorldCreator {
             // add the components to the entity
             entity.add(b2dbody);
             entity.add(type);
+
+            engine.addEntity(entity);
+            screen.bodies.add(b2dbody.body);
+
+
+        }
+        shape.dispose();
+    }
+
+    public void crearPeligros() {
+        BodyDef bodyDef = new BodyDef();
+        PolygonShape shape = new PolygonShape();
+        FixtureDef fixtureDef = new FixtureDef();
+
+        //Crear el terreno
+        for (RectangleMapObject object : map.getLayers().get("environmentHazard").getObjects().getByType(RectangleMapObject.class)) {
+
+            // Create the Entity and all the components that will go in the entity
+            Entity entity = engine.createEntity();
+            B2dBodyComponent b2dbody = engine.createComponent(B2dBodyComponent.class);
+            TypeComponent type = engine.createComponent(TypeComponent.class);
+            HazardComponent hazardComponent = engine.createComponent(HazardComponent.class);
+
+            type.type = TypeComponent.HAZARD;
+
+            hazardComponent.alive = true;
+            hazardComponent.damage = (int) object.getProperties().get("damage");
+
+            Rectangle rectangle = object.getRectangle();
+            bodyDef.type = BodyDef.BodyType.StaticBody;
+            bodyDef.position.set((rectangle.getX() + rectangle.getWidth() / 2) / TwilightHeroes.PPM, (rectangle.getY() + rectangle.getHeight() / 2) / TwilightHeroes.PPM);
+
+            b2dbody.body = world.createBody(bodyDef);
+            shape.setAsBox(rectangle.getWidth() / 2 / TwilightHeroes.PPM, rectangle.getHeight() / 2 / TwilightHeroes.PPM);
+            fixtureDef.shape = shape;
+            fixtureDef.filter.categoryBits = TwilightHeroes.SOLID_BIT;
+            b2dbody.body.createFixture(fixtureDef);
+            b2dbody.body.setUserData(entity);
+
+
+            // add the components to the entity
+            entity.add(b2dbody);
+            entity.add(type);
+            entity.add(hazardComponent);
 
             engine.addEntity(entity);
             screen.bodies.add(b2dbody.body);
@@ -266,12 +311,38 @@ public class B2WorldCreator {
 
 
             if (object.getProperties().get("type") != null){
-                if (object.getProperties().get("type").equals("lever")) {
-                    interactiveObjectComponent.isLever = true;
-                }else{
-                    interactiveObjectComponent.isLever = false;
+                switch (object.getProperties().get("type").toString()){
+                    case "lever":
+                        interactiveObjectComponent.tipoObjeto = tipoObjetoInteractivo.LEVER;
+                        break;
+                    case "dialogue":
+                        interactiveObjectComponent.tipoObjeto = tipoObjetoInteractivo.DIALOGUE;
+                        break;
+                    case "obelisk":
+                        interactiveObjectComponent.tipoObjeto = tipoObjetoInteractivo.OBELISK;
+                        break;
+
                 }
                 interactiveObjectComponent.id = (int) object.getProperties().get("id");
+            }
+
+            if (interactiveObjectComponent.tipoObjeto == tipoObjetoInteractivo.OBELISK){
+                AnimationComponent animationComponent = new AnimationComponent();
+                StateComponent stateComponent = new StateComponent();
+                TextureComponent textureComponent = new TextureComponent();
+
+
+                stateComponent.set(StateComponent.STATE_OBELISK_IDLE);
+            textureComponent.sprite.setRegion(manager.get("variety/obelisk.atlas", TextureAtlas.class).findRegion("IDLE"));
+                textureComponent.sprite.setPosition((rectangle.getX() + rectangle.getWidth() / 2) / TwilightHeroes.PPM, (rectangle.getY()) / TwilightHeroes.PPM);
+            textureComponent.sprite.setSize(0.5f,0.5f);
+
+
+                animationComponent.animations.put(StateComponent.STATE_OBELISK_IDLE, AnimationMaker.crearAnimacion(manager.get("variety/obelisk.atlas", TextureAtlas.class), "IDLE", 14, 7));
+                animationComponent.animations.put(StateComponent.STATE_OBELISK_ANI, AnimationMaker.crearAnimacion(manager.get("variety/obelisk.atlas", TextureAtlas.class), "ANI", 14, 7));
+                entity.add(animationComponent);
+                entity.add(stateComponent);
+                entity.add(textureComponent);
             }
 
             // add the components to the entity
@@ -352,7 +423,7 @@ public class B2WorldCreator {
         for (Entity lvr : levers) {
             InteractiveObjectComponent interactiveObjectComponent = Mappers.interactiveCom.get(lvr);
 
-            if (interactiveObjectComponent.isLever && screen.parent.playerSettings.doorsOpened[interactiveObjectComponent.id]) {
+            if (interactiveObjectComponent.tipoObjeto == tipoObjetoInteractivo.LEVER && screen.parent.playerSettings.doorsOpened[interactiveObjectComponent.id]) {
                 // La puerta está abierta, elimina la entidad y cambia las tiles
                 changeTilesForOpenedDoor(lvr,false);
             }

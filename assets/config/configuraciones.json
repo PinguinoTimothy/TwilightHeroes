@@ -45,6 +45,28 @@
     "spells": ["frostSpear"]
 
   }
+  ,
+  {
+  "name":"nightborne",
+  "atlas":"nightborne.atlas",
+  "width": 35,
+  "height": 47,
+  "hitboxX": 4,
+  "hitboxY": 8,
+  "animaciones":{
+    "IDLE":9,
+    "ATTACK":12,
+    "WALK":6
+  },
+  "hp":100,
+  "viewDistance":12.5,
+  "attackDistance":2.5,
+  "attackCooldown":1.5,
+  "speed":1.5,
+  "attackFrame":10,
+  "attackDamage": 50,
+  "attackMethod": "melee"
+  }
   
 ],
 

@@ -10,6 +10,7 @@ import com.twilightheroes.game.ecs.components.DialogueComponent;
 import com.twilightheroes.game.ecs.components.DoorComponent;
 import com.twilightheroes.game.ecs.components.EnemyComponent;
 import com.twilightheroes.game.ecs.components.ExitComponent;
+import com.twilightheroes.game.ecs.components.HazardComponent;
 import com.twilightheroes.game.ecs.components.InteractiveObjectComponent;
 import com.twilightheroes.game.ecs.components.PlayerComponent;
 import com.twilightheroes.game.ecs.components.StateComponent;
@@ -41,6 +42,7 @@ public class Mappers {
     public static final ComponentMapper<DialogueComponent> dialogueCom = ComponentMapper.getFor(DialogueComponent.class);
     public static final ComponentMapper<InteractiveObjectComponent> interactiveCom = ComponentMapper.getFor(InteractiveObjectComponent.class);
     public static final ComponentMapper<DoorComponent> doorCom = ComponentMapper.getFor(DoorComponent.class);
+    public static final ComponentMapper<HazardComponent> hazardCom = ComponentMapper.getFor(HazardComponent.class);
 
 
 }

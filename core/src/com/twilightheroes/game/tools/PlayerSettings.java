@@ -10,6 +10,8 @@ public class PlayerSettings {
     public int money;
     public int level;
 
+    public int lastObelisk;
+
     public boolean[] doorsOpened = new boolean[100];
 
     public Array<KillCounter> killCounter = new Array<>();

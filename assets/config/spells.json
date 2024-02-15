@@ -52,5 +52,18 @@
         "startFrames": 3,
         "goingFrames":10,
         "endingFrames":7
+    },
+    "fury":
+    {
+        "spellId": "fury",
+        "spellNameES": "furia",
+        "descriptionES": "Coste: 25 mana \nfuria a su lanzador",
+        "spellNameEN": "Healing Sigil",
+        "descriptionEN": "Cost: 25 mana \nfuria the user",
+        "castingTime": 0,
+        "manaCost": 0,
+        "startFrames": 3,
+        "goingFrames":10,
+        "endingFrames":7
     }
 }

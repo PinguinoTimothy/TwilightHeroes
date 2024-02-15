@@ -24,6 +24,9 @@ public class StateComponent implements Component, Pool.Poolable {
     public static final int STATE_SPELL_ENDING = 15;
     public static final int STATE_CASTING = 16;
     public static final int STATE_VFX = 17;
+    public static final int STATE_OBELISK_IDLE = 18;
+    public static final int STATE_OBELISK_ANI = 19;
+
     public int previousState = 0;
     public float time = 0.0f;
     public boolean isLooping = true;

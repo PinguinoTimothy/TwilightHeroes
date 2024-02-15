@@ -1,0 +1,13 @@
+nightborne.png
+size:2048,256
+repeat:none
+ATTACK
+bounds:2,84,968,66
+DEATH
+bounds:2,152,1840,82
+HURT
+bounds:1473,65,395,85
+IDLE
+bounds:2,2,727,80
+WALK
+bounds:972,95,499,55

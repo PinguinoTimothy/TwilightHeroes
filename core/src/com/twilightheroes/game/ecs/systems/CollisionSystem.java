@@ -14,6 +14,7 @@ import com.twilightheroes.game.ecs.components.BulletComponent;
 import com.twilightheroes.game.ecs.components.CollisionComponent;
 import com.twilightheroes.game.ecs.components.DialogueComponent;
 import com.twilightheroes.game.ecs.components.ExitComponent;
+import com.twilightheroes.game.ecs.components.HazardComponent;
 import com.twilightheroes.game.ecs.components.InteractiveObjectComponent;
 import com.twilightheroes.game.ecs.components.PlayerComponent;
 import com.twilightheroes.game.ecs.components.StatsComponent;
@@ -21,8 +22,9 @@ import com.twilightheroes.game.ecs.components.TypeComponent;
 import com.twilightheroes.game.screens.MainScreen;
 import com.twilightheroes.game.tools.Collisions;
 import com.twilightheroes.game.tools.Mappers;
+import com.twilightheroes.game.ecs.components.tipoObjetoInteractivo;
 
- 
+
 public class CollisionSystem extends IteratingSystem {
 
     private final Filter inmuneFilter = new Filter();
@@ -92,6 +94,33 @@ public class CollisionSystem extends IteratingSystem {
 
                                 break;
 
+                            case TypeComponent.HAZARD:
+                                HazardComponent hazardComponent = Mappers.hazardCom.get(collidedEntity);
+                                B2dBodyComponent bodyPlayer = Mappers.b2dCom.get(entity);
+                                B2dBodyComponent bodyHazard = Mappers.b2dCom.get(collidedEntity);
+
+                                if (hazardComponent.alive) {
+                                    if (!isHitbox && !player.inmune) {
+                                        float xForce = 2.5f;
+                                        if (bodyPlayer.body.getPosition().x < bodyHazard.body.getPosition().x) {
+                                            xForce = -2.5f;
+                                        }
+                                        playerStats.hp -= hazardComponent.damage;
+
+
+                                        bodyPlayer.body.getFixtureList().get(0).setFilterData(inmuneFilter);
+                                        player.inmune = true;
+                                        player.inmuneTime = 0.5f;
+                                        bodyPlayer.body.setLinearVelocity(new Vector2(0f, 0f));
+                                        bodyPlayer.body.setLinearVelocity(new Vector2(xForce, 0f));
+                                        player.knockback = true;
+                                        player.knockBackTime = 0.3f;
+                                        if (screen.parent.vibratorOn) {
+                                            Gdx.input.vibrate(500);
+                                        }
+                                    }
+                                }
+                                break;
                             case TypeComponent.EXIT:
 
 
@@ -113,18 +142,26 @@ public class CollisionSystem extends IteratingSystem {
                             case TypeComponent.INTERACTABLE:
                                 if (isInteractHitbox) {
                                     InteractiveObjectComponent interactiveObjectComponent = Mappers.interactiveCom.get(collidedEntity);
-                                    if (interactiveObjectComponent.isLever){
-                                        screen.parent.playerSettings.doorsOpened[interactiveObjectComponent.id] = true;
-                                        screen.b2WorldCreator.openDoors(collidedEntity);
-                                    }else{
-                                        DialogueComponent dialogueComponent = Mappers.dialogueCom.get(entity);
-                                        dialogueComponent.active = true;
+                                    switch (interactiveObjectComponent.tipoObjeto) {
+                                        case tipoObjetoInteractivo.LEVER:
+                                            screen.parent.playerSettings.doorsOpened[interactiveObjectComponent.id] = true;
+                                            screen.b2WorldCreator.openDoors(collidedEntity);
+                                            break;
+                                        case tipoObjetoInteractivo.DIALOGUE:
+                                            DialogueComponent dialogueComponent = Mappers.dialogueCom.get(entity);
+                                            dialogueComponent.active = true;
 
-                                        JsonValue text = jsonText.get(interactiveObjectComponent.id);
+                                            JsonValue text = jsonText.get(interactiveObjectComponent.id);
 
-                                        for (int j = 0; j < text.size; j++) {
-                                            dialogueComponent.dialogueTexts.add(text.getString(j));
-                                        }
+                                            for (int j = 0; j < text.size; j++) {
+                                                dialogueComponent.dialogueTexts.add(text.getString(j));
+                                            }
+                                            break;
+                                        case tipoObjetoInteractivo.OBELISK:
+                                            screen.parent.playerSettings.lastObelisk = interactiveObjectComponent.id;
+                                            playerStats.hp = 100;
+                                            player.mana = 100;
+                                            break;
                                     }
 
 
@@ -231,4 +268,6 @@ public class CollisionSystem extends IteratingSystem {
 
         }
     }
+
+
 }

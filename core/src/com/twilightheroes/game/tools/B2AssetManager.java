@@ -15,6 +15,9 @@ public class B2AssetManager {
         manager.load("enemies/enemy.png", Texture.class);
         manager.load("enemies/skeleton.atlas", TextureAtlas.class);
 
+        manager.load("enemies/nightborne.atlas", TextureAtlas.class);
+
+
         manager.load("player/player.atlas", TextureAtlas.class);
         manager.load("player/player.png", Texture.class);
 
@@ -31,6 +34,7 @@ public class B2AssetManager {
         manager.load("hud/pauseButton.png", Texture.class);
 
 
+
         manager.load("background.png", Texture.class);
         manager.load("hud/play01.png", Texture.class);
         manager.load("hud/healthBar.png", Texture.class);
@@ -40,6 +44,8 @@ public class B2AssetManager {
 
         manager.load("variety/checkboxOff.png", Texture.class);
         manager.load("variety/checked.png", Texture.class);
+        manager.load("variety/obelisk.atlas", TextureAtlas.class);
+
 
         manager.load("spells/spells.atlas", TextureAtlas.class);
 
@@ -67,6 +73,8 @@ public class B2AssetManager {
 
         manager.load("enemies/enemySample/caballero.png", Texture.class);
         manager.load("enemies/enemySample/skeleton.png", Texture.class);
+        manager.load("enemies/enemySample/nightborne.png", Texture.class);
+
         manager.load("hud/backButton.png", Texture.class);
 
         String skin = "hud/neonui/neon-ui.json";

@@ -3,17 +3,14 @@ package com.twilightheroes.game.ecs.components;
 import com.badlogic.ashley.core.Component;
 import com.badlogic.gdx.utils.Pool;
 
+public class HazardComponent implements Component, Pool.Poolable {
 
-public class InteractiveObjectComponent implements Component, Pool.Poolable {
-
-
-    public int id;
-    public int tipoObjeto;
+   public int damage;
+    public boolean alive;
 
     @Override
     public void reset() {
-
-        id = -1;
-        tipoObjeto = -1;
+damage = 0;
+alive = false;
     }
 }
