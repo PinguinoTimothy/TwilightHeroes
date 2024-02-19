@@ -10,6 +10,8 @@
         "manaCost": 25,
         "unlocked": true,
         "damage": 25,
+        "value": 0,
+        "duration": 0,
         "startFrames": 3,
         "goingFrames":10,
         "endingFrames":7
@@ -23,6 +25,8 @@
         "descriptionEN": "Cost: 25 mana \nHeals the user",
         "castingTime": 3,
         "manaCost": 25,
+        "value": 50,
+        "duration": 0,
         "startFrames": 3,
         "goingFrames":10,
         "endingFrames":7
@@ -36,19 +40,8 @@
         "descriptionEN": "Cost: 25 mana \nHeals the user",
         "castingTime": 3,
         "manaCost": 25,
-        "startFrames": 3,
-        "goingFrames":10,
-        "endingFrames":7
-    },
-    "earthSpike":
-    {
-        "spellId": "earthSpike",
-        "spellNameES": "earthSpike",
-        "descriptionES": "Coste: 25 mana \nCura a su lanzador",
-        "spellNameEN": "Healing Sigil",
-        "descriptionEN": "Cost: 25 mana \nHeals the user",
-        "castingTime": 0,
-        "manaCost": 0,
+        "duration" : 0,
+        "value" : 50,
         "startFrames": 3,
         "goingFrames":10,
         "endingFrames":7
@@ -56,12 +49,14 @@
     "fury":
     {
         "spellId": "fury",
-        "spellNameES": "furia",
-        "descriptionES": "Coste: 25 mana \nfuria a su lanzador",
-        "spellNameEN": "Healing Sigil",
-        "descriptionEN": "Cost: 25 mana \nfuria the user",
+        "spellNameES": "Furia",
+        "descriptionES": "Coste: 25 mana \nAumenta el daño del lanzador\nDuracion: 20 segundos",
+        "spellNameEN": "Fury",
+        "descriptionEN": "Cost: 25 mana \nRaises the damage of the caste\nDuration: 20 seconds",
         "castingTime": 0,
-        "manaCost": 0,
+        "duration": 20,
+        "manaCost": 25,
+        "value": 25,
         "startFrames": 3,
         "goingFrames":10,
         "endingFrames":7

@@ -99,7 +99,7 @@ public class B2WorldCreator {
                 Spell[] auxSpells = new Spell[auxSpellString.length];
                 for (int j = 0; j < auxSpellString.length; j++) {
                     JsonValue jsonSpell = jsonSpells.get(auxSpellString[j]);
-                    auxSpells[j] = new Spell(SpellList.spells.valueOf(jsonSpell.get("spellId").asString()).ordinal(), jsonSpell.get("manaCost").asInt(), jsonSpell.get("castingTime").asFloat(), new SpellVFX(4, 4));
+                    auxSpells[j] = new Spell(SpellList.spells.valueOf(jsonSpell.get("spellId").asString()).ordinal(), jsonSpell.get("manaCost").asInt(), jsonSpell.get("castingTime").asFloat() , new SpellVFX(4, 4),jsonSpell.get("duration").asInt(),jsonSpell.get("value").asInt());
                 }
                 spells = auxSpells;
             }
@@ -334,7 +334,7 @@ public class B2WorldCreator {
 
                 stateComponent.set(StateComponent.STATE_OBELISK_IDLE);
             textureComponent.sprite.setRegion(manager.get("variety/obelisk.atlas", TextureAtlas.class).findRegion("IDLE"));
-                textureComponent.sprite.setPosition((rectangle.getX() + rectangle.getWidth() / 2) / TwilightHeroes.PPM, (rectangle.getY()) / TwilightHeroes.PPM);
+                textureComponent.sprite.setPosition((rectangle.getX() + rectangle.getWidth() / 2) / TwilightHeroes.PPM, (rectangle.getY())-1000 / TwilightHeroes.PPM);
             textureComponent.sprite.setSize(0.5f,0.5f);
 
 
@@ -590,10 +590,10 @@ public class B2WorldCreator {
 
 
             JsonValue auxSpell = jsonSpells.get(screen.parent.playerSettings.spell1);
-            spellComponent.spell1 = new Spell(SpellList.spells.valueOf(auxSpell.get("spellId").asString()).ordinal(), auxSpell.get("manaCost").asInt(), auxSpell.get("castingTime").asFloat(), new SpellVFX(16, 16));
+            spellComponent.spell1 = new Spell(SpellList.spells.valueOf(auxSpell.get("spellId").asString()).ordinal(), auxSpell.get("manaCost").asInt(), auxSpell.get("castingTime").asFloat(), new SpellVFX(16, 16),auxSpell.get("duration").asInt(),auxSpell.get("value").asInt());
 
             auxSpell = jsonSpells.get(screen.parent.playerSettings.spell2);
-            spellComponent.spell2 = new Spell(SpellList.spells.valueOf(auxSpell.get("spellId").asString()).ordinal(), auxSpell.get("manaCost").asInt(), auxSpell.get("castingTime").asFloat(), new SpellVFX(16, 16));
+            spellComponent.spell2 = new Spell(SpellList.spells.valueOf(auxSpell.get("spellId").asString()).ordinal(), auxSpell.get("manaCost").asInt(), auxSpell.get("castingTime").asFloat(), new SpellVFX(16, 16),auxSpell.get("duration").asInt(),auxSpell.get("value").asInt());
 
 
             entity.add(b2dbody);

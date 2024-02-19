@@ -59,6 +59,7 @@ public class CollisionSystem extends IteratingSystem {
             boolean isEnemyHitbox = auxCollision.isEnemyHitbox;
             boolean canBeReduced = auxCollision.canBeReduced;
             boolean isInteractHitbox = auxCollision.isInteractHitbox;
+            boolean isSpell = auxCollision.isSpell;
 
             TypeComponent thisType = Mappers.typeCom.get(entity);
 
@@ -75,15 +76,19 @@ public class CollisionSystem extends IteratingSystem {
 
 
                                 if (isHitbox && !isEnemyHitbox) {
-                                    if (canBeReduced) {
-                                        enemyStats.hp -= playerStats.damage - enemyStats.damageReduction;
-                                    } else {
-                                        enemyStats.hp -= playerStats.damage;
-                                    }
-                                    player.canDodge = true;
-                                    playerStats.hp += playerStats.lifeSteal;
-                                    player.mana += 10;
+                                    if (isSpell){
+                                        enemyStats.hp -= playerStats.spellDamage;
 
+                                    }else {
+                                        if (canBeReduced) {
+                                            enemyStats.hp -= playerStats.damage - enemyStats.damageReduction;
+                                        } else {
+                                            enemyStats.hp -= playerStats.damage;
+                                        }
+                                        player.canDodge = true;
+                                        playerStats.hp += playerStats.lifeSteal;
+                                        player.mana += 10;
+                                    }
                                 }
 
 
@@ -188,7 +193,11 @@ public class CollisionSystem extends IteratingSystem {
                                 if (bodyPlayer.body.getPosition().x < bodyEnemy.body.getPosition().x) {
                                     xForce = -2.5f;
                                 }
-                                playerStats.hp -= enemyStats.damage;
+                                if (isSpell){
+                                    playerStats.hp -= enemyStats.spellDamage;
+                                }else{
+                                    playerStats.hp -= enemyStats.damage;
+                                }
 
 
                                 bodyPlayer.body.getFixtureList().get(0).setFilterData(inmuneFilter);

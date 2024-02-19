@@ -8,6 +8,7 @@ public class Collisions {
     public boolean isEnemyHitbox;
     public boolean canBeReduced;
     public boolean isInteractHitbox;
+    public boolean isSpell;
 
 
 }

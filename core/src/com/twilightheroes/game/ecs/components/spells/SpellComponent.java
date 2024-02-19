@@ -12,6 +12,8 @@ public class SpellComponent implements Component, Pool.Poolable {
 
     public boolean casting = false;
     public float castingTime = 0f;
+    public float duration = 0f;
+    public float value = 0f;
 
 
     @Override
@@ -21,5 +23,7 @@ public class SpellComponent implements Component, Pool.Poolable {
         spellToCast = null;
         casting = false;
         castingTime = 0f;
+        duration = 0f;
+        value = 0f;
     }
 }

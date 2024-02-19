@@ -68,6 +68,9 @@ public class SpellSystem extends IteratingSystem {
             if (!spellComponent.casting) {
                 spell = SpellList.spells.values()[spellComponent.spellToCast.id];
                 spellComponent.castingTime = spellComponent.spellToCast.castingTime;
+                spellComponent.duration = spellComponent.spellToCast.duration;
+                spellComponent.value = spellComponent.spellToCast.value;
+
                 stateComponent.set(StateComponent.STATE_CASTING);
                 stateComponent.time = 0f;
                 spellComponent.casting = true;
@@ -78,6 +81,7 @@ public class SpellSystem extends IteratingSystem {
 
                     case shockingGrasp:
                         createAttackFixture(texture, b2body, attackComponent, 20f, 6f, 16f, 0f, player);
+                statsComponent.spellDamage = spellComponent.value;
                         createVFX(spellComponent.spellToCast, entity,1);
 
                         break;
@@ -85,7 +89,7 @@ public class SpellSystem extends IteratingSystem {
 
 
                     case healingSigil:
-                        statsComponent.hp += 25;
+                        statsComponent.hp += spellComponent.value;
 
 
                         // bul.particleEffect = makeParticleEffect(ParticleEffectManager.FIRE,b2dbody);
@@ -93,7 +97,7 @@ public class SpellSystem extends IteratingSystem {
                         break;
 
                     case fury:
-                        statusComponent.effects.add(new StatusEffect(StatusType.DAMAGE, true, 10, 25));
+                        statusComponent.effects.add(new StatusEffect(StatusType.DAMAGE, true, spellComponent.duration, spellComponent.value));
                         break;
 
                     case frostSpear:
@@ -103,13 +107,6 @@ public class SpellSystem extends IteratingSystem {
                         screen.b2WorldCreator.createBullet(shooterX, shooterY, xVel, player ? BulletComponent.Owner.PLAYER : BulletComponent.Owner.ENEMY, texture.runningRight, 25, "frostSpear");
                         break;
 
-                    case earthSpike:
-
-                        for (int i = 0; i < 5; i++) {
-                            float delay = i * 0.5f; // Ajusta el valor del retraso según tus necesidades
-                            createDelayedAttackAndVFX(texture, b2body, attackComponent, 10f, 5f, 16f * (i+1), 0, player, spellComponent, entity, delay, i+1);
-                        }
-                        break;
                 }
                 spellComponent.casting = false;
                 spellComponent.spellToCast = null;
@@ -182,9 +179,9 @@ public class SpellSystem extends IteratingSystem {
         attackFixtureDef.isSensor = true;
         Fixture fix = b2dbody.body.createFixture(attackFixtureDef);
         if (player) {
-            fix.setUserData("playerAttackSensor");
+            fix.setUserData("playerAttackSensor isSpell");
         } else {
-            fix.setUserData("enemyAttackSensor");
+            fix.setUserData("enemyAttackSensor isSpell");
         }
 
        attackComponent.attackFixtures.add(fix); // Almacenar la fixture en la lista

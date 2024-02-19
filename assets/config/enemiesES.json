@@ -6,5 +6,9 @@
    "skeleton":{
     "name":"Esqueleto mago",
     "description":"Esqueleto que lanza magia"
+  },
+  "nightborne":{
+    "name":"Nightborne",
+    "description":"Es muy rapido"
   }
 }

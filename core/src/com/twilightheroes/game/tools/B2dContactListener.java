@@ -24,32 +24,38 @@ public class B2dContactListener implements ContactListener {
         boolean isEnemyHitbox = false;
         boolean canBeReduced = false;
         boolean isInteractHitbox = false;
+        boolean isSpell = false;
 
-        if ("playerAttackSensor".contains(fa.getUserData() == null ? "null" : fa.getUserData().toString()) || "playerAttackSensor".contains(fb.getUserData() == null ? "null" : fb.getUserData().toString())) {
+        if ((fa.getUserData() != null && fa.getUserData().toString().contains("playerAttackSensor")) || (fb.getUserData() != null && fb.getUserData().toString().contains("playerAttackSensor"))){
             isHitbox = true;
         }
-        if ("enemyAttackSensor".contains(fa.getUserData() == null ? "null" : fa.getUserData().toString()) || "enemyAttackSensor".contains(fb.getUserData() == null ? "null" : fb.getUserData().toString())) {
+        if ((fa.getUserData() != null && fa.getUserData().toString().contains("enemyAttackSensor")) || (fb.getUserData() != null && fb.getUserData().toString().contains("enemyAttackSensor"))){
             isEnemyHitbox = true;
         }
-        if ("canBeReduced".contains(fa.getUserData() == null ? "null" : fa.getUserData().toString()) || "canBeReduced".contains(fb.getUserData() == null ? "null" : fb.getUserData().toString())) {
+        if ((fa.getUserData() != null && fa.getUserData().toString().contains("canBeReduced")) || (fb.getUserData() != null && fb.getUserData().toString().contains("canBeReduced"))){
             canBeReduced = true;
         }
-        if ("playerInteractSensor".contains(fa.getUserData() == null ? "null" : fa.getUserData().toString()) || "playerInteractSensor".contains(fb.getUserData() == null ? "null" : fb.getUserData().toString())) {
+        if ((fa.getUserData() != null && fa.getUserData().toString().contains("playerInteractSensor")) || (fb.getUserData() != null && fb.getUserData().toString().contains("playerInteractSensor"))){
             isInteractHitbox = true;
-
         }
+        if ((fa.getUserData() != null && fa.getUserData().toString().contains("isSpell")) || (fb.getUserData() != null && fb.getUserData().toString().contains("isSpell"))){
+            isSpell = true;
+        }
+
+
+
 
         if (fa.getBody().getUserData() instanceof Entity) {
             Entity ent = (Entity) fa.getBody().getUserData();
-            entityCollision(ent, fb, true, isHitbox, isEnemyHitbox, canBeReduced, isInteractHitbox);
+            entityCollision(ent, fb, true, isHitbox, isEnemyHitbox, canBeReduced, isInteractHitbox,isSpell);
         } else if (fb.getBody().getUserData() instanceof Entity) {
             Entity ent = (Entity) fb.getBody().getUserData();
-            entityCollision(ent, fa, true, isHitbox, isEnemyHitbox, canBeReduced, isInteractHitbox);
+            entityCollision(ent, fa, true, isHitbox, isEnemyHitbox, canBeReduced, isInteractHitbox,isSpell);
 
         }
     }
 
-    private void entityCollision(Entity ent, Fixture fb, boolean touching, boolean isHitbox, boolean isEnemyHitbox, boolean canBeReduced, boolean isInteractHitbox) {
+    private void entityCollision(Entity ent, Fixture fb, boolean touching, boolean isHitbox, boolean isEnemyHitbox, boolean canBeReduced, boolean isInteractHitbox,boolean isSpell) {
         if (fb.getBody().getUserData() instanceof Entity) {
             Entity colEnt = (Entity) fb.getBody().getUserData();
 
@@ -63,6 +69,7 @@ public class B2dContactListener implements ContactListener {
                 collisionsAux.isEnemyHitbox = isEnemyHitbox;
                 collisionsAux.canBeReduced = canBeReduced;
                 collisionsAux.isInteractHitbox = isInteractHitbox;
+                collisionsAux.isSpell = isSpell;
 
                 if (touching) {
                     // Si las entidades están en contacto, añade la entidad a la lista de colisiones
@@ -81,6 +88,7 @@ public class B2dContactListener implements ContactListener {
                 collisionsAux.isEnemyHitbox = isEnemyHitbox;
                 collisionsAux.canBeReduced = canBeReduced;
                 collisionsAux.isInteractHitbox = isInteractHitbox;
+                collisionsAux.isSpell = isSpell;
 
                 if (touching) {
                     colb.collisionEntities.add(collisionsAux);

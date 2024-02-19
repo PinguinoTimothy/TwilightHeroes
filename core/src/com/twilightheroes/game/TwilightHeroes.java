@@ -73,6 +73,7 @@ public class TwilightHeroes extends Game {
         language = languages.values()[prefs.getInteger("language", 0)];
         playerSettings.spell1 = prefs.getString("spell1", "frostSpear");
         playerSettings.spell2 = prefs.getString("spell2", "healingSigil");
+        if (playerSettings.spell2.equals("earthSpike")) playerSettings.spell2 = "healingSigil";
         playerSettings.level = prefs.getInteger("level", 0);
         playerSettings.lastObelisk = prefs.getInteger("lastObelisk", 0);
         playerSettings.money = prefs.getInteger("money", 0);

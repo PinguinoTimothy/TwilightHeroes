@@ -5,6 +5,8 @@ import com.badlogic.gdx.utils.Pool;
 
 public class StatsComponent implements Component, Pool.Poolable {
     public float damage;
+    public float spellDamage;
+
     public float speed;
     public float hp;
     public float atkSpeed;
@@ -24,6 +26,6 @@ public class StatsComponent implements Component, Pool.Poolable {
         damageReduction = 0;
         hpRegen = 0;
         lifeSteal = 0;
-
+        spellDamage =0;
     }
 }
