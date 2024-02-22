@@ -615,9 +615,18 @@ public class B2WorldCreator {
             screen.playerEntity = entity;
         } else {
             playerEntity.remove(B2dBodyComponent.class);
+            playerEntity.remove(TextureComponent.class);
+
+            TextureComponent texture = engine.createComponent(TextureComponent.class);
+            aux = atlas.findRegion("Idle");
+            texture.sprite.setRegion(aux);
+
+            texture.sprite.setBounds(((RectangleMapObject) map.getLayers().get("spawn").getObjects().get(0)).getRectangle().x / TwilightHeroes.PPM, ((RectangleMapObject) map.getLayers().get("spawn").getObjects().get(0)).getRectangle().y / TwilightHeroes.PPM, jsonPlayer.get("width").asFloat() / TwilightHeroes.PPM, jsonPlayer.get("height").asFloat() / TwilightHeroes.PPM);
+
+
             B2dBodyComponent b2dbody = engine.createComponent(B2dBodyComponent.class);
             BodyDef bodyDef = new BodyDef();
-            bodyDef.position.set(2, 1);
+            bodyDef.position.set(texture.sprite.getX(), texture.sprite.getY());
             bodyDef.type = BodyDef.BodyType.DynamicBody;
             b2dbody.body = world.createBody(bodyDef);
             b2dbody.body.setFixedRotation(true);
@@ -646,6 +655,7 @@ public class B2WorldCreator {
 
             screen.bodies.add(b2dbody.body);
             playerEntity.add(b2dbody);
+            playerEntity.add(texture);
         }
     }
 
@@ -815,6 +825,7 @@ public class B2WorldCreator {
 
         engine.addEntity(entity);
     }
+
 
 
 }

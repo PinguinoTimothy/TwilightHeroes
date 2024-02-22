@@ -60,7 +60,7 @@ public class MainScreen implements Screen {
     private final ImageButton.ImageButtonStyle btnSpell2Style = new ImageButton.ImageButtonStyle();
     private final Button btnSpell1;
     private final Button btnSpell2;
-    private final String[] maps = {"map0", "mapa1", "mapa2", "mapa3"};
+    private final String[] maps = {"map0", "map1", "mapa2", "mapa3"};
     public TwilightHeroes parent;
     public Hud hud;
     public OrthographicCamera gameCam;
@@ -339,10 +339,16 @@ public class MainScreen implements Screen {
 
     @Override
     public void dispose() {
-        engine.clearPools();
         engine.removeAllEntities();
+        engine.removeAllSystems();
+
+        engine.clearPools();
+
         map.dispose();
         mapRenderer.dispose();
+        world.dispose();
+        hud.dispose();
+
 
 
     }

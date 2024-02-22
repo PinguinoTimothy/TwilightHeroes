@@ -27,10 +27,6 @@ public class EndScreen implements Screen {
 
     public EndScreen(TwilightHeroes twilightHeroes) {
         parent = twilightHeroes;
-    }
-
-    @Override
-    public void show() {
         // get skin
         Skin skin = new Skin();
         skin.add("play", parent.assMan.manager.get("hud/play01.png"));
@@ -39,7 +35,6 @@ public class EndScreen implements Screen {
 
         // create stage and set it as input processor
         stage = new Stage(new ExtendViewport(1920, 1080));
-        Gdx.input.setInputProcessor(stage);
 
         // create table to layout iutems we will add
         Table table = new Table();
@@ -90,6 +85,12 @@ public class EndScreen implements Screen {
 
         //add table to stage
         stage.addActor(table);
+    }
+
+    @Override
+    public void show() {
+        Gdx.input.setInputProcessor(stage);
+
 
     }
 
