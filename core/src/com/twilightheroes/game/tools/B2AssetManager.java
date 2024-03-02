@@ -16,6 +16,7 @@ public class B2AssetManager {
         manager.load("enemies/skeleton.atlas", TextureAtlas.class);
 
         manager.load("enemies/nightborne.atlas", TextureAtlas.class);
+        manager.load("enemies/wizard.atlas", TextureAtlas.class);
 
 
         manager.load("player/player.atlas", TextureAtlas.class);
@@ -41,6 +42,7 @@ public class B2AssetManager {
         manager.load("hud/knob.png", Texture.class);
 
         manager.load("backgrounds/mainMenuBackground.png", Texture.class);
+        manager.load("backgrounds/winscreenBackground.jpeg", Texture.class);
 
         manager.load("variety/checkboxOff.png", Texture.class);
         manager.load("variety/checked.png", Texture.class);
@@ -78,6 +80,7 @@ public class B2AssetManager {
         manager.load("enemies/enemySample/caballero.png", Texture.class);
         manager.load("enemies/enemySample/skeleton.png", Texture.class);
         manager.load("enemies/enemySample/nightborne.png", Texture.class);
+        manager.load("enemies/enemySample/wizard.png", Texture.class);
 
         manager.load("hud/backButton.png", Texture.class);
 

@@ -20,6 +20,8 @@ public class PlayerComponent implements Component, Pool.Poolable {
     public float coyoteTime;
     public Fixture interactFixture;
 
+    public boolean end = false;
+
 
     @Override
     public void reset() {
@@ -29,6 +31,6 @@ public class PlayerComponent implements Component, Pool.Poolable {
         canDodge = true;
         canAttack = true;
         inmune = false;
-
+end =  false;
     }
 }

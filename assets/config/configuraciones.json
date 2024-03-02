@@ -18,7 +18,7 @@
     "attackCooldown":1.5,
     "speed":0.5,
     "attackFrame":5,
-    "attackDamage": 50,
+    "attackDamage": 25,
     "attackMethod": "melee"
   }
   ,
@@ -38,9 +38,9 @@
     "viewDistance":10.5,
     "attackDistance":9,
     "attackCooldown":2,
-    "speed":1,
+    "speed":0.25,
     "attackFrame":5,
-    "attackDamage": 50,
+    "attackDamage": 25,
     "attackMethod": "spellCaster",
     "spells": ["frostSpear"]
 
@@ -62,10 +62,33 @@
   "viewDistance":12.5,
   "attackDistance":2.5,
   "attackCooldown":1.5,
-  "speed":1.5,
+  "speed":0.75,
   "attackFrame":10,
-  "attackDamage": 50,
+  "attackDamage": 30,
   "attackMethod": "melee"
+  },
+
+  {
+    "name":"wizard",
+    "atlas":"wizard.atlas",
+    "width": 128,
+    "height": 128,
+    "hitboxX": 6,
+    "hitboxY": 8,
+    "animaciones":{
+      "IDLE":8,
+      "ATTACK":8,
+      "WALK":8
+    },
+    "hp":250,
+    "viewDistance":10.5,
+    "attackDistance":10,
+    "attackCooldown":1,
+    "speed":0.5,
+    "attackFrame":5,
+    "attackDamage": 25,
+    "attackMethod": "spellCaster",
+    "spells": ["frostSpear","shockingGrasp"]
   }
   
 ],

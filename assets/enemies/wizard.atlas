@@ -1,0 +1,9 @@
+wizard.png
+size:2048,1024
+repeat:none
+ATTACK
+bounds:2,2,2000,250
+IDLE
+bounds:2,506,2000,250
+WALK
+bounds:2,254,2000,250

@@ -41,6 +41,7 @@ public class BestiaryScreen implements Screen {
     Stack stack = new Stack();
     JsonValue json = new JsonReader().parse(Gdx.files.internal("config/enemiesES.json"));
 
+  
     public BestiaryScreen(final TwilightHeroes parent) {
         this.parent = parent;
         stage = new Stage(new StretchViewport(1920, 1080)); // Utilizando StretchViewport

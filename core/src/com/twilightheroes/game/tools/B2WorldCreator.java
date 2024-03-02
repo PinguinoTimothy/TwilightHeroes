@@ -110,7 +110,7 @@ public class B2WorldCreator {
 
     }
 
-    public RoomSize generateLevel(TiledMap map, Entity playerEntity) {
+    public RoomSize generateLevel(TiledMap map, Entity playerEntity, int oldMap) {
         if (this.map != null) {
             this.map.dispose();
 
@@ -125,7 +125,7 @@ public class B2WorldCreator {
         crearPeligros();
 
 
-        createPlayer(manager.get("player/player.atlas", TextureAtlas.class), playerEntity);
+        createPlayer(manager.get("player/player.atlas", TextureAtlas.class), playerEntity, oldMap);
 
         createEnemy();
         Rectangle rectangleRoom = ((RectangleMapObject) map.getLayers().get("room").getObjects().get(0)).getRectangle();
@@ -257,6 +257,7 @@ public class B2WorldCreator {
             b2dbody.startY = rectangle.getY();
 
             exitComponent.exitToRoom = (int) object.getProperties().get("toMap");
+            exitComponent.fromRoom = (int) object.getProperties().get("fromMap");
 
             // add the components to the entity
             entity.add(b2dbody);
@@ -402,13 +403,13 @@ public class B2WorldCreator {
 
             engine.addEntity(entity);
             screen.bodies.add(b2dbody.body);
-            openDoors(null);
+            openDoors();
 
         }
         shape.dispose();
     }
 
-    public void openDoors(Entity lever) {
+    public void openDoors() {
         ImmutableArray<Entity> doors = engine.getEntitiesFor(Family.all(DoorComponent.class).get());
         for (Entity door : doors) {
             DoorComponent doorComponent = Mappers.doorCom.get(door);
@@ -484,7 +485,7 @@ public class B2WorldCreator {
         }
 
 
-    public void createPlayer(TextureAtlas atlas, Entity playerEntity) {
+    public void createPlayer(TextureAtlas atlas, Entity playerEntity, int oldMap) {
         JsonValue jsonPlayer = jsonConfig.get("personaje");
 
         if (playerEntity == null) {
@@ -507,8 +508,15 @@ public class B2WorldCreator {
             // create the data for the components and add them to the components
             aux = atlas.findRegion("Idle");
             texture.sprite.setRegion(aux);
+            Rectangle spawn = null;
+            for (RectangleMapObject object : map.getLayers().get("spawn").getObjects().getByType(RectangleMapObject.class)) {
+                if ( object.getProperties().get("id",int.class) == oldMap){
+                    spawn = object.getRectangle();
+                }
+            }
 
-            texture.sprite.setBounds(((RectangleMapObject) map.getLayers().get("spawn").getObjects().get(0)).getRectangle().x / TwilightHeroes.PPM, ((RectangleMapObject) map.getLayers().get("spawn").getObjects().get(0)).getRectangle().y / TwilightHeroes.PPM, jsonPlayer.get("width").asFloat() / TwilightHeroes.PPM, jsonPlayer.get("height").asFloat() / TwilightHeroes.PPM);
+
+                texture.sprite.setBounds(spawn.x / TwilightHeroes.PPM, spawn.y / TwilightHeroes.PPM, jsonPlayer.get("width").asFloat() / TwilightHeroes.PPM, jsonPlayer.get("height").asFloat() / TwilightHeroes.PPM);
 
             type.type = TypeComponent.PLAYER;
             stateCom.set(StateComponent.STATE_IDLE);
@@ -621,7 +629,15 @@ public class B2WorldCreator {
             aux = atlas.findRegion("Idle");
             texture.sprite.setRegion(aux);
 
-            texture.sprite.setBounds(((RectangleMapObject) map.getLayers().get("spawn").getObjects().get(0)).getRectangle().x / TwilightHeroes.PPM, ((RectangleMapObject) map.getLayers().get("spawn").getObjects().get(0)).getRectangle().y / TwilightHeroes.PPM, jsonPlayer.get("width").asFloat() / TwilightHeroes.PPM, jsonPlayer.get("height").asFloat() / TwilightHeroes.PPM);
+            Rectangle spawn = null;
+            for (RectangleMapObject object : map.getLayers().get("spawn").getObjects().getByType(RectangleMapObject.class)) {
+                if ( (int)object.getProperties().get("id") == oldMap){
+                    spawn = object.getRectangle();
+                }
+            }
+
+
+            texture.sprite.setBounds(spawn.x / TwilightHeroes.PPM, spawn.y / TwilightHeroes.PPM, jsonPlayer.get("width").asFloat() / TwilightHeroes.PPM, jsonPlayer.get("height").asFloat() / TwilightHeroes.PPM);
 
 
             B2dBodyComponent b2dbody = engine.createComponent(B2dBodyComponent.class);

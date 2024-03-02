@@ -181,7 +181,7 @@ public class PlayerControlSystem extends IteratingSystem {
             playerComponent.canJump = false;
             playerComponent.coyoteTime += 1f;
             b2body.body.setLinearVelocity(b2body.body.getLinearVelocity().x, 0);
-            b2body.body.applyLinearImpulse(new Vector2(0, 3f), b2body.body.getWorldCenter(), true);
+            b2body.body.applyLinearImpulse(new Vector2(0, 3.2f), b2body.body.getWorldCenter(), true);
         }
     }
 

@@ -17,6 +17,7 @@ import com.twilightheroes.game.screens.EndScreen;
 import com.twilightheroes.game.screens.MagicScreen;
 import com.twilightheroes.game.screens.MainScreen;
 import com.twilightheroes.game.screens.OptionScreen;
+import com.twilightheroes.game.screens.WinScreen;
 import com.twilightheroes.game.tools.B2AssetManager;
 import com.twilightheroes.game.tools.KillCounter;
 import com.twilightheroes.game.tools.PlayerSettings;
@@ -41,6 +42,8 @@ public class TwilightHeroes extends Game {
     public final static int MAGIC = 3;
     public final static int ENDGAME = 4;
     public final static int BESTIARY = 5;
+    public final static int WIN = 6;
+
     public MainScreen mainScreen;
     public PlayerSettings playerSettings = new PlayerSettings();
     public B2AssetManager assMan = new B2AssetManager();
@@ -58,6 +61,7 @@ public class TwilightHeroes extends Game {
     private EndScreen endScreen;
     private OptionScreen optionScreen;
     private BestiaryScreen bestiaryScreen;
+    private WinScreen winScreen;
 
     @Override
     public void create() {
@@ -177,6 +181,10 @@ public class TwilightHeroes extends Game {
             case BESTIARY:
                 if (bestiaryScreen == null) bestiaryScreen = new BestiaryScreen(this);
                 this.setScreen(bestiaryScreen);
+                break;
+            case WIN:
+                if (winScreen == null) winScreen = new WinScreen(this);
+                this.setScreen(winScreen);
                 break;
         }
     }

@@ -7,6 +7,7 @@ import com.badlogic.gdx.utils.Pool;
 public class StatusComponent implements Component, Pool.Poolable {
     public Array<StatusEffect> effects = new Array<>();
 
+    
     @Override
     public void reset() {
         effects.clear();

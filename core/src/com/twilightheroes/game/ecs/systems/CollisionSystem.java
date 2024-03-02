@@ -132,8 +132,14 @@ public class CollisionSystem extends IteratingSystem {
                                 if (!screen.change && screen.auxChangeMap == 0) {
                                     ExitComponent exitComponent = Mappers.exitCom.get(collidedEntity);
 
-                                    screen.change = true;
-                                    screen.newMap = exitComponent.exitToRoom;
+                                    if (exitComponent.exitToRoom != 4){
+                                        screen.change = true;
+                                        screen.newMap = exitComponent.exitToRoom;
+                                        screen.oldMap = exitComponent.fromRoom;
+
+                                    }else{
+player.end = true;
+                                    }
 
 
                                 }
@@ -150,7 +156,7 @@ public class CollisionSystem extends IteratingSystem {
                                     switch (interactiveObjectComponent.tipoObjeto) {
                                         case tipoObjetoInteractivo.LEVER:
                                             screen.parent.playerSettings.doorsOpened[interactiveObjectComponent.id] = true;
-                                            screen.b2WorldCreator.openDoors(collidedEntity);
+                                            screen.b2WorldCreator.openDoors();
                                             break;
                                         case tipoObjetoInteractivo.DIALOGUE:
                                             DialogueComponent dialogueComponent = Mappers.dialogueCom.get(entity);

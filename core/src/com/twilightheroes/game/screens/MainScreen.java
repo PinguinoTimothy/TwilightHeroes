@@ -60,7 +60,7 @@ public class MainScreen implements Screen {
     private final ImageButton.ImageButtonStyle btnSpell2Style = new ImageButton.ImageButtonStyle();
     private final Button btnSpell1;
     private final Button btnSpell2;
-    private final String[] maps = {"map0", "map1", "mapa2", "mapa3"};
+    private final String[] maps = {"map0", "map1", "map2", "map3"};
     public TwilightHeroes parent;
     public Hud hud;
     public OrthographicCamera gameCam;
@@ -70,6 +70,7 @@ public class MainScreen implements Screen {
     public Array<Body> bodies = new Array<>();
     public boolean change = false;
     public int newMap;
+    public int oldMap;
     public int auxChangeMap = 0;
     Image pantallaNegro;
     private TiledMap map;
@@ -202,7 +203,8 @@ public class MainScreen implements Screen {
         pantallaNegro.setVisible(false);
         hud.stage.addActor(pantallaNegro);
 
-        newMap = 0;
+newMap = 3;
+oldMap = 3;
         changeMap();
         WidgetContainer widgetContainer = new WidgetContainer();
         parent.widgets.add(widgetContainer);
@@ -258,9 +260,8 @@ public class MainScreen implements Screen {
         entitiesToRemove.clear();
         bodies.clear();
 
-
         map = mapLoader.load("maps/" + maps[newMap] + ".tmx");
-        RoomSize roomSize = b2WorldCreator.generateLevel(map, playerEntity);
+        RoomSize roomSize = b2WorldCreator.generateLevel(map, playerEntity,oldMap);
         renderingSystem.updateRoom(roomSize);
         mapRenderer.setMap(map);
 
@@ -273,6 +274,10 @@ public class MainScreen implements Screen {
     public void render(float delta) {
         //check if player is dead. if so show end screen
         PlayerComponent pc = (playerEntity.getComponent(PlayerComponent.class));
+
+        if (pc.end){
+            parent.changeScreen(TwilightHeroes.WIN);
+        }
         if (pc.isDead) {
             parent.changeScreen(TwilightHeroes.ENDGAME);
         }

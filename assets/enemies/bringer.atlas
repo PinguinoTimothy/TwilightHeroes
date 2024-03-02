@@ -1,0 +1,9 @@
+bringer.png
+size:2048,512
+repeat:none
+ATTACK
+bounds:2,192,1400,93
+IDLE
+bounds:2,97,1120,93
+WALK
+bounds:2,2,1120,93
