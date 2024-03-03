@@ -23,8 +23,12 @@ import com.twilightheroes.game.tools.KillCounter;
 import com.twilightheroes.game.tools.PlayerSettings;
 import com.twilightheroes.game.tools.WidgetContainer;
 
+/**
+ * Clase principal que extiende la clase Game de LibGDX.
+ * Controla la logica del juego y la gestion de pantallas.
+ */
 public class TwilightHeroes extends Game {
-
+    
     public static final int V_WIDTH = 400;
     public static final int V_HEIGHT = 208;
     public static final float PPM = 100;
@@ -63,6 +67,10 @@ public class TwilightHeroes extends Game {
     private BestiaryScreen bestiaryScreen;
     private WinScreen winScreen;
 
+
+    /**
+     * Carga los assets, las preferencias e inicia el menu
+     */
     @Override
     public void create() {
 
@@ -92,6 +100,10 @@ public class TwilightHeroes extends Game {
 
     }
 
+    /**
+     * Se encarga de leer/escribir el contador de enemigos muertos para la screen Bestiario
+     * @param read Decide si va a leer (True) o escribir (False)
+     */
     public void killCounterHandler(boolean read) {
         FileHandle fileHandle = Gdx.files.local("config/killCounter.json");
         if (read) {
@@ -123,6 +135,9 @@ public class TwilightHeroes extends Game {
         }
     }
 
+    /**
+     * Se encarga de cambiar el idioma
+     */
     public void updateLanguage() {
         jsonMultilanguage = new JsonReader().parse(Gdx.files.internal("config/language.json")).get(language.name());
         for (WidgetContainer screen : widgets) {
@@ -140,6 +155,10 @@ public class TwilightHeroes extends Game {
 
     }
 
+    /**
+     * Se encarga de cambiar la screen actual
+     * @param screen La screen a la que va a cambiar
+     */
     public void changeScreen(int screen) {
 
         switch (screen) {
@@ -189,6 +208,9 @@ public class TwilightHeroes extends Game {
         }
     }
 
+    /**
+     * Reinicia la screen del juego
+     */
     public void restart() {
         if (mainScreen != null) {
             mainScreen.dispose();
@@ -197,12 +219,18 @@ public class TwilightHeroes extends Game {
         changeScreen(APPLICATION);
     }
 
+    /**
+     * Renderiza la screen
+     */
     @Override
     public void render() {
         super.render();
 
     }
 
+    /**
+     * Cuando se pausa el juego guarda las preferencias de usuario, las puertas que se han abierto y el nivel
+     */
     @Override
     public void pause() {
         super.pause();
@@ -222,6 +250,9 @@ public class TwilightHeroes extends Game {
         killCounterHandler(false);
     }
 
+    /**
+     * Se encarga de hacer dispose a las distintas pantallas y al asset manager
+     */
     @Override
     public void dispose() {
         super.dispose();
@@ -233,6 +264,9 @@ public class TwilightHeroes extends Game {
         assMan.manager.dispose();
     }
 
+    /**
+     * Enumerado con los idiomas
+     */
     public enum languages {
         ES,
         EN

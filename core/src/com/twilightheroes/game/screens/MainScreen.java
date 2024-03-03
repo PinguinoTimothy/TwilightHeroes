@@ -48,7 +48,9 @@ import com.twilightheroes.game.tools.Mappers;
 import com.twilightheroes.game.tools.RoomSize;
 import com.twilightheroes.game.tools.WidgetContainer;
 
-
+/**
+ * La pantalla del juego
+ */
 public class MainScreen implements Screen {
 
     private final World world;
@@ -77,6 +79,11 @@ public class MainScreen implements Screen {
     private float transitionTime = 0f;
 
     public Timer timer;
+
+    /**
+     * Constructor de la pantalla de juego
+     * @param twilightHeroes La clase que implementa el juego para llamar a distintas funciones
+     */
     public MainScreen(TwilightHeroes twilightHeroes) {
         parent = twilightHeroes;
         world = new World(new Vector2(0, -9.8f), true);
@@ -215,6 +222,9 @@ oldMap = 3;
 
     }
 
+    /**
+     * Metodo que se llama cada vez que se enseña esta pantalla.
+     */
     @Override
     public void show() {
         Gdx.input.setInputProcessor(hud.stage);
@@ -222,7 +232,9 @@ oldMap = 3;
 
     }
 
-
+    /**
+     * Metodo que se encarga de cambiar el icono de los botones de hechizos basado en los hechizos seleccionados
+     */
     public void actualizarBotones() {
 
 
@@ -236,6 +248,9 @@ oldMap = 3;
 
     }
 
+    /**
+     * Metodo encargado de cambiar el nivel
+     */
     private void changeMap() {
         auxChangeMap = 5;
         change = false;
@@ -270,6 +285,10 @@ oldMap = 3;
 
     }
 
+    /**
+     * Metodo render
+     * @param delta valor desde la ultima vez que se ejecuto este metodo
+     */
     @Override
     public void render(float delta) {
         //check if player is dead. if so show end screen
@@ -319,6 +338,11 @@ oldMap = 3;
 
     }
 
+    /**
+     * Se encarga de reescalar la pantalla
+     * @param width Nuevo Ancho
+     * @param height Nuevo Alto
+     */
     @Override
     public void resize(int width, int height) {
         renderingSystem.resize(width, height);
@@ -331,6 +355,9 @@ oldMap = 3;
 
     }
 
+    /**
+     * Llamado cuando se continua la ejecucion
+     */
     @Override
     public void resume() {
         hud.stage.unfocusAll();
@@ -342,6 +369,9 @@ oldMap = 3;
 
     }
 
+    /**
+     * Metodo que hace dispose de todas las cosas necesarias
+     */
     @Override
     public void dispose() {
         engine.removeAllEntities();
