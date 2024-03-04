@@ -13,6 +13,7 @@ import com.badlogic.gdx.utils.JsonReader;
 import com.badlogic.gdx.utils.JsonValue;
 import com.badlogic.gdx.utils.JsonWriter;
 import com.twilightheroes.game.screens.BestiaryScreen;
+import com.twilightheroes.game.screens.CreditScreen;
 import com.twilightheroes.game.screens.EndScreen;
 import com.twilightheroes.game.screens.MagicScreen;
 import com.twilightheroes.game.screens.MainScreen;
@@ -47,6 +48,9 @@ public class TwilightHeroes extends Game {
     public final static int ENDGAME = 4;
     public final static int BESTIARY = 5;
     public final static int WIN = 6;
+    public final static int CREDITS = 7;
+    public final static int HELP = 8;
+
 
     public MainScreen mainScreen;
     public PlayerSettings playerSettings = new PlayerSettings();
@@ -66,6 +70,7 @@ public class TwilightHeroes extends Game {
     private OptionScreen optionScreen;
     private BestiaryScreen bestiaryScreen;
     private WinScreen winScreen;
+    private CreditScreen creditScreen;
 
 
     /**
@@ -204,6 +209,10 @@ public class TwilightHeroes extends Game {
             case WIN:
                 if (winScreen == null) winScreen = new WinScreen(this);
                 this.setScreen(winScreen);
+                break;
+            case CREDITS:
+                if (creditScreen == null) creditScreen = new CreditScreen(this);
+                this.setScreen(creditScreen);
                 break;
         }
     }

@@ -15,7 +15,7 @@
     "hp":100,
     "viewDistance":12.5,
     "attackDistance":2.5,
-    "attackCooldown":1.5,
+    "attackCooldown":199,
     "speed":0.5,
     "attackFrame":5,
     "attackDamage": 25,

@@ -180,14 +180,13 @@ public class MainScreen implements Screen {
         btnPause.setBounds(350, 170, 30, 30);
         hud.stage.addActor(btnPause);
 
-        ImageButton btnInteract = new ImageButton(new TextureRegionDrawable(new TextureRegion(manager.get("hud/pauseButton.png", Texture.class))));
+        ImageButton btnInteract = new ImageButton(new TextureRegionDrawable(new TextureRegion(manager.get("hud/interact.png", Texture.class))));
         btnInteract.setScale(1.5f, 1.5f);
         btnInteract.setBounds(300, 70, 30, 30);
         hud.stage.addActor(btnInteract);
 
 
         // add all the relevant systems our engine should run
-        engine.addSystem(new SpellSystem(this));
         engine.addSystem(new PlayerControlSystem(touchpad, btnJump, btnAttack, btnDodge, btnSpell1, btnSpell2, btnInteract, btnPause, this));
         engine.addSystem(new AnimationSystem());
         engine.addSystem(new PhysicsDebugSystem(world, renderingSystem.getCamera()));
@@ -197,6 +196,7 @@ public class MainScreen implements Screen {
         engine.addSystem(new EnemySystem(this));
         engine.addSystem(new EffectSystem());
         engine.addSystem(new BulletSystem(this));
+        engine.addSystem(new SpellSystem(this));
         engine.addSystem(new DialogueSystem(this));
 
 
@@ -210,7 +210,7 @@ public class MainScreen implements Screen {
         pantallaNegro.setVisible(false);
         hud.stage.addActor(pantallaNegro);
 
-newMap = 3;
+newMap =3;
 oldMap = 3;
         changeMap();
         WidgetContainer widgetContainer = new WidgetContainer();

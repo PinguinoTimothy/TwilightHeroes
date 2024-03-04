@@ -289,24 +289,15 @@ public class PlayerControlSystem extends IteratingSystem {
                 }
             } else {
                 if ((state.get() == StateComponent.STATE_ATTACK01 || state.get() == StateComponent.STATE_ATTACK02 || state.get() == StateComponent.STATE_ATTACK03) && !animation.animations.get(state.get()).isAnimationFinished(state.time)) {
-                    b2body.body.setGravityScale(0f);
                     playerComponent.canJump = false;
                 } else {
                     if (spellComponent.castingTime <= 0) {
                         state.isLooping = true;
 
-                        for (int i = 0; i < attackComponent.lifetimes.size; i++) {
-                            float lifetime = attackComponent.lifetimes.get(i);
-                            lifetime += deltaTime;
-                            attackComponent.lifetimes.set(i, lifetime);
-
-                            if (lifetime >= 0.1f) {
-                                Fixture atkFix = attackComponent.attackFixtures.get(i);
-                                b2body.body.destroyFixture(atkFix);
-                                attackComponent.attackFixtures.removeIndex(i);
-                                attackComponent.lifetimes.removeIndex(i);
-                                i--;  // Ajusta el índice después de eliminar un elemento
-                            }
+                        if (attackComponent.attackFixture != null) {
+                            // Si la fixture de ataque ya existe, la eliminamos antes de recrearla
+                            b2body.body.destroyFixture(attackComponent.attackFixture);
+                            attackComponent.attackFixture = null;
                         }
 
                         // Crear una nueva fixture de ataque
@@ -449,10 +440,8 @@ public class PlayerControlSystem extends IteratingSystem {
         attackFixtureDef.shape = attackShape;
         attackFixtureDef.filter.categoryBits = TwilightHeroes.HITBOX_BIT;
         attackFixtureDef.isSensor = true; // Configurar la fixture como un sensor
-        Fixture fix = b2dbody.body.createFixture(attackFixtureDef);
-        fix.setUserData("playerAttackSensor");
-        attackComponent.attackFixtures.add(fix);
-        attackComponent.lifetimes.add(0f);  // Inicializa el tiempo de vida para esta fixture a 0
+        attackComponent.attackFixture = b2dbody.body.createFixture(attackFixtureDef);
+        attackComponent.attackFixture.setUserData("playerAttackSensor");
         // Liberar los recursos del shape
         attackShape.dispose();
 

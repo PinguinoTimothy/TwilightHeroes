@@ -1,3 +1,7 @@
 {
-  "Dialogo1": ["Esto es la linea1 y es muy larga muy \nlarga muy larga muy larga \nmuy larga muy larga muy larga\nEsto es la linea1.1","Esto es la linea 2","Esto es la linea 3"]
+  "Dialogo1": ["Esto es la linea1 y es muy larga muy \nlarga muy larga muy larga \nmuy larga muy larga muy larga\nEsto es la linea1.1","Esto es la linea 2","Esto es la linea 3"],
+  "Dialogo2": ["Camino a las Cavernas Ferrosas ->"],
+  "Dialogo3": ["Camino a las Cavernas Ferrosas ->"]
+
+
 }

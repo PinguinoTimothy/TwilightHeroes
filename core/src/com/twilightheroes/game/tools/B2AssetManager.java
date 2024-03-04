@@ -24,7 +24,7 @@ public class B2AssetManager {
 
         manager.load("hud/attack.png", Texture.class);
         manager.load("hud/attackchecked.png", Texture.class);
-
+        manager.load("hud/interact.png", Texture.class);
         manager.load("hud/dodge.png", Texture.class);
         manager.load("hud/healthBar.png", Texture.class);
         manager.load("hud/Joystick.png", Texture.class);

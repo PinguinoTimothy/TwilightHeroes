@@ -562,14 +562,11 @@ public class B2WorldCreator {
             attackFixtureDef.filter.categoryBits = TwilightHeroes.HITBOX_BIT;
 
             attackFixtureDef.filter.maskBits = TwilightHeroes.ENEMY_BIT;
-
-            Fixture fix = b2dbody.body.createFixture(attackFixtureDef);
-            fix.setUserData("playerAttackSensor");
-            attackComponent.attackFixtures.add(fix);
-            attackComponent.lifetimes.add(0f);  // Inicializa el tiempo de vida para esta fixture a 0
+            attackFixture = b2dbody.body.createFixture(attackFixtureDef);
+            attackFixture.setUserData("playerAttackSensor");
+            attackComponent.attackFixture = attackFixture;
             // Liberar los recursos del shape
             attackShape.dispose();
-
 
             b2dbody.body.setUserData(entity);
 

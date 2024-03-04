@@ -88,7 +88,7 @@ public class WinScreen implements Screen {
         stage.addActor(table);
     }
 
-
+  
 
     @Override
     public void show() {
