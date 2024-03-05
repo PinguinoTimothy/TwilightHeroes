@@ -84,6 +84,12 @@ public class B2AssetManager {
 
         manager.load("hud/backButton.png", Texture.class);
 
+        manager.load("help/hechizos.jpeg", Texture.class);
+        manager.load("help/principales.jpeg", Texture.class);
+        manager.load("help/flechaDerecha.png", Texture.class);
+        manager.load("help/flechaIzquierda.png", Texture.class);
+
+
         String skin = "hud/neonui/neon-ui.json";
         SkinLoader.SkinParameter params = new SkinLoader.SkinParameter("hud/neonui/neon-ui.atlas");
         manager.load(skin, Skin.class, params);

@@ -129,6 +129,13 @@ public class MenuScreen implements Screen {
         textButton = new TextButton(language.get("controls").asString(), textButtonStyle);
         textButton.setName("controls");
         widgetContainer.widgets.add(textButton);
+        textButton.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                super.clicked(event, x, y);
+                parent.changeScreen(TwilightHeroes.HELP);
+            }
+        });
 
         table1.add(textButton);
 
@@ -140,6 +147,7 @@ public class MenuScreen implements Screen {
         parent.widgets.add(widgetContainer);
 
     }
+
 
     @Override
     public void show() {

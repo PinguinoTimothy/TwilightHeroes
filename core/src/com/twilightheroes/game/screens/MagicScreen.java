@@ -60,7 +60,7 @@ public class MagicScreen implements Screen {
         stack.addActor(image);
 
         Table mainTable = new Table();
-        mainTable.setDebug(true);
+      //  mainTable.setDebug(true);
         mainTable.setFillParent(true);
 
         mainTable.top().padTop(20.0f);
@@ -147,7 +147,7 @@ public class MagicScreen implements Screen {
 
         // Adding a scrollable table with 50 buttons below
         Table buttonTable = new Table();
-        buttonTable.setDebug(true);
+       // buttonTable.setDebug(true);
 
 
         JsonValue json = new JsonReader().parse(Gdx.files.internal("config/spells.json"));
@@ -173,7 +173,7 @@ public class MagicScreen implements Screen {
 
         // Create a Table for information on the right
         Table rightTable = new Table();
-        rightTable.setDebug(true);
+      //  rightTable.setDebug(true);
 
         // Add information labels to the rightTable
         Label.LabelStyle labelStyle = new Label.LabelStyle();

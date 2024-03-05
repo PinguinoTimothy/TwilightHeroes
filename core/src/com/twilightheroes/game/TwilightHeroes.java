@@ -15,6 +15,7 @@ import com.badlogic.gdx.utils.JsonWriter;
 import com.twilightheroes.game.screens.BestiaryScreen;
 import com.twilightheroes.game.screens.CreditScreen;
 import com.twilightheroes.game.screens.EndScreen;
+import com.twilightheroes.game.screens.HelpScreen;
 import com.twilightheroes.game.screens.MagicScreen;
 import com.twilightheroes.game.screens.MainScreen;
 import com.twilightheroes.game.screens.OptionScreen;
@@ -64,6 +65,7 @@ public class TwilightHeroes extends Game {
     public JsonValue jsonMultilanguage;
     public Array<WidgetContainer> widgets = new Array<>();
     Preferences prefs;
+
     private com.twilightheroes.game.screens.MenuScreen menuScreen;
     private MagicScreen magicScreen;
     private EndScreen endScreen;
@@ -71,7 +73,7 @@ public class TwilightHeroes extends Game {
     private BestiaryScreen bestiaryScreen;
     private WinScreen winScreen;
     private CreditScreen creditScreen;
-
+private HelpScreen helpScreen;
 
     /**
      * Carga los assets, las preferencias e inicia el menu
@@ -213,6 +215,10 @@ public class TwilightHeroes extends Game {
             case CREDITS:
                 if (creditScreen == null) creditScreen = new CreditScreen(this);
                 this.setScreen(creditScreen);
+                break;
+            case HELP:
+                if (helpScreen == null) helpScreen = new HelpScreen(this);
+                this.setScreen(helpScreen);
                 break;
         }
     }

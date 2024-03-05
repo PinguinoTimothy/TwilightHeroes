@@ -149,7 +149,7 @@ public class MainScreen implements Screen {
         btnAttack.setBounds(300, 15, 30, 30);
         hud.stage.addActor(btnAttack);
 
-        hud.stage.setDebugAll(true);
+        //hud.stage.setDebugAll(true);
 
         // Boton Dodge
         Skin btnDodgeSkin = new Skin();
@@ -189,7 +189,7 @@ public class MainScreen implements Screen {
         // add all the relevant systems our engine should run
         engine.addSystem(new PlayerControlSystem(touchpad, btnJump, btnAttack, btnDodge, btnSpell1, btnSpell2, btnInteract, btnPause, this));
         engine.addSystem(new AnimationSystem());
-        engine.addSystem(new PhysicsDebugSystem(world, renderingSystem.getCamera()));
+        //engine.addSystem(new PhysicsDebugSystem(world, renderingSystem.getCamera()));
         engine.addSystem(new PhysicsSystem(world, engine, this));
         engine.addSystem(new CollisionSystem(renderingSystem, this));
         engine.addSystem(renderingSystem);
@@ -210,8 +210,8 @@ public class MainScreen implements Screen {
         pantallaNegro.setVisible(false);
         hud.stage.addActor(pantallaNegro);
 
-newMap =3;
-oldMap = 3;
+newMap =0;
+oldMap = 0;
         changeMap();
         WidgetContainer widgetContainer = new WidgetContainer();
         parent.widgets.add(widgetContainer);

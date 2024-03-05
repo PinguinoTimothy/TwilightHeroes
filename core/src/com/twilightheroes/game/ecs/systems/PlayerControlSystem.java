@@ -27,6 +27,9 @@ import com.twilightheroes.game.ecs.components.spells.SpellComponent;
 import com.twilightheroes.game.screens.MainScreen;
 import com.twilightheroes.game.tools.Mappers;
 
+/**
+ * The type Player control system.
+ */
 public class PlayerControlSystem extends IteratingSystem {
 
 
@@ -34,17 +37,53 @@ public class PlayerControlSystem extends IteratingSystem {
     private final Filter inmuneFilter = new Filter();
     private final Filter playerFilter = new Filter();
     private final MainScreen screen;
+    /**
+     * The Dodging.
+     */
     public boolean dodging = false;
+    /**
+     * The Make dodge.
+     */
     public boolean makeDodge = false;
+    /**
+     * The Dodge time.
+     */
     public float dodgeTime = 0f;
+    /**
+     * The Dodge cooldown.
+     */
     public float dodgeCooldown = 0f;
+    /**
+     * The Touchpad.
+     */
     Touchpad touchpad;
+    /**
+     * The Btn saltar.
+     */
     Button btnSaltar;
+    /**
+     * The Btn atacar.
+     */
     Button btnAtacar;
+    /**
+     * The Btn dodge.
+     */
     Button btnDodge;
+    /**
+     * The B 2 body.
+     */
     B2dBodyComponent b2body;
+    /**
+     * The State.
+     */
     StateComponent state;
+    /**
+     * The Attack component.
+     */
     AttackComponent attackComponent;
+    /**
+     * The Animation.
+     */
     AnimationComponent animation;
     private int numAtaqueActual = 0;
     private int numAtaquesDeseados = 0;
@@ -59,6 +98,19 @@ public class PlayerControlSystem extends IteratingSystem {
     private float interactCooldown = 0f;
 
 
+    /**
+     * Instantiates a new Player control system.
+     *
+     * @param touchpad       the touchpad
+     * @param btnSaltar      the btn saltar
+     * @param btnAtacar      the btn atacar
+     * @param btnDodge       the btn dodge
+     * @param btnHabilidad1  the btn habilidad 1
+     * @param btnHabilidad2  the btn habilidad 2
+     * @param interactButton the interact button
+     * @param btnPause       the btn pause
+     * @param screen         the screen
+     */
     public PlayerControlSystem(Touchpad touchpad, Button btnSaltar, Button btnAtacar, Button btnDodge, Button btnHabilidad1, Button btnHabilidad2, Button interactButton, Button btnPause, final MainScreen screen) {
         super(Family.all(PlayerComponent.class).get());
         this.touchpad = touchpad;
@@ -176,6 +228,9 @@ public class PlayerControlSystem extends IteratingSystem {
 
     }
 
+    /**
+     * Saltar.
+     */
     public void saltar() {
         if ((playerComponent.canJump || playerComponent.coyoteTime < 0.1f) && !knockback && !attacking) {
             playerComponent.canJump = false;
@@ -185,6 +240,9 @@ public class PlayerControlSystem extends IteratingSystem {
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     protected void processEntity(Entity entity, float deltaTime) {
         b2body = Mappers.b2dCom.get(entity);
