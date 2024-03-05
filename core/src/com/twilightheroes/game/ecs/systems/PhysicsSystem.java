@@ -12,15 +12,40 @@ import com.twilightheroes.game.ecs.components.TextureComponent;
 import com.twilightheroes.game.screens.MainScreen;
 import com.twilightheroes.game.tools.Mappers;
 
+/**
+ * The system that handles the physics of the world
+ */
 public class PhysicsSystem extends IteratingSystem {
 
+    /**
+     * The world
+     */
     private final World world;
+    /**
+     * The bodies waiting to process
+     */
     private final Array<Entity> bodiesQueue;
+    /**
+     * the engine
+     */
     private final PooledEngine engine;
 
+    /**
+     * the Mainscreen
+     */
     private final MainScreen screen;
+    /**
+     * Entities to remove from engine
+     */
     private final Array<Entity> entitiesToRemove = new Array<>();
 
+    /**
+     * Instantiates a new Physics system.
+     *
+     * @param world  the world
+     * @param engine the engine
+     * @param screen the MainScreen
+     */
     public PhysicsSystem(World world, PooledEngine engine, MainScreen screen) {
         super(Family.all(B2dBodyComponent.class, TextureComponent.class).get());
         this.world = world;
@@ -29,6 +54,10 @@ public class PhysicsSystem extends IteratingSystem {
         this.screen = screen;
     }
 
+    /**
+     * Update the system
+     * @param deltaTime The time passed since last frame in seconds.
+     */
     @Override
     public void update(float deltaTime) {
         super.update(deltaTime);
@@ -72,7 +101,11 @@ public class PhysicsSystem extends IteratingSystem {
 
         bodiesQueue.clear();
     }
-
+    /**
+     * This method is called on every entity on every update call of the EntitySystem.
+     * @param entity The current Entity being processed
+     * @param deltaTime The delta time between the last and current frame
+     */
     @Override
     protected void processEntity(Entity entity, float deltaTime) {
         bodiesQueue.add(entity);

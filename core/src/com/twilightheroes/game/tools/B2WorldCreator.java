@@ -51,6 +51,9 @@ import com.twilightheroes.game.screens.MainScreen;
 
 import java.util.HashMap;
 
+/**
+ * The type B 2 world creator.
+ */
 public class B2WorldCreator {
 
     private final PooledEngine engine;
@@ -61,9 +64,20 @@ public class B2WorldCreator {
     private final AssetManager manager;
     private final JsonValue jsonSpells = new JsonReader().parse(Gdx.files.internal("config/spells.json"));
     private final JsonValue jsonConfig = new JsonReader().parse(Gdx.files.internal("config/configuraciones.json"));
+    /**
+     * The Aux.
+     */
     public TextureRegion aux;
     private TiledMap map;
 
+    /**
+     * Instantiates a new B 2 world creator.
+     *
+     * @param world   the world
+     * @param engine  the engine
+     * @param screen  the screen
+     * @param manager the manager
+     */
     public B2WorldCreator(World world, PooledEngine engine, MainScreen screen, AssetManager manager) {
 
         this.engine = engine;
@@ -110,6 +124,14 @@ public class B2WorldCreator {
 
     }
 
+    /**
+     * Generate level room size.
+     *
+     * @param map          the map
+     * @param playerEntity the player entity
+     * @param oldMap       the old map
+     * @return the room size
+     */
     public RoomSize generateLevel(TiledMap map, Entity playerEntity, int oldMap) {
         if (this.map != null) {
             this.map.dispose();
@@ -134,6 +156,9 @@ public class B2WorldCreator {
 
     }
 
+    /**
+     * Crear terreno.
+     */
     public void crearTerreno() {
         BodyDef bodyDef = new BodyDef();
         PolygonShape shape = new PolygonShape();
@@ -174,6 +199,9 @@ public class B2WorldCreator {
         shape.dispose();
     }
 
+    /**
+     * Crear peligros.
+     */
     public void crearPeligros() {
         BodyDef bodyDef = new BodyDef();
         PolygonShape shape = new PolygonShape();
@@ -218,6 +246,9 @@ public class B2WorldCreator {
         shape.dispose();
     }
 
+    /**
+     * Crear salidas.
+     */
     public void crearSalidas() {
         BodyDef bodyDef = new BodyDef();
         PolygonShape shape = new PolygonShape();
@@ -273,6 +304,9 @@ public class B2WorldCreator {
         shape.dispose();
     }
 
+    /**
+     * Crear interacciones.
+     */
     public void crearInteracciones() {
         BodyDef bodyDef = new BodyDef();
         PolygonShape shape = new PolygonShape();
@@ -360,6 +394,9 @@ public class B2WorldCreator {
         shape.dispose();
     }
 
+    /**
+     * Crear puertas.
+     */
     public void crearPuertas(){
         BodyDef bodyDef = new BodyDef();
         PolygonShape shape = new PolygonShape();
@@ -409,6 +446,9 @@ public class B2WorldCreator {
         shape.dispose();
     }
 
+    /**
+     * Open doors.
+     */
     public void openDoors() {
         ImmutableArray<Entity> doors = engine.getEntitiesFor(Family.all(DoorComponent.class).get());
         for (Entity door : doors) {
@@ -485,6 +525,13 @@ public class B2WorldCreator {
         }
 
 
+    /**
+     * Create player.
+     *
+     * @param atlas        the atlas
+     * @param playerEntity the player entity
+     * @param oldMap       the old map
+     */
     public void createPlayer(TextureAtlas atlas, Entity playerEntity, int oldMap) {
         JsonValue jsonPlayer = jsonConfig.get("personaje");
 
@@ -673,6 +720,9 @@ public class B2WorldCreator {
     }
 
 
+    /**
+     * Create enemy.
+     */
     public void createEnemy() {
 
         if (map.getLayers().get("enemies") != null) {
@@ -776,6 +826,17 @@ public class B2WorldCreator {
     }
 
 
+    /**
+     * Create bullet.
+     *
+     * @param x            the x
+     * @param y            the y
+     * @param xVel         the x vel
+     * @param own          the own
+     * @param runningRight the running right
+     * @param damage       the damage
+     * @param spellName    the spell name
+     */
     public void createBullet(float x, float y, float xVel, BulletComponent.Owner own, boolean runningRight, float damage, String spellName) {
         Entity entity = engine.createEntity();
         B2dBodyComponent b2dbody = engine.createComponent(B2dBodyComponent.class);

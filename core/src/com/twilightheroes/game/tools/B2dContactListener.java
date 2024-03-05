@@ -8,8 +8,14 @@ import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.Manifold;
 import com.twilightheroes.game.ecs.components.CollisionComponent;
 
+/**
+ * The type B 2 d contact listener.
+ */
 public class B2dContactListener implements ContactListener {
 
+    /**
+     * Instantiates a new B 2 d contact listener.
+     */
     public B2dContactListener() {
     }
 

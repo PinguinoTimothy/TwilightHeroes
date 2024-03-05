@@ -25,13 +25,34 @@ import com.twilightheroes.game.tools.Mappers;
 import com.twilightheroes.game.ecs.components.tipoObjetoInteractivo;
 
 
+/**
+ * The system that handles all the collisions between entities
+ */
 public class CollisionSystem extends IteratingSystem {
 
+    /**
+     * The filter that makes the player immune
+     */
     private final Filter inmuneFilter = new Filter();
+    /**
+     * Json that contains the dialogues
+     */
     private final JsonValue jsonText = new JsonReader().parse(Gdx.files.internal("config/dialogues.json"));
+    /**
+     * The Rendering system.
+     */
     RenderingSystem renderingSystem;
+    /**
+     * The MainScreen.
+     */
     MainScreen screen;
 
+    /**
+     * Instantiates a new Collision system.
+     *
+     * @param renderingSystem the rendering system
+     * @param screen          the screen
+     */
     public CollisionSystem(RenderingSystem renderingSystem, MainScreen screen) {
         // only need to worry about player collisions;
         super(Family.all(CollisionComponent.class).get());
@@ -42,7 +63,11 @@ public class CollisionSystem extends IteratingSystem {
         inmuneFilter.categoryBits = TwilightHeroes.INMUNE_BIT;
 
     }
-
+    /**
+     * This method is called on every entity on every update call of the EntitySystem.
+     * @param entity The current Entity being processed
+     * @param deltaTime The delta time between the last and current frame
+     */
     @Override
     protected void processEntity(Entity entity, float deltaTime) {
 
@@ -105,7 +130,7 @@ public class CollisionSystem extends IteratingSystem {
                                 B2dBodyComponent bodyHazard = Mappers.b2dCom.get(collidedEntity);
 
                                 if (hazardComponent.alive) {
-                                    if (!isHitbox && !player.inmune) {
+                                    if (!isHitbox && !player.immune) {
                                         float xForce = 2.5f;
                                         if (bodyPlayer.body.getPosition().x < bodyHazard.body.getPosition().x) {
                                             xForce = -2.5f;
@@ -114,8 +139,8 @@ public class CollisionSystem extends IteratingSystem {
 
 
                                         bodyPlayer.body.getFixtureList().get(0).setFilterData(inmuneFilter);
-                                        player.inmune = true;
-                                        player.inmuneTime = 0.5f;
+                                        player.immune = true;
+                                        player.immuneTime = 0.5f;
                                         bodyPlayer.body.setLinearVelocity(new Vector2(0f, 0f));
                                         bodyPlayer.body.setLinearVelocity(new Vector2(xForce, 0f));
                                         player.knockback = true;
@@ -193,7 +218,7 @@ player.end = true;
                             B2dBodyComponent bodyEnemy = Mappers.b2dCom.get(entity);
                             StatsComponent playerStats = Mappers.statsCom.get(collidedEntity);
                             StatsComponent enemyStats = Mappers.statsCom.get(entity);
-                            if (!isHitbox && !player.inmune) {
+                            if (!isHitbox && !player.immune) {
                                 System.out.println("enemy hit player");
                                 float xForce = 2.5f;
                                 if (bodyPlayer.body.getPosition().x < bodyEnemy.body.getPosition().x) {
@@ -207,8 +232,8 @@ player.end = true;
 
 
                                 bodyPlayer.body.getFixtureList().get(0).setFilterData(inmuneFilter);
-                                player.inmune = true;
-                                player.inmuneTime = 0.5f;
+                                player.immune = true;
+                                player.immuneTime = 0.5f;
                                 bodyPlayer.body.setLinearVelocity(new Vector2(0f, 0f));
                                 bodyPlayer.body.setLinearVelocity(new Vector2(xForce, 0f));
                                 player.knockback = true;
@@ -235,14 +260,14 @@ player.end = true;
                                         B2dBodyComponent bodyPlayer = Mappers.b2dCom.get(collidedEntity);
                                         StatsComponent playerStats = Mappers.statsCom.get(collidedEntity);
 
-                                        if (!player.inmune && !isHitbox) {
+                                        if (!player.immune && !isHitbox) {
 
                                             playerStats.hp -= bullet.damage;
                                             bullet.isDead = true;
 
                                             bodyPlayer.body.getFixtureList().get(0).setFilterData(inmuneFilter);
-                                            player.inmune = true;
-                                            player.inmuneTime = 0.5f;
+                                            player.immune = true;
+                                            player.immuneTime = 0.5f;
                                             // bodyPlayer.body.setLinearVelocity(new Vector2(0f, 0f));
                                             // bodyPlayer.body.setLinearVelocity(new Vector2(xForce, 0f));
                                             // player.knockback = true;

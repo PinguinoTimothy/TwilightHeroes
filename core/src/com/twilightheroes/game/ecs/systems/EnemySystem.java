@@ -23,16 +23,31 @@ import com.twilightheroes.game.tools.Mappers;
 
 import java.util.Random;
 
+/**
+ * The system that handles all the enemies
+ */
 public class EnemySystem extends IteratingSystem {
 
-
+    /**
+     * The MainScreen
+     */
     private final MainScreen screen;
 
+    /**
+     * Instantiates a new Enemy system.
+     *
+     * @param screen the screen
+     */
     public EnemySystem(MainScreen screen) {
         super(Family.all(EnemyComponent.class).get());
         this.screen = screen;
     }
 
+    /**
+     * Calculate distance between the enemy and the player
+     * @param enemigo The enemy to calculate
+     * @return Vector2 that contains the distance
+     */
     private Vector2 calculateDistance(Entity enemigo) {
         Vector2 distanceVector = new Vector2();
 
@@ -53,7 +68,11 @@ public class EnemySystem extends IteratingSystem {
 
         return distanceVector;
     }
-
+    /**
+     * This method is called on every entity on every update call of the EntitySystem.
+     * @param entity The current Entity being processed
+     * @param deltaTime The delta time between the last and current frame
+     */
     @Override
     protected void processEntity(Entity entity, float deltaTime) {
         EnemyComponent enemyCom = Mappers.enemyCom.get(entity);        // get EnemyComponent
@@ -178,7 +197,12 @@ public class EnemySystem extends IteratingSystem {
         }
     }
 
-
+    /**
+     * Create the attackFixture of the given enemy
+     * @param texture TextureComponent of the enemy
+     * @param b2dbody b2bodyComponent of the enemy
+     * @param attackComponent attackComponent of the enemy
+     */
     private void createAttackFixture(TextureComponent texture, B2dBodyComponent b2dbody, AttackComponent attackComponent) {
         PolygonShape attackShape = new PolygonShape();
         float offsetX = texture.runningRight ? 16 / TwilightHeroes.PPM : -16 / TwilightHeroes.PPM;

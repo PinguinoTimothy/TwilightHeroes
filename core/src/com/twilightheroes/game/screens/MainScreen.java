@@ -5,6 +5,7 @@ import com.badlogic.ashley.core.PooledEngine;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.assets.AssetManager;
+import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
@@ -48,6 +49,8 @@ import com.twilightheroes.game.tools.Mappers;
 import com.twilightheroes.game.tools.RoomSize;
 import com.twilightheroes.game.tools.WidgetContainer;
 
+import java.util.Random;
+
 /**
  * La pantalla del juego
  */
@@ -63,39 +66,82 @@ public class MainScreen implements Screen {
     private final Button btnSpell1;
     private final Button btnSpell2;
     private final String[] maps = {"map0", "map1", "map2", "map3"};
+    /**
+     * The Parent.
+     */
     public TwilightHeroes parent;
+    /**
+     * The Hud.
+     */
     public Hud hud;
+    /**
+     * The Game cam.
+     */
     public OrthographicCamera gameCam;
+    /**
+     * The B 2 world creator.
+     */
     public B2WorldCreator b2WorldCreator;
 
+    /**
+     * The Player entity.
+     */
     public Entity playerEntity;
+    /**
+     * The Bodies.
+     */
     public Array<Body> bodies = new Array<>();
+    /**
+     * The Change.
+     */
     public boolean change = false;
+    /**
+     * The New map.
+     */
     public int newMap;
+    /**
+     * The Old map.
+     */
     public int oldMap;
+    /**
+     * The Aux change map.
+     */
     public int auxChangeMap = 0;
+    /**
+     * The Pantalla negro.
+     */
     Image pantallaNegro;
     private TiledMap map;
     private float transitionTime = 0f;
 
+    /**
+     * The Timer.
+     */
     public Timer timer;
+
+    public Music music;
+    private String[] musicas = new String[]{"musica1.ogg","musica2.ogg","musica3.ogg","musica4.ogg","musica5.ogg"};
+    private Random rand = new Random();
+
+    private          AssetManager manager;
+
 
     /**
      * Constructor de la pantalla de juego
+     *
      * @param twilightHeroes La clase que implementa el juego para llamar a distintas funciones
      */
     public MainScreen(TwilightHeroes twilightHeroes) {
         parent = twilightHeroes;
         world = new World(new Vector2(0, -9.8f), true);
         world.setContactListener(new B2dContactListener());
-        AssetManager manager = parent.assMan.manager;
 
 
         gameCam = new OrthographicCamera();
         float viewportWidth = 12 * 16;
         float viewportHeight = 10 * 16;
         Viewport viewport = new ExtendViewport(viewportWidth / TwilightHeroes.PPM, viewportHeight / TwilightHeroes.PPM, gameCam);
-
+        manager = parent.assMan.manager;
         mapLoader = new TmxMapLoader();
         mapRenderer = new OrthogonalTiledMapRenderer(map, 1 / TwilightHeroes.PPM);
 
@@ -219,13 +265,25 @@ oldMap = 0;
          timer = new Timer();
          timer.start();
 
+        int mus =rand.nextInt(musicas.length);
+        music = manager.get("music/"+musicas[mus],Music.class);
+        music.setOnCompletionListener(new Music.OnCompletionListener() {
+            @Override
+            public void onCompletion(Music music) {
+                int mus =rand.nextInt(musicas.length);
+                music = manager.get("music/"+musicas[mus],Music.class);
+                music.play();
+            }
+        });
+        music.setLooping(false);
+        music.setVolume(parent.musicVolume);
+        music.play();
 
     }
 
-    /**
-     * Metodo que se llama cada vez que se enseña esta pantalla.
-     */
-    @Override
+
+   /** Called when this screen becomes the current screen for the game. */
+ @Override
     public void show() {
         Gdx.input.setInputProcessor(hud.stage);
         newMap = parent.playerSettings.level;
@@ -285,11 +343,10 @@ oldMap = 0;
 
     }
 
-    /**
-     * Metodo render
-     * @param delta valor desde la ultima vez que se ejecuto este metodo
-     */
-    @Override
+
+    /** Called when the screen should render itself.
+	 * @param delta The time in seconds since the last render. */
+@Override
     public void render(float delta) {
         //check if player is dead. if so show end screen
         PlayerComponent pc = (playerEntity.getComponent(PlayerComponent.class));
@@ -334,6 +391,8 @@ oldMap = 0;
             pantallaNegro.setVisible(false);
 
         }
+
+
 
 
     }

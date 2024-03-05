@@ -26,6 +26,9 @@ import com.twilightheroes.game.TwilightHeroes;
 import com.twilightheroes.game.tools.KillCounter;
 
 
+/**
+ * The type Help screen.
+ */
 public class HelpScreen implements Screen {
 
     private final Stage stage;
@@ -37,10 +40,18 @@ public class HelpScreen implements Screen {
     private final ImageButton rightArrow;
     private final ImageButton leftArrow;
 
+    /**
+     * The Stack.
+     */
     Stack stack = new Stack();
     private String[] menus = new String[]{"principales.jpeg","hechizos.jpeg"};
     private int imgActual = 0;
 
+    /**
+     * Instantiates a new Help screen.
+     *
+     * @param parent the parent
+     */
     public HelpScreen(final TwilightHeroes parent) {
         this.parent = parent;
         stage = new Stage(new StretchViewport(1920, 1080)); // Utilizando StretchViewport
@@ -100,7 +111,8 @@ mainTable.setBounds(100,0,100,100);
 
     }
 
-    @Override
+   /** Called when this screen becomes the current screen for the game. */
+ @Override
     public void show() {
         stage.clear();
         stack.clear();
@@ -123,7 +135,9 @@ mainTable.setBounds(100,0,100,100);
         Gdx.input.setInputProcessor(stage);
     }
 
-    @Override
+    /** Called when the screen should render itself.
+	 * @param delta The time in seconds since the last render. */
+@Override
     public void render(float delta) {
         // Limpiar la pantalla
         Gdx.gl.glClearColor(0, 0, 0, 1);

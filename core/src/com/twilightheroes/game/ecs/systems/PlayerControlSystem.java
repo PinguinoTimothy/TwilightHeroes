@@ -6,7 +6,6 @@ import com.badlogic.ashley.systems.IteratingSystem;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Filter;
-import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
@@ -28,21 +27,28 @@ import com.twilightheroes.game.screens.MainScreen;
 import com.twilightheroes.game.tools.Mappers;
 
 /**
- * The type Player control system.
+ * The system that handles the player controls
  */
 public class PlayerControlSystem extends IteratingSystem {
 
-
-    private final Queue<Integer> inputBuffer = new Queue<>();
+    /**
+     *A filter that sets the player immune
+     */
     private final Filter inmuneFilter = new Filter();
+    /**
+     *A filter that sets the player as a player
+     */
     private final Filter playerFilter = new Filter();
+    /**
+     * the Mainscreen
+     */
     private final MainScreen screen;
     /**
-     * The Dodging.
+     * If the player can dodge.
      */
     public boolean dodging = false;
     /**
-     * The Make dodge.
+     * If the player request a dodge.
      */
     public boolean makeDodge = false;
     /**
@@ -58,43 +64,75 @@ public class PlayerControlSystem extends IteratingSystem {
      */
     Touchpad touchpad;
     /**
-     * The Btn saltar.
+     * The Jump Button.
      */
     Button btnSaltar;
     /**
-     * The Btn atacar.
+     * The Attack Button.
      */
     Button btnAtacar;
     /**
-     * The Btn dodge.
+     * The Dodge Button.
      */
     Button btnDodge;
     /**
-     * The B 2 body.
+     * The B2BodyComponent of the player.
      */
     B2dBodyComponent b2body;
     /**
-     * The State.
+     * The StateComponent of the player.
      */
     StateComponent state;
     /**
-     * The Attack component.
+     * The Attack component of the player.
      */
     AttackComponent attackComponent;
     /**
-     * The Animation.
+     * The Animation component of the player.
      */
     AnimationComponent animation;
-    private int numAtaqueActual = 0;
-    private int numAtaquesDeseados = 0;
-    private int numAtaquesLimite = 0;
-    private int numAtaquesCompletados = 0;
-    private boolean knockback;
-    private float dequeueTime = 0f;
+
+    /**
+     * The player component of the player.
+     */
     private PlayerComponent playerComponent;
+    /**
+     * The spell component of the player
+     */
     private SpellComponent spellComponent;
+
+    /**
+     * the number of the actual attack
+     */
+    private int numAtaqueActual = 0;
+    /**
+     * how many attacks are requested
+     */
+    private int numAtaquesDeseados = 0;
+    /**
+     * the limit of attacks a player can do in a single combo
+     */
+    private int numAtaquesLimite = 0;
+    /**
+     * number of attacks of the current combo
+     */
+    private int numAtaquesCompletados = 0;
+    /**
+     * if the player is in knockback
+     */
+    private boolean knockback;
+
+    /**
+     * if the player is attacking
+     */
     private boolean attacking = false;
+    /**
+     * the cooldown between attacks
+     */
     private float attackCooldown = 0f;
+    /**
+     * the cooldoown between interactions
+     */
     private float interactCooldown = 0f;
 
 
@@ -229,7 +267,7 @@ public class PlayerControlSystem extends IteratingSystem {
     }
 
     /**
-     * Saltar.
+     * The functions that handles the player jump.
      */
     public void saltar() {
         if ((playerComponent.canJump || playerComponent.coyoteTime < 0.1f) && !knockback && !attacking) {
@@ -241,7 +279,9 @@ public class PlayerControlSystem extends IteratingSystem {
     }
 
     /**
-     * {@inheritDoc}
+     * This method is called on every entity on every update call of the EntitySystem.
+     * @param entity The current Entity being processed
+     * @param deltaTime The delta time between the last and current frame
      */
     @Override
     protected void processEntity(Entity entity, float deltaTime) {
@@ -289,9 +329,9 @@ public class PlayerControlSystem extends IteratingSystem {
         }
         if (makeDodge) {
 
-            playerComponent.inmune = true;
+            playerComponent.immune = true;
             dodging = true;
-            playerComponent.inmuneTime = 0.5f;
+            playerComponent.immuneTime = 0.5f;
             dodgeTime = 0.1f;
             float dodgeForceX;
             if (touchpad.getKnobPercentX() > 0) {
@@ -311,12 +351,12 @@ public class PlayerControlSystem extends IteratingSystem {
 
         }
 
-        if (playerComponent.inmune) {
+        if (playerComponent.immune) {
 
-            playerComponent.inmuneTime -= deltaTime;
-            if (playerComponent.inmuneTime <= 0) {
-                playerComponent.inmuneTime = 0f;
-                playerComponent.inmune = false;
+            playerComponent.immuneTime -= deltaTime;
+            if (playerComponent.immuneTime <= 0) {
+                playerComponent.immuneTime = 0f;
+                playerComponent.immune = false;
                 dodging = false;
                 b2body.body.getFixtureList().get(0).setFilterData(playerFilter);
             }
@@ -465,20 +505,21 @@ public class PlayerControlSystem extends IteratingSystem {
                 }
 
             }
-            dequeueTime += deltaTime;
-            while (dequeueTime >= 0.2f) {
-                if (!inputBuffer.isEmpty()) {
-                    inputBuffer.removeFirst();
-                }
-                dequeueTime -= 0.2f;
-                if (dequeueTime < 0f) {
-                    dequeueTime = 0f;
-                }
-            }
+
         }
     }
 
 
+    /**
+     * Create the attackFixture for the player
+     * @param texture Texture of the player
+     * @param b2dbody Body of the player
+     * @param attackComponent AttackComponent of the player
+     * @param hx Width of the attackFixture
+     * @param hy Height of the attackFixture
+     * @param offsetX OffsetX of the attackFixture
+     * @param offsetY OffsetY of the attackFixture
+     */
     private void createAttackFixture(TextureComponent texture, B2dBodyComponent b2dbody, AttackComponent attackComponent, float hx, float hy, float offsetX, float offsetY) {
         PolygonShape attackShape = new PolygonShape();
         float auxOffsetX;
@@ -507,6 +548,15 @@ public class PlayerControlSystem extends IteratingSystem {
         b2body.body.applyLinearImpulse(new Vector2(0.001f, 0), b2body.body.getWorldCenter(), true);
 
     }
+
+    /**
+     * Create the interact fixture for the player
+     * @param b2dbody Body of the player
+     * @param hx Width of the interactFixture
+     * @param hy Height of the interactFixture
+     * @param offsetX OffsetX of the interactFixture
+     * @param offsetY OffsetY of the interactFixture
+     */
 
     private void createInteractFixture(B2dBodyComponent b2dbody, float hx, float hy, float offsetX, float offsetY) {
         PolygonShape interactShape = new PolygonShape();

@@ -20,11 +20,19 @@ import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import com.twilightheroes.game.TwilightHeroes;
 
+/**
+ * The type End screen.
+ */
 public class EndScreen implements Screen {
 
     private final TwilightHeroes parent;
     private Stage stage;
 
+    /**
+     * Instantiates a new End screen.
+     *
+     * @param twilightHeroes the twilight heroes
+     */
     public EndScreen(TwilightHeroes twilightHeroes) {
         parent = twilightHeroes;
         // get skin
@@ -87,14 +95,17 @@ public class EndScreen implements Screen {
         stage.addActor(table);
     }
 
-    @Override
+   /** Called when this screen becomes the current screen for the game. */
+ @Override
     public void show() {
         Gdx.input.setInputProcessor(stage);
 
 
     }
 
-    @Override
+    /** Called when the screen should render itself.
+	 * @param delta The time in seconds since the last render. */
+@Override
     public void render(float delta) {
         // clear the screen ready for next set of images to be drawn
         Gdx.gl.glClearColor(0f, 0f, 0f, 1);

@@ -9,15 +9,28 @@ import com.twilightheroes.game.ecs.components.effectComponents.StatusEffect;
 import com.twilightheroes.game.ecs.components.effectComponents.StatusType;
 import com.twilightheroes.game.tools.Mappers;
 
+/**
+ * The system that handles all the effects
+ */
 public class EffectSystem extends IteratingSystem {
 
+    /**
+     * Status to remove
+     */
     private final Array<StatusEffect> statusABorrar = new Array<>();
 
+    /**
+     * Instantiates a new Effect system.
+     */
     public EffectSystem() {
 
         super(Family.all(StatusComponent.class).get());
     }
-
+    /**
+     * This method is called on every entity on every update call of the EntitySystem.
+     * @param entity The current Entity being processed
+     * @param deltaTime The delta time between the last and current frame
+     */
     @Override
     protected void processEntity(Entity entity, float deltaTime) {
         StatusComponent statusComponent = Mappers.statusCom.get(entity);
@@ -41,6 +54,12 @@ public class EffectSystem extends IteratingSystem {
         }
     }
 
+    /**
+     * Apply the effect.
+     *
+     * @param effect the effect to apply
+     * @param entity the entity to apply the effect
+     */
     void applyEffect(StatusEffect effect, Entity entity) {
 
         switch (effect.type) {

@@ -16,17 +16,38 @@ import com.badlogic.gdx.utils.viewport.Viewport;
 import com.twilightheroes.game.TwilightHeroes;
 import com.twilightheroes.game.tools.Mappers;
 
+/**
+ * The type Hud.
+ */
 public class Hud implements Disposable {
+    /**
+     * The Stage.
+     */
     public Stage stage;
 
 
+    /**
+     * The Health orb.
+     */
     ProgressBar healthOrb;
+    /**
+     * The Mana orb.
+     */
     ProgressBar manaOrb;
 
 
+    /**
+     * The Hb texture.
+     */
     Texture hbTexture;
 
 
+    /**
+     * Instantiates a new Hud.
+     *
+     * @param sb      the sb
+     * @param manager the manager
+     */
     public Hud(SpriteBatch sb, AssetManager manager) {
 
         Viewport viewport = new FitViewport(TwilightHeroes.V_WIDTH, TwilightHeroes.V_HEIGHT, new OrthographicCamera());
@@ -57,6 +78,9 @@ public class Hud implements Disposable {
 
     }
 
+    /**
+     * Hide hud elements.
+     */
     public void hideHudElements() {
 
 
@@ -65,6 +89,9 @@ public class Hud implements Disposable {
         }
     }
 
+    /**
+     * Show hud elements.
+     */
     public void showHudElements() {
         for (Actor act: stage.getActors()) {
             act.setVisible(true);
@@ -72,6 +99,11 @@ public class Hud implements Disposable {
     }
 
 
+    /**
+     * Update.
+     *
+     * @param playerEntity the player entity
+     */
     public void update(Entity playerEntity) {
 
 

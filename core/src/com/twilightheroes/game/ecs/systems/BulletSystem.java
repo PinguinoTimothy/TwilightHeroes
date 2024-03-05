@@ -10,14 +10,27 @@ import com.twilightheroes.game.ecs.components.StateComponent;
 import com.twilightheroes.game.screens.MainScreen;
 import com.twilightheroes.game.tools.Mappers;
 
+/**
+ * The system that handles all the bullets
+ */
 public class BulletSystem extends IteratingSystem {
     private final MainScreen screen;
 
+    /**
+     * Instantiates a new Bullet system.
+     *
+     * @param screen the screen
+     */
     public BulletSystem(MainScreen screen) {
         super(Family.all(BulletComponent.class).get());
         this.screen = screen;
     }
 
+    /**
+     * This method is called on every entity on every update call of the EntitySystem.
+     * @param entity The current Entity being processed
+     * @param deltaTime The delta time between the last and current frame
+     */
     @Override
     protected void processEntity(Entity entity, float deltaTime) {
         //get box 2d body and bullet components

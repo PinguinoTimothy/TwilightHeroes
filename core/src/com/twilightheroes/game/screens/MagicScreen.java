@@ -31,6 +31,9 @@ import com.twilightheroes.game.ecs.components.spells.SpellVFX;
 import com.twilightheroes.game.tools.Mappers;
 import com.twilightheroes.game.tools.WidgetContainer;
 
+/**
+ * The type Magic screen.
+ */
 public class MagicScreen implements Screen {
 
     private final Stage stage;
@@ -38,11 +41,28 @@ public class MagicScreen implements Screen {
     private final ImageButton btnSpell1;
     private final ImageButton btnSpell2;
     private final Array<ImageButton> btnSpells = new Array<>();
+    /**
+     * The Selected slot.
+     */
     public ImageButton selectedSlot;
+    /**
+     * The Last selected.
+     */
     public ImageButton lastSelected;
+    /**
+     * The Name.
+     */
     public Label name;
+    /**
+     * The Description.
+     */
     public Label description;
 
+    /**
+     * Instantiates a new Magic screen.
+     *
+     * @param twilightHeroes the twilight heroes
+     */
     public MagicScreen(TwilightHeroes twilightHeroes) {
         parent = twilightHeroes;
         stage = new Stage(new StretchViewport(1920, 1080));
@@ -207,7 +227,8 @@ public class MagicScreen implements Screen {
         parent.widgets.add(widgetContainer);
     }
 
-    @Override
+   /** Called when this screen becomes the current screen for the game. */
+ @Override
     public void show() {
         Gdx.input.setInputProcessor(stage);
 
@@ -288,7 +309,9 @@ public class MagicScreen implements Screen {
         return new ImageButton(imageButtonStyle);
     }
 
-    @Override
+    /** Called when the screen should render itself.
+	 * @param delta The time in seconds since the last render. */
+@Override
     public void render(float delta) {
         Gdx.gl.glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);

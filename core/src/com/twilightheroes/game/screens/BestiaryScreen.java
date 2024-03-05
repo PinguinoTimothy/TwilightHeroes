@@ -26,6 +26,9 @@ import com.twilightheroes.game.TwilightHeroes;
 import com.twilightheroes.game.tools.KillCounter;
 
 
+/**
+ * The type Bestiary screen.
+ */
 public class BestiaryScreen implements Screen {
 
     private final Stage stage;
@@ -38,10 +41,21 @@ public class BestiaryScreen implements Screen {
     private final Table enemigoInfoTable;
     private final TwilightHeroes parent;
     private final ImageButton backButton;
+    /**
+     * The Stack.
+     */
     Stack stack = new Stack();
+    /**
+     * The Json.
+     */
     JsonValue json = new JsonReader().parse(Gdx.files.internal("config/enemiesES.json"));
 
-  
+
+    /**
+     * Instantiates a new Bestiary screen.
+     *
+     * @param parent the parent
+     */
     public BestiaryScreen(final TwilightHeroes parent) {
         this.parent = parent;
         stage = new Stage(new StretchViewport(1920, 1080)); // Utilizando StretchViewport
@@ -79,7 +93,8 @@ public class BestiaryScreen implements Screen {
 
     }
 
-    @Override
+   /** Called when this screen becomes the current screen for the game. */
+ @Override
     public void show() {
         stage.clear();
         stack.clear();
@@ -110,7 +125,9 @@ public class BestiaryScreen implements Screen {
         Gdx.input.setInputProcessor(stage);
     }
 
-    @Override
+    /** Called when the screen should render itself.
+	 * @param delta The time in seconds since the last render. */
+@Override
     public void render(float delta) {
         // Limpiar la pantalla
         Gdx.gl.glClearColor(0, 0, 0, 1);

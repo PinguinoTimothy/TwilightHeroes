@@ -30,18 +30,40 @@ import com.twilightheroes.game.screens.MainScreen;
 import com.twilightheroes.game.tools.AnimationMaker;
 import com.twilightheroes.game.tools.Mappers;
 
+/**
+ * A simple EntitySystem that iterates over each spell entity and calls processEntity() for each entity every time the EntitySystem is
+ * updated.
+ */
 public class SpellSystem extends IteratingSystem {
+    /**
+     * The MainScren.
+     */
     MainScreen screen;
+    /**
+     * The List of spells.
+     */
     SpellList.spells spell;
+    /**
+     * The AssetManager.
+     */
     AssetManager manager;
 
 
+    /**
+     * Instantiates a new Spell system.
+     *
+     * @param screen the MainScreen
+     */
     public SpellSystem(MainScreen screen) {
         super(Family.all(SpellComponent.class).get());
         this.screen = screen;
         manager = screen.parent.assMan.manager;
     }
-
+    /**
+     * This method is called on every entity on every update call of the EntitySystem.
+     * @param entity The current Entity being processed
+     * @param deltaTime The delta time between the last and current frame
+     */
     @Override
     protected void processEntity(final Entity entity, float deltaTime) {
 
@@ -114,11 +136,11 @@ public class SpellSystem extends IteratingSystem {
     }
 
 
-
-
-
-
-
+    /**
+     * Create the VFX for the spell
+     * @param spellComponent the spell
+     * @param casterEntity the caster
+     */
     private void createVFX(SpellComponent spellComponent, Entity casterEntity) {
         if (spellComponent.spellToCast.vfx != null) {
             Entity entityVFX = getEngine().createEntity();
@@ -146,6 +168,17 @@ public class SpellSystem extends IteratingSystem {
         }
     }
 
+    /**
+     * Create the attackFixture for the spell based on his caster
+     * @param texture Texture of his caster
+     * @param b2dbody Body of his caster
+     * @param attackComponent AttackComponent of his caster
+     * @param hx Width of the attackFixture
+     * @param hy Height of the attackFixture
+     * @param offsetX OffsetX of the attackFixture
+     * @param offsetY OffsetY of the attackFixture
+     * @param player True indicates that the caster is a player false an enemy
+     */
     private void createAttackFixture(TextureComponent texture, B2dBodyComponent b2dbody, AttackComponent attackComponent, float hx, float hy, float offsetX, float offsetY, boolean player) {
         PolygonShape attackShape = new PolygonShape();
         float auxOffsetX = texture.runningRight ? offsetX : -offsetX;

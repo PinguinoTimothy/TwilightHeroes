@@ -8,9 +8,15 @@ import com.twilightheroes.game.ecs.components.StateComponent;
 import com.twilightheroes.game.ecs.components.TextureComponent;
 import com.twilightheroes.game.tools.Mappers;
 
+/**
+ * The system that handles all the animations
+ */
 public class AnimationSystem extends IteratingSystem {
 
 
+    /**
+     * Instantiates a new Animation system.
+     */
     public AnimationSystem() {
         super(Family.all(TextureComponent.class,
                 AnimationComponent.class,
@@ -19,7 +25,11 @@ public class AnimationSystem extends IteratingSystem {
 
     }
 
-
+    /**
+     * This method is called on every entity on every update call of the EntitySystem.
+     * @param entity The current Entity being processed
+     * @param deltaTime The delta time between the last and current frame
+     */
     @Override
     protected void processEntity(Entity entity, float deltaTime) {
 

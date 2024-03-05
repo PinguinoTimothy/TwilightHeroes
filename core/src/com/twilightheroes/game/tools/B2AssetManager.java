@@ -2,14 +2,24 @@ package com.twilightheroes.game.tools;
 
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.assets.loaders.SkinLoader;
+import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 
+/**
+ * The type B 2 asset manager.
+ */
 public class B2AssetManager {
+    /**
+     * The Manager.
+     */
     public final AssetManager manager = new AssetManager();
 
 
+    /**
+     * Load images.
+     */
     public void loadImages() {
         manager.load("enemies/caballero.atlas", TextureAtlas.class);
         manager.load("enemies/enemy.png", Texture.class);
@@ -89,6 +99,11 @@ public class B2AssetManager {
         manager.load("help/flechaDerecha.png", Texture.class);
         manager.load("help/flechaIzquierda.png", Texture.class);
 
+        manager.load("music/musica1.ogg", Music.class);
+        manager.load("music/musica2.ogg", Music.class);
+        manager.load("music/musica3.ogg", Music.class);
+        manager.load("music/musica4.ogg", Music.class);
+        manager.load("music/musica5.ogg", Music.class);
 
         String skin = "hud/neonui/neon-ui.json";
         SkinLoader.SkinParameter params = new SkinLoader.SkinParameter("hud/neonui/neon-ui.atlas");

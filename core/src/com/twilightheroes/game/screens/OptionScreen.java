@@ -30,24 +30,65 @@ import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import com.twilightheroes.game.TwilightHeroes;
 import com.twilightheroes.game.tools.WidgetContainer;
 
+/**
+ * The type Option screen.
+ */
 public class OptionScreen implements Screen {
 
     private final TwilightHeroes parent;
     private final Table mainTable;
+    /**
+     * The Slider volume.
+     */
     public Slider sliderVolume;
+    /**
+     * The Name.
+     */
     public Label name;
+    /**
+     * The Btn menu hechizos.
+     */
     TextButton btnMenuHechizos;
+    /**
+     * The Btn menu opciones.
+     */
     TextButton btnMenuOpciones;
+    /**
+     * The Chk accelerometer.
+     */
     CheckBox chkAccelerometer;
+    /**
+     * The Chk vibrator.
+     */
     CheckBox chkVibrator;
+    /**
+     * The Language select box.
+     */
     SelectBox<String> languageSelectBox;
+    /**
+     * The Lbl language.
+     */
     Label lblLanguage;
+    /**
+     * The Btn volver.
+     */
     TextButton btnVolver;
+    /**
+     * The Lbl volume.
+     */
     Label lblVolume;
+    /**
+     * The Widgets.
+     */
     WidgetContainer widgets = new WidgetContainer();
     private Stage stage;
 
 
+    /**
+     * Instantiates a new Option screen.
+     *
+     * @param twilightHeroes the twilight heroes
+     */
     public OptionScreen(TwilightHeroes twilightHeroes) {
         parent = twilightHeroes;
         JsonValue language = parent.jsonMultilanguage.get("options");
@@ -163,6 +204,7 @@ public class OptionScreen implements Screen {
         sliderVolume.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
+                parent.mainScreen.music.setVolume(sliderVolume.getValue());
                 parent.musicVolume = sliderVolume.getValue();
             }
         });
@@ -200,7 +242,8 @@ public class OptionScreen implements Screen {
     }
 
 
-    @Override
+   /** Called when this screen becomes the current screen for the game. */
+ @Override
     public void show() {
         Gdx.input.setInputProcessor(stage);
 
@@ -233,7 +276,9 @@ public class OptionScreen implements Screen {
     }
 
 
-    @Override
+    /** Called when the screen should render itself.
+	 * @param delta The time in seconds since the last render. */
+@Override
     public void render(float delta) {
         Gdx.gl.glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);

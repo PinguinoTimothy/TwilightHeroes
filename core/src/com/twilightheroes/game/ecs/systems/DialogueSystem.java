@@ -17,13 +17,34 @@ import com.twilightheroes.game.ecs.components.DialogueComponent;
 import com.twilightheroes.game.screens.MainScreen;
 import com.twilightheroes.game.tools.Mappers;
 
+/**
+ * The system that handles all the Dialogues
+ */
 public class DialogueSystem extends IteratingSystem {
 
+    /**
+     * The MainScreen
+     */
     private final MainScreen screen;
+    /**
+     * The label where the dialogue is contained
+     */
     private final Label label;
+    /**
+     * if the player touch the screen to pass to the next dialogue
+     */
     private boolean touchDown = false;
+
+    /**
+     * the window that contains the dialogue
+     */
     private Window dialog;
 
+    /**
+     * Instantiates a new Dialogue system.
+     *
+     * @param screen the mainscreen
+     */
     public DialogueSystem(MainScreen screen) {
         super(Family.all(DialogueComponent.class).get());
         this.screen = screen;
@@ -56,7 +77,11 @@ public class DialogueSystem extends IteratingSystem {
             }
         });
     }
-
+    /**
+     * This method is called on every entity on every update call of the EntitySystem.
+     * @param entity The current Entity being processed
+     * @param deltaTime The delta time between the last and current frame
+     */
     @Override
     protected void processEntity(Entity entity, float deltaTime) {
         DialogueComponent dialogueComponent = Mappers.dialogueCom.get(entity);
@@ -78,7 +103,12 @@ public class DialogueSystem extends IteratingSystem {
         }
     }
 
-    // Método para mostrar el siguiente texto del diálogo
+    /**
+     * See if there is more dialogue or the dialogue is ended.
+     *
+     * @param dialogueComponent the dialogue component
+     */
+// Método para mostrar el siguiente texto del diálogo
     public void showDialogue(DialogueComponent dialogueComponent) {
         if (!dialogueComponent.dialogueTexts.isEmpty()) {
             String nextText = dialogueComponent.dialogueTexts.removeIndex(0);
@@ -88,7 +118,12 @@ public class DialogueSystem extends IteratingSystem {
         }
     }
 
-    // Método para activar el diálogo
+    /**
+     * Show the dialogue.
+     *
+     * @param text the text
+     */
+// Método para activar el diálogo
     public void showDialogue(String text) {
         // Obtener la entidad que tiene el componente de diálogo
         // Activar el componente de diálogo con el texto proporcionado
@@ -108,7 +143,12 @@ public class DialogueSystem extends IteratingSystem {
         }
     }
 
-    // Método para ocultar el diálogo
+    /**
+     * Hide the dialogue.
+     *
+     * @param dialogueComponent the dialogue component
+     */
+// Método para ocultar el diálogo
     public void hideDialogue(DialogueComponent dialogueComponent) {
 
         if (dialogueComponent.active) {

@@ -13,20 +13,62 @@ import com.twilightheroes.game.ecs.components.TextureComponent;
 import com.twilightheroes.game.tools.Mappers;
 import com.twilightheroes.game.tools.RoomSize;
 
+/**
+ * The system in charge of rendering the textures and moving the cam
+ */
 public class RenderingSystem extends IteratingSystem {
 
+    /**
+     * The constant PPM.
+     */
     public static final float PPM = 99.9f;
 
 
+    /**
+     * The constant PIXELS_TO_METRES.
+     */
     public static final float PIXELS_TO_METRES = 1.0f / PPM;
-    private final SpriteBatch batch; // a reference to our spritebatch
-    private final Array<Entity> renderQueue; // an array used to allow sorting of images allowing us to draw images on top of each other
-    private final OrthographicCamera cam; // a reference to our camera
+
+    /**
+     * The spritebatch
+     */
+    private final SpriteBatch batch;
+    /**
+     *  an array used to allow sorting of images allowing us to draw images on top of each other
+     */
+    private final Array<Entity> renderQueue;
+    /**
+     * The cam
+     */
+    private final OrthographicCamera cam;
+    /**
+     * The viewport
+     */
     private final Viewport viewport;
+    /**
+     * the room width
+     */
     private float roomWidth;
+    /**
+     * the room height
+     */
     private float roomHeight;
+    /**
+     * the room starting point in the X-Axis
+     */
     private float roomStartX;
+    /**
+     * the room starting point in the Y-Axis
+     */
     private float roomStartY;
+
+    /**
+     * Instantiates a new Rendering system.
+     *
+     * @param batch    the spritebatch
+     * @param cam      the cam
+     * @param viewport the viewport
+     */
     public RenderingSystem(SpriteBatch batch, OrthographicCamera cam, Viewport viewport) {
         super(Family.all(TextureComponent.class).get());
 
@@ -40,16 +82,33 @@ public class RenderingSystem extends IteratingSystem {
 
     }
 
+    /**
+     * Pixels to meters float.
+     *
+     * @param pixelValue the pixel value
+     * @return the value of pixels in meters
+     */
     public static float PixelsToMeters(float pixelValue) {
         return pixelValue * PIXELS_TO_METRES;
     }
 
+    /**
+     * Resize the screen.
+     *
+     * @param width  the new width
+     * @param height the new height
+     */
     public void resize(int width, int height) {
         viewport.update(width, height, false);
         viewport.getCamera().position.set(viewport.getWorldWidth() / 2f, viewport.getWorldHeight() / 2f, 0);
         viewport.getCamera().update();
     }
 
+    /**
+     * Update the room.
+     *
+     * @param roomSize the room size
+     */
     public void updateRoom(RoomSize roomSize) {
         this.roomWidth = roomSize.roomWidth;
         this.roomHeight = roomSize.roomHeight;
@@ -58,6 +117,10 @@ public class RenderingSystem extends IteratingSystem {
 
     }
 
+    /**
+     * Update the system
+     * @param deltaTime The time passed since last frame in seconds.
+     */
     @Override
     public void update(float deltaTime) {
         super.update(deltaTime);
@@ -95,7 +158,11 @@ public class RenderingSystem extends IteratingSystem {
         renderQueue.clear();
     }
 
-
+    /**
+     * This method is called on every entity on every update call of the EntitySystem.
+     * @param entity The current Entity being processed
+     * @param deltaTime The delta time between the last and current frame
+     */
     @Override
     public void processEntity(Entity entity, float deltaTime) {
 
@@ -111,7 +178,12 @@ public class RenderingSystem extends IteratingSystem {
     }
 
 
-    // convenience method to get camera
+    /**
+     * Gets camera.
+     *
+     * @return the camera
+     */
+// convenience method to get camera
     public OrthographicCamera getCamera() {
         return cam;
     }

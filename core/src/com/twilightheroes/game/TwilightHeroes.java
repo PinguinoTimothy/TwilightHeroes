@@ -30,40 +30,136 @@ import com.twilightheroes.game.tools.WidgetContainer;
  * Controla la logica del juego y la gestion de pantallas.
  */
 public class TwilightHeroes extends Game {
-    
+
+    /**
+     * The constant V_WIDTH.
+     */
     public static final int V_WIDTH = 400;
+    /**
+     * The constant V_HEIGHT.
+     */
     public static final int V_HEIGHT = 208;
+    /**
+     * The constant PPM.
+     */
     public static final float PPM = 100;
+    /**
+     * The constant PLAYER_BIT.
+     */
     public static final short PLAYER_BIT = 2;
+    /**
+     * The constant HITBOX_BIT.
+     */
     public static final short HITBOX_BIT = 4;
+    /**
+     * The constant SOLID_BIT.
+     */
     public static final short SOLID_BIT = 8;
+    /**
+     * The constant ENEMY_BIT.
+     */
     public static final short ENEMY_BIT = 16;
+    /**
+     * The constant EXIT_BIT.
+     */
     public static final short EXIT_BIT = 32;
+    /**
+     * The constant INMUNE_BIT.
+     */
     public static final short INMUNE_BIT = 64;
+    /**
+     * The constant BULLET_BIT.
+     */
     public static final short BULLET_BIT = 128;
+    /**
+     * The constant INTERACTIVE_BIT.
+     */
     public static final short INTERACTIVE_BIT = 256;
+    /**
+     * The constant MENU.
+     */
     public final static int MENU = 0;
+    /**
+     * The constant OPTIONS.
+     */
     public final static int OPTIONS = 1;
+    /**
+     * The constant APPLICATION.
+     */
     public final static int APPLICATION = 2;
+    /**
+     * The constant MAGIC.
+     */
     public final static int MAGIC = 3;
+    /**
+     * The constant ENDGAME.
+     */
     public final static int ENDGAME = 4;
+    /**
+     * The constant BESTIARY.
+     */
     public final static int BESTIARY = 5;
+    /**
+     * The constant WIN.
+     */
     public final static int WIN = 6;
+    /**
+     * The constant CREDITS.
+     */
     public final static int CREDITS = 7;
+    /**
+     * The constant HELP.
+     */
     public final static int HELP = 8;
 
 
+    /**
+     * The Main screen.
+     */
     public MainScreen mainScreen;
+    /**
+     * The Player settings.
+     */
     public PlayerSettings playerSettings = new PlayerSettings();
+    /**
+     * The Ass man.
+     */
     public B2AssetManager assMan = new B2AssetManager();
+    /**
+     * The Accelerometer on.
+     */
     public boolean accelerometerOn;
+    /**
+     * The Vibrator on.
+     */
     public boolean vibratorOn;
+    /**
+     * The Music volume.
+     */
     public float musicVolume;
+    /**
+     * The Language.
+     */
     public languages language;
+    /**
+     * The In game.
+     */
     public boolean inGame = false;
+    /**
+     * The Previous screen.
+     */
     public int previousScreen;
+    /**
+     * The Json multilanguage.
+     */
     public JsonValue jsonMultilanguage;
+    /**
+     * The Widgets.
+     */
     public Array<WidgetContainer> widgets = new Array<>();
+    /**
+     * The Prefs.
+     */
     Preferences prefs;
 
     private com.twilightheroes.game.screens.MenuScreen menuScreen;
@@ -109,6 +205,7 @@ private HelpScreen helpScreen;
 
     /**
      * Se encarga de leer/escribir el contador de enemigos muertos para la screen Bestiario
+     *
      * @param read Decide si va a leer (True) o escribir (False)
      */
     public void killCounterHandler(boolean read) {
@@ -164,6 +261,7 @@ private HelpScreen helpScreen;
 
     /**
      * Se encarga de cambiar la screen actual
+     *
      * @param screen La screen a la que va a cambiar
      */
     public void changeScreen(int screen) {
@@ -283,7 +381,13 @@ private HelpScreen helpScreen;
      * Enumerado con los idiomas
      */
     public enum languages {
+        /**
+         * Es languages.
+         */
         ES,
+        /**
+         * En languages.
+         */
         EN
     }
 
