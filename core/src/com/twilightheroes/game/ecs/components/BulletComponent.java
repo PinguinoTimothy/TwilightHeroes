@@ -61,5 +61,6 @@ public class BulletComponent implements Component, Pool.Poolable {
         /**
          * None.
          */
-        NONE}
+        NONE
+    }
 }

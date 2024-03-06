@@ -26,17 +26,16 @@ import com.twilightheroes.game.tools.WidgetContainer;
  * The type Menu screen.
  */
 public class MenuScreen implements Screen {
-    private final Skin skin;
-
-    private final Stage stage;
     /**
      * The Parent.
      */
-    TwilightHeroes parent;
+    final TwilightHeroes parent;
     /**
      * The Language.
      */
-    JsonValue language;
+    final JsonValue language;
+    private final Skin skin;
+    private final Stage stage;
 
     /**
      * Instantiates a new Menu screen.
@@ -163,17 +162,22 @@ public class MenuScreen implements Screen {
     }
 
 
-   /** Called when this screen becomes the current screen for the game. */
- @Override
+    /**
+     * Called when this screen becomes the current screen for the game.
+     */
+    @Override
     public void show() {
         Gdx.input.setInputProcessor(stage);
 
     }
 
 
-    /** Called when the screen should render itself.
-	 * @param delta The time in seconds since the last render. */
-@Override
+    /**
+     * Called when the screen should render itself.
+     *
+     * @param delta The time in seconds since the last render.
+     */
+    @Override
     public void render(float delta) {
         Gdx.gl.glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);

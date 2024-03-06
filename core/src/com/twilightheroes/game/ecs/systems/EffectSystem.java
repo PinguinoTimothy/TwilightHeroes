@@ -26,9 +26,11 @@ public class EffectSystem extends IteratingSystem {
 
         super(Family.all(StatusComponent.class).get());
     }
+
     /**
      * This method is called on every entity on every update call of the EntitySystem.
-     * @param entity The current Entity being processed
+     *
+     * @param entity    The current Entity being processed
      * @param deltaTime The delta time between the last and current frame
      */
     @Override

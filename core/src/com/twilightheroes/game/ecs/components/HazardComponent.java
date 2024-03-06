@@ -22,7 +22,7 @@ public class HazardComponent implements Component, Pool.Poolable {
      */
     @Override
     public void reset() {
-damage = 0;
-alive = false;
+        damage = 0;
+        alive = false;
     }
 }

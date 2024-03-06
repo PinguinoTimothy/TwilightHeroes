@@ -1,14 +1,14 @@
 {
   "caballero":{
     "name":"Caballero Capa \nRoja",
-    "description":"Enemigo caballero"
+    "description":"Las no-muertos \nmas basicos revividos \npor el emperador"
   },
    "skeleton":{
     "name":"Esqueleto mago",
     "description":"Esqueleto que lanza magia"
   },
   "nightborne":{
-    "name":"Nightborne",
-    "description":"Es muy rapido"
+    "name":"Nocheterna" ,
+    "description":"Monstruos con una \nvelocidad increible"
   }
 }

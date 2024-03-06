@@ -8,7 +8,7 @@ public class StatusEffect {
     /**
      * The Type of status.
      */
-    public int type;
+    public final int type;
     /**
      * The Buff or debuff.
      */

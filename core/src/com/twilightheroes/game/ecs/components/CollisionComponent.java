@@ -14,7 +14,7 @@ public class CollisionComponent implements Component, Pool.Poolable {
     /**
      * The Collision entities.
      */
-    public Array<Collisions> collisionEntities = new Array<>();
+    public final Array<Collisions> collisionEntities = new Array<>();
 
 
     /**

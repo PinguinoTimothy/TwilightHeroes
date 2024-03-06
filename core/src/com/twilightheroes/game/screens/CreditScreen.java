@@ -23,7 +23,6 @@ import com.badlogic.gdx.utils.JsonValue;
 import com.badlogic.gdx.utils.Scaling;
 import com.badlogic.gdx.utils.viewport.StretchViewport;
 import com.twilightheroes.game.TwilightHeroes;
-import com.twilightheroes.game.tools.KillCounter;
 
 
 /**
@@ -31,22 +30,20 @@ import com.twilightheroes.game.tools.KillCounter;
  */
 public class CreditScreen implements Screen {
 
-    private final Stage stage;
-    private final ScrollPane scrollPane;
-    private final BitmapFont bigFont;
-
-
-    private final Table mainTable;
-    private final TwilightHeroes parent;
-    private final ImageButton backButton;
     /**
      * The Stack.
      */
-    Stack stack = new Stack();
+    final Stack stack = new Stack();
     /**
      * The Json.
      */
-    JsonValue json = new JsonReader().parse(Gdx.files.internal("config/credits.json"));
+    final JsonValue json = new JsonReader().parse(Gdx.files.internal("config/credits.json"));
+    private final Stage stage;
+    private final ScrollPane scrollPane;
+    private final BitmapFont bigFont;
+    private final Table mainTable;
+    private final TwilightHeroes parent;
+    private final ImageButton backButton;
 
 
     /**
@@ -88,8 +85,10 @@ public class CreditScreen implements Screen {
 
     }
 
-   /** Called when this screen becomes the current screen for the game. */
- @Override
+    /**
+     * Called when this screen becomes the current screen for the game.
+     */
+    @Override
     public void show() {
         stage.clear();
         stack.clear();
@@ -101,8 +100,8 @@ public class CreditScreen implements Screen {
         stack.addActor(image);
 
 
-        String[] tipes = new String[]{"Sprites","Music"};
-        for (String tipe: tipes) {
+        String[] tipes = new String[]{"Sprites", "Music"};
+        for (String tipe : tipes) {
             agregarFila(tipe);
 
         }
@@ -121,9 +120,12 @@ public class CreditScreen implements Screen {
         Gdx.input.setInputProcessor(stage);
     }
 
-    /** Called when the screen should render itself.
-	 * @param delta The time in seconds since the last render. */
-@Override
+    /**
+     * Called when the screen should render itself.
+     *
+     * @param delta The time in seconds since the last render.
+     */
+    @Override
     public void render(float delta) {
         // Limpiar la pantalla
         Gdx.gl.glClearColor(0, 0, 0, 1);
@@ -139,11 +141,10 @@ public class CreditScreen implements Screen {
         JsonValue jsonTipo = json.get(tipo);
         for (int i = 0; i < jsonTipo.size; i++) {
             String name = String.valueOf(jsonTipo.get(i));
-            Label labelNombre = new Label(tipo +" : "+name, new Label.LabelStyle(bigFont, Color.WHITE));
+            Label labelNombre = new Label(tipo + " : " + name, new Label.LabelStyle(bigFont, Color.WHITE));
             mainTable.add(labelNombre);
             mainTable.row();
         }
-
 
 
     }

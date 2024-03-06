@@ -10,77 +10,77 @@ public class EnemyPrototype {
     /**
      * The Atlas.
      */
-    public TextureAtlas atlas;
+    public final TextureAtlas atlas;
     /**
      * The Name.
      */
-    public String name;
+    public final String name;
     /**
      * The Width.
      */
-    public int width;
+    public final int width;
     /**
      * The Height.
      */
-    public int height;
+    public final int height;
     /**
      * The Hitbox x.
      */
-    public int hitboxX;
+    public final int hitboxX;
     /**
      * The Hitbox y.
      */
-    public int hitboxY;
+    public final int hitboxY;
     /**
      * The Hp.
      */
-    public int hp;
+    public final int hp;
     /**
      * The Idle frames.
      */
-    public int idleFrames;
+    public final int idleFrames;
     /**
      * The Walk frames.
      */
-    public int walkFrames;
+    public final int walkFrames;
     /**
      * The Attack frames.
      */
-    public int attackFrames;
+    public final int attackFrames;
 
     /**
      * The View distance.
      */
-    public float viewDistance;
+    public final float viewDistance;
     /**
      * The Attack distance.
      */
-    public float attackDistance;
+    public final float attackDistance;
     /**
      * The Attack cooldown.
      */
-    public float attackCooldown;
+    public final float attackCooldown;
     /**
      * The Speed.
      */
-    public float speed;
+    public final float speed;
     /**
      * The Attack frame.
      */
-    public int attackFrame;
+    public final int attackFrame;
     /**
      * The Attack damage.
      */
-    public int attackDamage;
+    public final int attackDamage;
     /**
      * The Attack method.
      */
-    public String attackMethod;
+    public final String attackMethod;
 
     /**
      * The Spells.
      */
-    public Spell[] spells;
+    public final Spell[] spells;
 
 
     /**

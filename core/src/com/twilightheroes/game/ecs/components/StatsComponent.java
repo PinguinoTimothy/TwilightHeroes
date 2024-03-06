@@ -56,6 +56,6 @@ public class StatsComponent implements Component, Pool.Poolable {
         damageReduction = 0;
         hpRegen = 0;
         lifeSteal = 0;
-        spellDamage =0;
+        spellDamage = 0;
     }
 }

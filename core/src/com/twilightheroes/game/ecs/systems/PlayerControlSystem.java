@@ -4,6 +4,7 @@ import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.systems.IteratingSystem;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Filter;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
@@ -12,7 +13,6 @@ import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.Touchpad;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
-import com.badlogic.gdx.utils.Queue;
 import com.twilightheroes.game.TwilightHeroes;
 import com.twilightheroes.game.ecs.components.AnimationComponent;
 import com.twilightheroes.game.ecs.components.AttackComponent;
@@ -21,7 +21,6 @@ import com.twilightheroes.game.ecs.components.PlayerComponent;
 import com.twilightheroes.game.ecs.components.StateComponent;
 import com.twilightheroes.game.ecs.components.StatsComponent;
 import com.twilightheroes.game.ecs.components.TextureComponent;
-import com.twilightheroes.game.ecs.components.effectComponents.StatusComponent;
 import com.twilightheroes.game.ecs.components.spells.SpellComponent;
 import com.twilightheroes.game.screens.MainScreen;
 import com.twilightheroes.game.tools.Mappers;
@@ -32,17 +31,35 @@ import com.twilightheroes.game.tools.Mappers;
 public class PlayerControlSystem extends IteratingSystem {
 
     /**
-     *A filter that sets the player immune
+     * The Touchpad.
+     */
+    final Touchpad touchpad;
+    /**
+     * The Jump Button.
+     */
+    final Button btnSaltar;
+    /**
+     * The Attack Button.
+     */
+    final Button btnAtacar;
+    /**
+     * The Dodge Button.
+     */
+    final Button btnDodge;
+    /**
+     * A filter that sets the player immune
      */
     private final Filter inmuneFilter = new Filter();
     /**
-     *A filter that sets the player as a player
+     * A filter that sets the player as a player
      */
     private final Filter playerFilter = new Filter();
     /**
      * the Mainscreen
      */
     private final MainScreen screen;
+    private final Sound sound;
+    private final long soundId;
     /**
      * If the player can dodge.
      */
@@ -60,22 +77,6 @@ public class PlayerControlSystem extends IteratingSystem {
      */
     public float dodgeCooldown = 0f;
     /**
-     * The Touchpad.
-     */
-    Touchpad touchpad;
-    /**
-     * The Jump Button.
-     */
-    Button btnSaltar;
-    /**
-     * The Attack Button.
-     */
-    Button btnAtacar;
-    /**
-     * The Dodge Button.
-     */
-    Button btnDodge;
-    /**
      * The B2BodyComponent of the player.
      */
     B2dBodyComponent b2body;
@@ -91,7 +92,6 @@ public class PlayerControlSystem extends IteratingSystem {
      * The Animation component of the player.
      */
     AnimationComponent animation;
-
     /**
      * The player component of the player.
      */
@@ -100,7 +100,6 @@ public class PlayerControlSystem extends IteratingSystem {
      * The spell component of the player
      */
     private SpellComponent spellComponent;
-
     /**
      * the number of the actual attack
      */
@@ -121,7 +120,6 @@ public class PlayerControlSystem extends IteratingSystem {
      * if the player is in knockback
      */
     private boolean knockback;
-
     /**
      * if the player is attacking
      */
@@ -263,7 +261,10 @@ public class PlayerControlSystem extends IteratingSystem {
             }
         });
 
-
+        sound = screen.parent.assMan.manager.get("sfx/walk.wav", Sound.class);
+        soundId = sound.play();
+        sound.setLooping(soundId, true);
+        sound.pause(soundId);
     }
 
     /**
@@ -275,12 +276,14 @@ public class PlayerControlSystem extends IteratingSystem {
             playerComponent.coyoteTime += 1f;
             b2body.body.setLinearVelocity(b2body.body.getLinearVelocity().x, 0);
             b2body.body.applyLinearImpulse(new Vector2(0, 3.2f), b2body.body.getWorldCenter(), true);
+            screen.parent.assMan.manager.get("sfx/jump.wav", Sound.class).play();
         }
     }
 
     /**
      * This method is called on every entity on every update call of the EntitySystem.
-     * @param entity The current Entity being processed
+     *
+     * @param entity    The current Entity being processed
      * @param deltaTime The delta time between the last and current frame
      */
     @Override
@@ -292,7 +295,6 @@ public class PlayerControlSystem extends IteratingSystem {
         attackComponent = Mappers.atkCom.get(entity);
         playerComponent = Mappers.playerCom.get(entity);
         StatsComponent stats = Mappers.statsCom.get(entity);
-        StatusComponent status = Mappers.statusCom.get(entity);
         spellComponent = Mappers.spellCom.get(entity);
 
         if (stats.hp <= 0) {
@@ -311,8 +313,8 @@ public class PlayerControlSystem extends IteratingSystem {
                 b2body.body.destroyFixture(playerComponent.interactFixture);
                 playerComponent.interactFixture = null;
             }
-        }else {
-            interactCooldown-=deltaTime;
+        } else {
+            interactCooldown -= deltaTime;
         }
 
         knockback = playerComponent.knockback;
@@ -348,6 +350,7 @@ public class PlayerControlSystem extends IteratingSystem {
             b2body.body.getFixtureList().get(0).setFilterData(inmuneFilter);
             makeDodge = false;
             texture.sprite.setAlpha(0);
+            screen.parent.assMan.manager.get("sfx/dash.wav", Sound.class).play();
 
         }
 
@@ -405,14 +408,17 @@ public class PlayerControlSystem extends IteratingSystem {
                                 case 1:
                                     state.set(StateComponent.STATE_ATTACK01);
                                     createAttackFixture(texture, b2body, attackComponent, 12f, 8, 16f, 0f);
+                                    screen.parent.assMan.manager.get("sfx/sword.mp3", Sound.class).play();
                                     break;
                                 case 2:
                                     state.set(StateComponent.STATE_ATTACK02);
                                     createAttackFixture(texture, b2body, attackComponent, 12f, 8, 16f, 0f);
+                                    screen.parent.assMan.manager.get("sfx/sword.mp3", Sound.class).play();
                                     break;
                                 case 3:
                                     state.set(StateComponent.STATE_ATTACK03);
                                     createAttackFixture(texture, b2body, attackComponent, 12f, 8, 16f, 0f);
+                                    screen.parent.assMan.manager.get("sfx/sword.mp3", Sound.class).play();
                                     attackCooldown = 0.5f;
                                     break;
                             }
@@ -447,8 +453,7 @@ public class PlayerControlSystem extends IteratingSystem {
 
 
                             } else if (b2body.body.getLinearVelocity().y == 0 && state.get() != StateComponent.STATE_JUMPING) {
-                                playerComponent.canJump = true;
-                                playerComponent.coyoteTime = 0f;
+
 
                                 if (b2body.body.getLinearVelocity().x != 0 && state.get() != StateComponent.STATE_JUMPING) {
                                     state.set(StateComponent.STATE_MOVING);
@@ -501,6 +506,7 @@ public class PlayerControlSystem extends IteratingSystem {
 
                 } else {
                     b2body.body.setLinearVelocity(new Vector2(0, b2body.body.getLinearVelocity().y));
+                    sound.pause(soundId);
 
                 }
 
@@ -512,13 +518,14 @@ public class PlayerControlSystem extends IteratingSystem {
 
     /**
      * Create the attackFixture for the player
-     * @param texture Texture of the player
-     * @param b2dbody Body of the player
+     *
+     * @param texture         Texture of the player
+     * @param b2dbody         Body of the player
      * @param attackComponent AttackComponent of the player
-     * @param hx Width of the attackFixture
-     * @param hy Height of the attackFixture
-     * @param offsetX OffsetX of the attackFixture
-     * @param offsetY OffsetY of the attackFixture
+     * @param hx              Width of the attackFixture
+     * @param hy              Height of the attackFixture
+     * @param offsetX         OffsetX of the attackFixture
+     * @param offsetY         OffsetY of the attackFixture
      */
     private void createAttackFixture(TextureComponent texture, B2dBodyComponent b2dbody, AttackComponent attackComponent, float hx, float hy, float offsetX, float offsetY) {
         PolygonShape attackShape = new PolygonShape();
@@ -551,9 +558,10 @@ public class PlayerControlSystem extends IteratingSystem {
 
     /**
      * Create the interact fixture for the player
+     *
      * @param b2dbody Body of the player
-     * @param hx Width of the interactFixture
-     * @param hy Height of the interactFixture
+     * @param hx      Width of the interactFixture
+     * @param hy      Height of the interactFixture
      * @param offsetX OffsetX of the interactFixture
      * @param offsetY OffsetY of the interactFixture
      */

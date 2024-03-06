@@ -40,7 +40,6 @@ public class SpellComponent implements Component, Pool.Poolable {
     public float value = 0f;
 
 
-
     /**
      * Resets the object for reuse.
      */

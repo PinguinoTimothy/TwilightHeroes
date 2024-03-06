@@ -1,0 +1,229 @@
+{
+    "Map/SizeTest": {
+        "height": 4300,
+        "width": 2
+    },
+    "activeFile": "",
+    "expandedProjectPaths": [
+        "tiles",
+        "."
+    ],
+    "file.lastUsedOpenFilter": "Todos los archivos (*)",
+    "fileStates": {
+        "Background.tsx": {
+            "scaleInDock": 1
+        },
+        "C:/Users/ianro/Downloads/Mapas/SET1_Mainlev_build.tsx": {
+            "scaleInDock": 1
+        },
+        "Forest2.tsx": {
+            "scaleInDock": 1.5
+        },
+        "ForestBack.tsx": {
+            "scaleInDock": 1
+        },
+        "ForestBackground.tsx": {
+            "scaleInDock": 1
+        },
+        "ForestDeco.tsx": {
+            "scaleInDock": 1
+        },
+        "ForestDeco2.tsx": {
+            "scaleInDock": 1
+        },
+        "ForestParallax.tsx": {
+            "scaleInDock": 1
+        },
+        "ForestParallax2.tsx": {
+            "scaleInDock": 1
+        },
+        "Tiles.tsx": {
+            "scaleInDock": 1
+        },
+        "cave.tsx": {
+            "scaleInDock": 0.75,
+            "scaleInEditor": 1
+        },
+        "map0.tmx": {
+            "expandedObjectLayers": [
+                13,
+                10
+            ],
+            "scale": 0.5,
+            "selectedLayer": 16,
+            "viewCenter": {
+                "x": 354,
+                "y": 526
+            }
+        },
+        "map1.tmx": {
+            "expandedObjectLayers": [
+                13,
+                8,
+                10
+            ],
+            "scale": 0.75,
+            "selectedLayer": 15,
+            "viewCenter": {
+                "x": 866.6666666666666,
+                "y": 409.33333333333337
+            }
+        },
+        "map2.tmx": {
+            "scale": 0.7075520833333333,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 961.0599926389401,
+                "y": 281.2513801987486
+            }
+        },
+        "map3.tmx": {
+            "expandedObjectLayers": [
+                17,
+                13,
+                15,
+                11,
+                12,
+                8,
+                10
+            ],
+            "scale": 0.75,
+            "selectedLayer": 10,
+            "viewCenter": {
+                "x": 1192,
+                "y": 533.3333333333334
+            }
+        },
+        "mapa0.tmx": {
+            "scale": 0.589626736111111,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 1153.2719911667282,
+                "y": 232.35038645564964
+            }
+        },
+        "mapa1.tmx": {
+            "scale": 1.4151041666666666,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 480.52999631947006,
+                "y": 160.4122193595878
+            }
+        },
+        "mapa2.tmx": {
+            "scale": 1.4151041666666666,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 480.52999631947006,
+                "y": 160.4122193595878
+            }
+        },
+        "mapa3.tmx": {
+            "scale": 1.4151041666666666,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 480.52999631947006,
+                "y": 160.4122193595878
+            }
+        },
+        "nivelPlataformas.tmx": {
+            "scale": 1.4151041666666666,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 480.52999631947006,
+                "y": 160.4122193595878
+            }
+        },
+        "palaxCave2.tsx": {
+            "scaleInDock": 0.33,
+            "scaleInEditor": 1
+        },
+        "paralaxCave1.tsx": {
+            "scaleInDock": 0.33,
+            "scaleInEditor": 0.75
+        },
+        "paralaxCave3.tsx": {
+            "scaleInDock": 0.33,
+            "scaleInEditor": 1
+        },
+        "paralaxCave4.tsx": {
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "paralaxCave5.tsx": {
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "tiles/Dungeon Tile Set.tsx": {
+            "scaleInDock": 1.5
+        },
+        "tiles/SET1_Main_bckgrdlev_build.tsx": {
+            "scaleInDock": 1
+        },
+        "tiles/SET1_Mainlev_build.tsx": {
+            "scaleInDock": 1
+        },
+        "tiles/SET1_background_obj.tsx": {
+            "scaleInDock": 1
+        },
+        "tiles/SET1_bakcground_night1.tsx": {
+            "scaleInDock": 1
+        },
+        "tiles/SET1_bakcground_night2.tsx": {
+            "scaleInDock": 1
+        },
+        "tiles/SET1_bakcground_night3.tsx": {
+            "scaleInDock": 1
+        },
+        "tiles/SET1_decorative_obj.tsx": {
+            "scaleInDock": 1
+        },
+        "tiles/cave.tsx": {
+            "scaleInDock": 1
+        },
+        "tiles/industrial.tsx": {
+            "scaleInDock": 3,
+            "scaleInEditor": 1
+        },
+        "tiles/oak_woods_tileset.tsx": {
+            "scaleInDock": 1
+        },
+        "tiles/palaxCave2.tsx": {
+            "scaleInDock": 1
+        },
+        "tiles/paralaxCave1.tsx": {
+            "scaleInDock": 1
+        },
+        "tiles/paralaxCave3.tsx": {
+            "scaleInDock": 1
+        },
+        "tiles/paralaxCave5.tsx": {
+            "scaleInDock": 1
+        }
+    },
+    "last.imagePath": "C:/Users/ianro/AndroidStudioProjects/TwilightHeroes/assets/maps/tiles/images",
+    "map.lastUsedFormat": "tmx",
+    "openFiles": [
+    ],
+    "project": "projecto.tiled-project",
+    "property.type": "string",
+    "recentFiles": [
+        "cave.tsx",
+        "paralaxCave5.tsx",
+        "paralaxCave4.tsx",
+        "paralaxCave3.tsx",
+        "palaxCave2.tsx",
+        "paralaxCave1.tsx",
+        "tiles/industrial.tsx",
+        "mapa3.tmx",
+        "nivelPlataformas.tmx",
+        "mapa2.tmx",
+        "mapa1.tmx",
+        "mapa0.tmx"
+    ],
+    "tileset.lastUsedFormat": "tsx",
+    "tileset.tileSize": {
+        "height": 16,
+        "width": 16
+    }
+}

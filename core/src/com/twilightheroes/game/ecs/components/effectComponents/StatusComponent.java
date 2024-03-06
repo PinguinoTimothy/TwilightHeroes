@@ -11,7 +11,7 @@ public class StatusComponent implements Component, Pool.Poolable {
     /**
      * The Effects.
      */
-    public Array<StatusEffect> effects = new Array<>();
+    public final Array<StatusEffect> effects = new Array<>();
 
 
     /**

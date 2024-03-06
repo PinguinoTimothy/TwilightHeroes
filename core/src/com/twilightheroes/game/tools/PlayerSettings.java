@@ -9,6 +9,14 @@ import com.badlogic.gdx.utils.Array;
 public class PlayerSettings {
 
     /**
+     * The Doors opened.
+     */
+    public final boolean[] doorsOpened = new boolean[100];
+    /**
+     * The Kill counter.
+     */
+    public final Array<KillCounter> killCounter = new Array<>();
+    /**
      * The Spell 1.
      */
     public String spell1;
@@ -24,21 +32,10 @@ public class PlayerSettings {
      * The Level.
      */
     public int level;
-
     /**
-     * The Last obelisk.
+     * The Last level.
      */
-    public int lastObelisk;
-
-    /**
-     * The Doors opened.
-     */
-    public boolean[] doorsOpened = new boolean[100];
-
-    /**
-     * The Kill counter.
-     */
-    public Array<KillCounter> killCounter = new Array<>();
+    public int lastLevel;
 
 
 }

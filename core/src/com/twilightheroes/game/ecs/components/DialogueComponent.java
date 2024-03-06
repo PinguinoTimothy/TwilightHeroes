@@ -13,12 +13,11 @@ public class DialogueComponent implements Component, Pool.Poolable {
     /**
      * The Dialogue texts.
      */
-    public Array<String> dialogueTexts = new Array<>();
+    public final Array<String> dialogueTexts = new Array<>();
     /**
      * If the dialogue is active.
      */
     public boolean active = false;
-
 
 
     /**

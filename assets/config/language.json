@@ -14,7 +14,9 @@
       "language":"Idioma:",
       "accelerometer":"Desactivar Acelerómetro",
       "vibrator":"Desactivar Vibrador",
-      "back":"Volver"
+      "back":"Volver",
+      "backMenu": "Volver al Menu"
+
     },
     "magic":{
       "spells":"Hechizos",
@@ -38,7 +40,8 @@
       "language":"Language:",
       "accelerometer": "Disable Accelerometer",
       "vibrator": "Disable Vibrator",
-      "back": "Return"
+      "back": "Return",
+      "backMenu": "Back To Menu"
     },
     "magic":{
       "spells": "Spells",

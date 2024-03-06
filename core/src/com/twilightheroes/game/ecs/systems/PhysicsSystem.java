@@ -4,6 +4,7 @@ import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.core.PooledEngine;
 import com.badlogic.ashley.systems.IteratingSystem;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Array;
 import com.twilightheroes.game.TwilightHeroes;
@@ -56,6 +57,7 @@ public class PhysicsSystem extends IteratingSystem {
 
     /**
      * Update the system
+     *
      * @param deltaTime The time passed since last frame in seconds.
      */
     @Override
@@ -85,6 +87,7 @@ public class PhysicsSystem extends IteratingSystem {
                     bodyComp.body.getPosition().y - textureComponent.sprite.getHeight() / 2
             );
             if (bodyComp.isDead) {
+                screen.parent.assMan.manager.get("sfx/enemyDeath.wav", Sound.class).play();
                 entitiesToRemove.add(entity);
             }
         }
@@ -101,9 +104,11 @@ public class PhysicsSystem extends IteratingSystem {
 
         bodiesQueue.clear();
     }
+
     /**
      * This method is called on every entity on every update call of the EntitySystem.
-     * @param entity The current Entity being processed
+     *
+     * @param entity    The current Entity being processed
      * @param deltaTime The delta time between the last and current frame
      */
     @Override

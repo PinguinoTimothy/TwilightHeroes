@@ -26,7 +26,7 @@ import com.twilightheroes.game.TwilightHeroes;
 public class EndScreen implements Screen {
 
     private final TwilightHeroes parent;
-    private Stage stage;
+    private final Stage stage;
 
     /**
      * Instantiates a new End screen.
@@ -47,7 +47,6 @@ public class EndScreen implements Screen {
         // create table to layout iutems we will add
         Table table = new Table();
         table.setFillParent(true);
-        table.setDebug(true);
         table.setBackground(new TextureRegionDrawable(new TextureRegion(background)));
 
         FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("KarmaFuture.ttf"));
@@ -95,17 +94,22 @@ public class EndScreen implements Screen {
         stage.addActor(table);
     }
 
-   /** Called when this screen becomes the current screen for the game. */
- @Override
+    /**
+     * Called when this screen becomes the current screen for the game.
+     */
+    @Override
     public void show() {
         Gdx.input.setInputProcessor(stage);
 
 
     }
 
-    /** Called when the screen should render itself.
-	 * @param delta The time in seconds since the last render. */
-@Override
+    /**
+     * Called when the screen should render itself.
+     *
+     * @param delta The time in seconds since the last render.
+     */
+    @Override
     public void render(float delta) {
         // clear the screen ready for next set of images to be drawn
         Gdx.gl.glClearColor(0f, 0f, 0f, 1);

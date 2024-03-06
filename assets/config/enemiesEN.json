@@ -1,0 +1,14 @@
+{
+  "caballero":{
+    "name":"Red Cape \nKnight",
+    "description":"The most basic undead\n revived by the emperor"
+  },
+   "skeleton":{
+    "name":"Skeleton Wizard",
+    "description":"Can cast magic"
+  },
+  "nightborne":{
+    "name":"Nightborne",
+    "description":"Monsters with incredible speed"
+  }
+}

@@ -35,52 +35,56 @@ import com.twilightheroes.game.tools.WidgetContainer;
  */
 public class OptionScreen implements Screen {
 
-    private final TwilightHeroes parent;
-    private final Table mainTable;
     /**
      * The Slider volume.
      */
-    public Slider sliderVolume;
+    public final Slider sliderVolume;
+    /**
+     * The Btn menu hechizos.
+     */
+    final TextButton btnMenuHechizos;
+    /**
+     * The Btn menu opciones.
+     */
+    final TextButton btnMenuOpciones;
+    /**
+     * The Chk accelerometer.
+     */
+    final CheckBox chkAccelerometer;
+    /**
+     * The Chk vibrator.
+     */
+    final CheckBox chkVibrator;
+    /**
+     * The Language select box.
+     */
+    final SelectBox<String> languageSelectBox;
+    /**
+     * The Btn volver.
+     */
+    final TextButton btnVolver;
+    /**
+     * Boton volver al menu
+     */
+    final TextButton btnVolverMenu;
+    /**
+     * The Lbl volume.
+     */
+    final Label lblVolume;
+    /**
+     * The Widgets.
+     */
+    final WidgetContainer widgets = new WidgetContainer();
+    private final TwilightHeroes parent;
+    private final Table mainTable;
     /**
      * The Name.
      */
     public Label name;
     /**
-     * The Btn menu hechizos.
-     */
-    TextButton btnMenuHechizos;
-    /**
-     * The Btn menu opciones.
-     */
-    TextButton btnMenuOpciones;
-    /**
-     * The Chk accelerometer.
-     */
-    CheckBox chkAccelerometer;
-    /**
-     * The Chk vibrator.
-     */
-    CheckBox chkVibrator;
-    /**
-     * The Language select box.
-     */
-    SelectBox<String> languageSelectBox;
-    /**
      * The Lbl language.
      */
     Label lblLanguage;
-    /**
-     * The Btn volver.
-     */
-    TextButton btnVolver;
-    /**
-     * The Lbl volume.
-     */
-    Label lblVolume;
-    /**
-     * The Widgets.
-     */
-    WidgetContainer widgets = new WidgetContainer();
     private Stage stage;
 
 
@@ -200,11 +204,24 @@ public class OptionScreen implements Screen {
         btnVolver.setName("back");
         widgets.widgets.add(btnVolver);
 
+        btnVolverMenu = createTextButton(language.get("backMenu").asString(), textButtonStyle);
+        btnVolverMenu.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                super.clicked(event, x, y);
+                parent.changeScreen(TwilightHeroes.MENU);
+            }
+        });
+        btnVolverMenu.setName("backMenu");
+        widgets.widgets.add(btnVolverMenu);
+
         // Agregar listeners para manejar cambios en las configuraciones
         sliderVolume.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                parent.mainScreen.music.setVolume(sliderVolume.getValue());
+                if (parent.music != null) {
+                    parent.music.setVolume(sliderVolume.getValue());
+                }
                 parent.musicVolume = sliderVolume.getValue();
             }
         });
@@ -242,19 +259,21 @@ public class OptionScreen implements Screen {
     }
 
 
-   /** Called when this screen becomes the current screen for the game. */
- @Override
+    /**
+     * Called when this screen becomes the current screen for the game.
+     */
+    @Override
     public void show() {
         Gdx.input.setInputProcessor(stage);
 
         mainTable.clear();
         if (parent.inGame) {
-            mainTable.add(btnMenuHechizos).padBottom(40.0f).align(Align.left).padRight(200f);
-            mainTable.add(btnMenuOpciones).padBottom(40.0f).align(Align.right).padLeft(200f).row();
+            mainTable.add(btnMenuHechizos).padBottom(20.0f).align(Align.left).padRight(200f);
+            mainTable.add(btnMenuOpciones).padBottom(20.0f).align(Align.right).padLeft(200f).row();
 
         } else {
             mainTable.removeActor(btnMenuHechizos);
-            mainTable.add(btnMenuOpciones).padBottom(40.0f).align(Align.center).padLeft(50f).row();
+            mainTable.add(btnMenuOpciones).padBottom(20.0f).align(Align.center).padLeft(50f).row();
 
         }
         mainTable.add(lblVolume).colspan(2).center().row();
@@ -264,6 +283,7 @@ public class OptionScreen implements Screen {
         mainTable.add(chkAccelerometer).colspan(2).center().row();
         mainTable.add(chkVibrator).colspan(2).center().row();
         mainTable.add(btnVolver).colspan(2).center().row();
+        mainTable.add(btnVolverMenu).colspan(2).center().row();
 
     }
 
@@ -276,9 +296,12 @@ public class OptionScreen implements Screen {
     }
 
 
-    /** Called when the screen should render itself.
-	 * @param delta The time in seconds since the last render. */
-@Override
+    /**
+     * Called when the screen should render itself.
+     *
+     * @param delta The time in seconds since the last render.
+     */
+    @Override
     public void render(float delta) {
         Gdx.gl.glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);

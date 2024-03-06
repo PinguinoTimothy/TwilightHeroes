@@ -8,28 +8,28 @@ public class Spell {
     /**
      * The Id.
      */
-    public int id;
+    public final int id;
     /**
      * The Mana cost.
      */
-    public float manaCost;
+    public final float manaCost;
     /**
      * The Casting time.
      */
-    public float castingTime;
+    public final float castingTime;
     /**
      * The Duration.
      */
-    public float duration;
+    public final float duration;
     /**
      * The Value.
      */
-    public float value;
+    public final float value;
 
     /**
      * The Vfx.
      */
-    public SpellVFX vfx;
+    public final SpellVFX vfx;
 
     /**
      * Instantiates a new Spell.
@@ -41,13 +41,13 @@ public class Spell {
      * @param duration    the duration
      * @param value       the value
      */
-    public Spell(int id, float manaCost, float castingTime, SpellVFX spellVFX, float duration,float value) {
+    public Spell(int id, float manaCost, float castingTime, SpellVFX spellVFX, float duration, float value) {
 
         this.id = id;
         this.manaCost = manaCost;
         this.castingTime = castingTime;
         this.vfx = spellVFX;
-        this.duration =duration;
+        this.duration = duration;
         this.value = value;
 
     }

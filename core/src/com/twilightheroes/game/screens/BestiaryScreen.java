@@ -44,12 +44,13 @@ public class BestiaryScreen implements Screen {
     /**
      * The Stack.
      */
-    Stack stack = new Stack();
+    private final Stack stack = new Stack();
     /**
      * The Json.
      */
-    JsonValue json = new JsonReader().parse(Gdx.files.internal("config/enemiesES.json"));
+    private JsonValue json;
 
+    private String killLanguage;
 
     /**
      * Instantiates a new Bestiary screen.
@@ -62,6 +63,7 @@ public class BestiaryScreen implements Screen {
         this.mainTable = new Table();
         this.enemigoInfoTable = new Table();
         this.scrollPane = new ScrollPane(mainTable);
+
 
         FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("KarmaFuture.ttf"));
         final FreeTypeFontGenerator.FreeTypeFontParameter parameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
@@ -93,13 +95,24 @@ public class BestiaryScreen implements Screen {
 
     }
 
-   /** Called when this screen becomes the current screen for the game. */
- @Override
+    /**
+     * Called when this screen becomes the current screen for the game.
+     */
+    @Override
     public void show() {
         stage.clear();
         stack.clear();
 
         mainTable.clear();
+
+        if (parent.language == TwilightHeroes.languages.EN) {
+            json = new JsonReader().parse(Gdx.files.internal("config/enemiesEN.json"));
+            killLanguage = "Killed";
+        } else {
+            json = new JsonReader().parse(Gdx.files.internal("config/enemiesES.json"));
+            killLanguage = "Derrotados";
+        }
+
         // Configurar la apariencia de la tabla principal (opcional)
         Image image = new Image(parent.assMan.manager.get("backgrounds/book.png", Texture.class));
         image.setScaling(Scaling.fillY);
@@ -125,9 +138,12 @@ public class BestiaryScreen implements Screen {
         Gdx.input.setInputProcessor(stage);
     }
 
-    /** Called when the screen should render itself.
-	 * @param delta The time in seconds since the last render. */
-@Override
+    /**
+     * Called when the screen should render itself.
+     *
+     * @param delta The time in seconds since the last render.
+     */
+    @Override
     public void render(float delta) {
         // Limpiar la pantalla
         Gdx.gl.glClearColor(0, 0, 0, 1);
@@ -171,7 +187,7 @@ public class BestiaryScreen implements Screen {
 
                 // Agregar nueva información detallada del enemigo seleccionado
                 Label infoLabel = new Label(name, new Label.LabelStyle(smallFont, Color.WHITE));
-                Label cantidadLabel = new Label(cantidad + " killed", new Label.LabelStyle(smallFont, Color.WHITE));
+                Label cantidadLabel = new Label(cantidad + " " + killLanguage, new Label.LabelStyle(smallFont, Color.WHITE));
 
                 // Agregar la imagen grande del enemigo
                 Texture texture = parent.assMan.manager.get("enemies/enemySample/" + nombre + ".png", Texture.class);

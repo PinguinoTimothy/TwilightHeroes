@@ -3,8 +3,8 @@ package com.twilightheroes.game.ecs.systems;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.systems.IteratingSystem;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.twilightheroes.game.TwilightHeroes;
@@ -45,6 +45,7 @@ public class EnemySystem extends IteratingSystem {
 
     /**
      * Calculate distance between the enemy and the player
+     *
      * @param enemigo The enemy to calculate
      * @return Vector2 that contains the distance
      */
@@ -68,9 +69,11 @@ public class EnemySystem extends IteratingSystem {
 
         return distanceVector;
     }
+
     /**
      * This method is called on every entity on every update call of the EntitySystem.
-     * @param entity The current Entity being processed
+     *
+     * @param entity    The current Entity being processed
      * @param deltaTime The delta time between the last and current frame
      */
     @Override
@@ -119,6 +122,7 @@ public class EnemySystem extends IteratingSystem {
                     switch (enemyCom.attackMethod) {
                         case "melee":
                             createAttackFixture(textureComponent, bodyCom, attackComponent);
+                            screen.parent.assMan.manager.get("sfx/enemySword.wav", Sound.class).play();
                             break;
                         case "range":
                             float xVel = textureComponent.runningRight ? 1f : -1f;
@@ -199,8 +203,9 @@ public class EnemySystem extends IteratingSystem {
 
     /**
      * Create the attackFixture of the given enemy
-     * @param texture TextureComponent of the enemy
-     * @param b2dbody b2bodyComponent of the enemy
+     *
+     * @param texture         TextureComponent of the enemy
+     * @param b2dbody         b2bodyComponent of the enemy
      * @param attackComponent attackComponent of the enemy
      */
     private void createAttackFixture(TextureComponent texture, B2dBodyComponent b2dbody, AttackComponent attackComponent) {

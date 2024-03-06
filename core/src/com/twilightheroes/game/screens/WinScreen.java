@@ -10,14 +10,12 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
-import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import com.twilightheroes.game.TwilightHeroes;
 
@@ -27,7 +25,7 @@ import com.twilightheroes.game.TwilightHeroes;
 public class WinScreen implements Screen {
 
     private final TwilightHeroes parent;
-    private Stage stage;
+    private final Stage stage;
 
     /**
      * Instantiates a new Win screen.
@@ -48,7 +46,6 @@ public class WinScreen implements Screen {
         // create table to layout iutems we will add
         Table table = new Table();
         table.setFillParent(true);
-        table.setDebug(true);
         table.setBackground(new TextureRegionDrawable(new TextureRegion(background)));
 
         FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("KarmaFuture.ttf"));
@@ -76,7 +73,7 @@ public class WinScreen implements Screen {
         TextButton.TextButtonStyle textButtonStyle = new TextButton.TextButtonStyle();
         textButtonStyle.font = fontBig;
 
-       TextButton btnVolver = new TextButton(parent.language == TwilightHeroes.languages.ES ? "Volver Al Menu" : "Back To Menu",textButtonStyle);
+        TextButton btnVolver = new TextButton(parent.language == TwilightHeroes.languages.ES ? "Volver Al Menu" : "Back To Menu", textButtonStyle);
         btnVolver.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
@@ -96,19 +93,23 @@ public class WinScreen implements Screen {
         stage.addActor(table);
     }
 
-  
 
-   /** Called when this screen becomes the current screen for the game. */
- @Override
+    /**
+     * Called when this screen becomes the current screen for the game.
+     */
+    @Override
     public void show() {
         Gdx.input.setInputProcessor(stage);
 
 
     }
 
-    /** Called when the screen should render itself.
-	 * @param delta The time in seconds since the last render. */
-@Override
+    /**
+     * Called when the screen should render itself.
+     *
+     * @param delta The time in seconds since the last render.
+     */
+    @Override
     public void render(float delta) {
         // clear the screen ready for next set of images to be drawn
         Gdx.gl.glClearColor(0f, 0f, 0f, 1);

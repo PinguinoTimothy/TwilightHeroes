@@ -7,10 +7,8 @@ import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
-import com.badlogic.gdx.utils.Timer;
 import com.twilightheroes.game.TwilightHeroes;
 import com.twilightheroes.game.ecs.components.AnimationComponent;
 import com.twilightheroes.game.ecs.components.AttackComponent;
@@ -23,7 +21,6 @@ import com.twilightheroes.game.ecs.components.TextureComponent;
 import com.twilightheroes.game.ecs.components.effectComponents.StatusComponent;
 import com.twilightheroes.game.ecs.components.effectComponents.StatusEffect;
 import com.twilightheroes.game.ecs.components.effectComponents.StatusType;
-import com.twilightheroes.game.ecs.components.spells.Spell;
 import com.twilightheroes.game.ecs.components.spells.SpellComponent;
 import com.twilightheroes.game.ecs.components.spells.SpellList;
 import com.twilightheroes.game.screens.MainScreen;
@@ -38,15 +35,15 @@ public class SpellSystem extends IteratingSystem {
     /**
      * The MainScren.
      */
-    MainScreen screen;
+    final MainScreen screen;
+    /**
+     * The AssetManager.
+     */
+    final AssetManager manager;
     /**
      * The List of spells.
      */
     SpellList.spells spell;
-    /**
-     * The AssetManager.
-     */
-    AssetManager manager;
 
 
     /**
@@ -59,15 +56,17 @@ public class SpellSystem extends IteratingSystem {
         this.screen = screen;
         manager = screen.parent.assMan.manager;
     }
+
     /**
      * This method is called on every entity on every update call of the EntitySystem.
-     * @param entity The current Entity being processed
+     *
+     * @param entity    The current Entity being processed
      * @param deltaTime The delta time between the last and current frame
      */
     @Override
     protected void processEntity(final Entity entity, float deltaTime) {
 
-       final SpellComponent spellComponent = Mappers.spellCom.get(entity);
+        final SpellComponent spellComponent = Mappers.spellCom.get(entity);
         TextureComponent texture = Mappers.texCom.get(entity);
         B2dBodyComponent b2body = Mappers.b2dCom.get(entity);
         AttackComponent attackComponent = Mappers.atkCom.get(entity);
@@ -106,7 +105,6 @@ public class SpellSystem extends IteratingSystem {
                         break;
 
 
-
                     case healingSigil:
                         statsComponent.hp += spellComponent.value;
 
@@ -138,8 +136,9 @@ public class SpellSystem extends IteratingSystem {
 
     /**
      * Create the VFX for the spell
+     *
      * @param spellComponent the spell
-     * @param casterEntity the caster
+     * @param casterEntity   the caster
      */
     private void createVFX(SpellComponent spellComponent, Entity casterEntity) {
         if (spellComponent.spellToCast.vfx != null) {
@@ -170,14 +169,15 @@ public class SpellSystem extends IteratingSystem {
 
     /**
      * Create the attackFixture for the spell based on his caster
-     * @param texture Texture of his caster
-     * @param b2dbody Body of his caster
+     *
+     * @param texture         Texture of his caster
+     * @param b2dbody         Body of his caster
      * @param attackComponent AttackComponent of his caster
-     * @param hx Width of the attackFixture
-     * @param hy Height of the attackFixture
-     * @param offsetX OffsetX of the attackFixture
-     * @param offsetY OffsetY of the attackFixture
-     * @param player True indicates that the caster is a player false an enemy
+     * @param hx              Width of the attackFixture
+     * @param hy              Height of the attackFixture
+     * @param offsetX         OffsetX of the attackFixture
+     * @param offsetY         OffsetY of the attackFixture
+     * @param player          True indicates that the caster is a player false an enemy
      */
     private void createAttackFixture(TextureComponent texture, B2dBodyComponent b2dbody, AttackComponent attackComponent, float hx, float hy, float offsetX, float offsetY, boolean player) {
         PolygonShape attackShape = new PolygonShape();

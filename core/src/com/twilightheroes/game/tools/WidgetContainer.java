@@ -10,12 +10,12 @@ public class WidgetContainer {
 
 
     /**
+     * The Widgets.
+     */
+    public final Array<Actor> widgets = new Array<>();
+    /**
      * The Name screen.
      */
     public String nameScreen;
-    /**
-     * The Widgets.
-     */
-    public Array<Actor> widgets = new Array<>();
 
 }

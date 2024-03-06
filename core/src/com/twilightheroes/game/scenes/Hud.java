@@ -23,23 +23,23 @@ public class Hud implements Disposable {
     /**
      * The Stage.
      */
-    public Stage stage;
+    public final Stage stage;
 
 
     /**
      * The Health orb.
      */
-    ProgressBar healthOrb;
+    final ProgressBar healthOrb;
     /**
      * The Mana orb.
      */
-    ProgressBar manaOrb;
+    final ProgressBar manaOrb;
 
 
     /**
      * The Hb texture.
      */
-    Texture hbTexture;
+    final Texture hbTexture;
 
 
     /**
@@ -75,7 +75,6 @@ public class Hud implements Disposable {
         stage.addActor(table);
 
 
-
     }
 
     /**
@@ -84,7 +83,7 @@ public class Hud implements Disposable {
     public void hideHudElements() {
 
 
-        for (Actor act: stage.getActors()) {
+        for (Actor act : stage.getActors()) {
             act.setVisible(false);
         }
     }
@@ -93,7 +92,7 @@ public class Hud implements Disposable {
      * Show hud elements.
      */
     public void showHudElements() {
-        for (Actor act: stage.getActors()) {
+        for (Actor act : stage.getActors()) {
             act.setVisible(true);
         }
     }

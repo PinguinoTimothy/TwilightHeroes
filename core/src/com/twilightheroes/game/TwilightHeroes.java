@@ -3,6 +3,7 @@ package com.twilightheroes.game;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Preferences;
+import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
@@ -111,20 +112,22 @@ public class TwilightHeroes extends Game {
      * The constant HELP.
      */
     public final static int HELP = 8;
-
-
+    /**
+     * The Player settings.
+     */
+    public final PlayerSettings playerSettings = new PlayerSettings();
+    /**
+     * The Ass man.
+     */
+    public final B2AssetManager assMan = new B2AssetManager();
+    /**
+     * The Widgets.
+     */
+    public final Array<WidgetContainer> widgets = new Array<>();
     /**
      * The Main screen.
      */
     public MainScreen mainScreen;
-    /**
-     * The Player settings.
-     */
-    public PlayerSettings playerSettings = new PlayerSettings();
-    /**
-     * The Ass man.
-     */
-    public B2AssetManager assMan = new B2AssetManager();
     /**
      * The Accelerometer on.
      */
@@ -154,14 +157,13 @@ public class TwilightHeroes extends Game {
      */
     public JsonValue jsonMultilanguage;
     /**
-     * The Widgets.
+     * The Music.
      */
-    public Array<WidgetContainer> widgets = new Array<>();
+    public Music music;
     /**
      * The Prefs.
      */
     Preferences prefs;
-
     private com.twilightheroes.game.screens.MenuScreen menuScreen;
     private MagicScreen magicScreen;
     private EndScreen endScreen;
@@ -169,7 +171,7 @@ public class TwilightHeroes extends Game {
     private BestiaryScreen bestiaryScreen;
     private WinScreen winScreen;
     private CreditScreen creditScreen;
-private HelpScreen helpScreen;
+    private HelpScreen helpScreen;
 
     /**
      * Carga los assets, las preferencias e inicia el menu
@@ -190,10 +192,10 @@ private HelpScreen helpScreen;
         playerSettings.spell2 = prefs.getString("spell2", "healingSigil");
         if (playerSettings.spell2.equals("earthSpike")) playerSettings.spell2 = "healingSigil";
         playerSettings.level = prefs.getInteger("level", 0);
-        playerSettings.lastObelisk = prefs.getInteger("lastObelisk", 0);
+        playerSettings.lastLevel = prefs.getInteger("lastLevel", 0);
         playerSettings.money = prefs.getInteger("money", 0);
         for (int i = 0; i < playerSettings.doorsOpened.length; i++) {
-            playerSettings.doorsOpened[i] = prefs.getBoolean("door_"+i,false);
+            playerSettings.doorsOpened[i] = prefs.getBoolean("door_" + i, false);
         }
 
         jsonMultilanguage = new JsonReader().parse(Gdx.files.internal("config/language.json")).get(language.name());
@@ -269,6 +271,10 @@ private HelpScreen helpScreen;
         switch (screen) {
 
             case MENU:
+                if (music != null) {
+                    music.pause();
+
+                }
                 if (menuScreen == null)
                     menuScreen = new com.twilightheroes.game.screens.MenuScreen(this);
                 previousScreen = MENU;
@@ -297,6 +303,10 @@ private HelpScreen helpScreen;
                 this.setScreen(magicScreen);
                 break;
             case ENDGAME:
+                if (music != null) {
+                    music.pause();
+
+                }
                 if (endScreen == null) endScreen = new EndScreen(this);
                 inGame = false;
                 previousScreen = ENDGAME;
@@ -307,6 +317,10 @@ private HelpScreen helpScreen;
                 this.setScreen(bestiaryScreen);
                 break;
             case WIN:
+                if (music != null) {
+                    music.pause();
+
+                }
                 if (winScreen == null) winScreen = new WinScreen(this);
                 this.setScreen(winScreen);
                 break;
@@ -354,10 +368,10 @@ private HelpScreen helpScreen;
         prefs.putString("spell1", playerSettings.spell1);
         prefs.putString("spell2", playerSettings.spell2);
         prefs.putInteger("level", playerSettings.level);
-        prefs.putInteger("lastObelisk", playerSettings.lastObelisk);
+        prefs.putInteger("lastLevel", playerSettings.lastLevel);
         prefs.putInteger("money", playerSettings.money);
         for (int i = 0; i < playerSettings.doorsOpened.length; i++) {
-            prefs.putBoolean("door_"+i,playerSettings.doorsOpened[i]);
+            prefs.putBoolean("door_" + i, playerSettings.doorsOpened[i]);
         }
         prefs.flush();
         killCounterHandler(false);

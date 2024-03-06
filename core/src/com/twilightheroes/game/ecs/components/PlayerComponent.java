@@ -73,6 +73,6 @@ public class PlayerComponent implements Component, Pool.Poolable {
         canDodge = true;
         canAttack = true;
         immune = false;
-end =  false;
+        end = false;
     }
 }

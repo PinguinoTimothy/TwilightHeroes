@@ -22,7 +22,7 @@ public class DoorComponent implements Component, Pool.Poolable {
      */
     @Override
     public void reset() {
-id = -1;
-open = false;
+        id = -1;
+        open = false;
     }
 }

@@ -37,7 +37,6 @@ import com.twilightheroes.game.ecs.systems.CollisionSystem;
 import com.twilightheroes.game.ecs.systems.DialogueSystem;
 import com.twilightheroes.game.ecs.systems.EffectSystem;
 import com.twilightheroes.game.ecs.systems.EnemySystem;
-import com.twilightheroes.game.ecs.systems.PhysicsDebugSystem;
 import com.twilightheroes.game.ecs.systems.PhysicsSystem;
 import com.twilightheroes.game.ecs.systems.PlayerControlSystem;
 import com.twilightheroes.game.ecs.systems.RenderingSystem;
@@ -56,6 +55,30 @@ import java.util.Random;
  */
 public class MainScreen implements Screen {
 
+    /**
+     * The Parent.
+     */
+    public final TwilightHeroes parent;
+    /**
+     * The Hud.
+     */
+    public final Hud hud;
+    /**
+     * The B 2 world creator.
+     */
+    public final B2WorldCreator b2WorldCreator;
+    /**
+     * The Bodies.
+     */
+    public final Array<Body> bodies = new Array<>();
+    /**
+     * The Timer.
+     */
+    public final Timer timer;
+    /**
+     * The Pantalla negro.
+     */
+    final Image pantallaNegro;
     private final World world;
     private final PooledEngine engine;
     private final RenderingSystem renderingSystem;
@@ -66,31 +89,17 @@ public class MainScreen implements Screen {
     private final Button btnSpell1;
     private final Button btnSpell2;
     private final String[] maps = {"map0", "map1", "map2", "map3"};
-    /**
-     * The Parent.
-     */
-    public TwilightHeroes parent;
-    /**
-     * The Hud.
-     */
-    public Hud hud;
+    private final String[] musicas = new String[]{"musica1.ogg", "musica2.ogg", "musica3.ogg", "musica4.ogg", "musica5.ogg"};
+    private final Random rand = new Random();
+    private final AssetManager manager;
     /**
      * The Game cam.
      */
     public OrthographicCamera gameCam;
     /**
-     * The B 2 world creator.
-     */
-    public B2WorldCreator b2WorldCreator;
-
-    /**
      * The Player entity.
      */
     public Entity playerEntity;
-    /**
-     * The Bodies.
-     */
-    public Array<Body> bodies = new Array<>();
     /**
      * The Change.
      */
@@ -107,23 +116,8 @@ public class MainScreen implements Screen {
      * The Aux change map.
      */
     public int auxChangeMap = 0;
-    /**
-     * The Pantalla negro.
-     */
-    Image pantallaNegro;
     private TiledMap map;
     private float transitionTime = 0f;
-
-    /**
-     * The Timer.
-     */
-    public Timer timer;
-
-    public Music music;
-    private String[] musicas = new String[]{"musica1.ogg","musica2.ogg","musica3.ogg","musica4.ogg","musica5.ogg"};
-    private Random rand = new Random();
-
-    private          AssetManager manager;
 
 
     /**
@@ -256,37 +250,38 @@ public class MainScreen implements Screen {
         pantallaNegro.setVisible(false);
         hud.stage.addActor(pantallaNegro);
 
-newMap =0;
-oldMap = 0;
+        newMap = parent.playerSettings.level;
+        oldMap = parent.playerSettings.lastLevel;
         changeMap();
         WidgetContainer widgetContainer = new WidgetContainer();
         parent.widgets.add(widgetContainer);
 
-         timer = new Timer();
-         timer.start();
+        timer = new Timer();
+        timer.start();
 
-        int mus =rand.nextInt(musicas.length);
-        music = manager.get("music/"+musicas[mus],Music.class);
-        music.setOnCompletionListener(new Music.OnCompletionListener() {
+        int mus = rand.nextInt(musicas.length);
+        parent.music = manager.get("music/" + musicas[mus], Music.class);
+        parent.music.setOnCompletionListener(new Music.OnCompletionListener() {
             @Override
             public void onCompletion(Music music) {
-                int mus =rand.nextInt(musicas.length);
-                music = manager.get("music/"+musicas[mus],Music.class);
-                music.play();
+                int mus = rand.nextInt(musicas.length);
+                parent.music = manager.get("music/" + musicas[mus], Music.class);
+                parent.music.play();
             }
         });
-        music.setLooping(false);
-        music.setVolume(parent.musicVolume);
-        music.play();
+        parent.music.setLooping(false);
+        parent.music.setVolume(parent.musicVolume);
+        parent.music.play();
 
     }
 
 
-   /** Called when this screen becomes the current screen for the game. */
- @Override
+    /**
+     * Called when this screen becomes the current screen for the game.
+     */
+    @Override
     public void show() {
         Gdx.input.setInputProcessor(hud.stage);
-        newMap = parent.playerSettings.level;
 
     }
 
@@ -334,24 +329,28 @@ oldMap = 0;
         bodies.clear();
 
         map = mapLoader.load("maps/" + maps[newMap] + ".tmx");
-        RoomSize roomSize = b2WorldCreator.generateLevel(map, playerEntity,oldMap);
+        RoomSize roomSize = b2WorldCreator.generateLevel(map, playerEntity, oldMap);
         renderingSystem.updateRoom(roomSize);
         mapRenderer.setMap(map);
 
         parent.playerSettings.level = newMap;
+        parent.playerSettings.lastLevel = oldMap;
 
 
     }
 
 
-    /** Called when the screen should render itself.
-	 * @param delta The time in seconds since the last render. */
-@Override
+    /**
+     * Called when the screen should render itself.
+     *
+     * @param delta The time in seconds since the last render.
+     */
+    @Override
     public void render(float delta) {
         //check if player is dead. if so show end screen
         PlayerComponent pc = (playerEntity.getComponent(PlayerComponent.class));
 
-        if (pc.end){
+        if (pc.end) {
             parent.changeScreen(TwilightHeroes.WIN);
         }
         if (pc.isDead) {
@@ -393,13 +392,12 @@ oldMap = 0;
         }
 
 
-
-
     }
 
     /**
      * Se encarga de reescalar la pantalla
-     * @param width Nuevo Ancho
+     *
+     * @param width  Nuevo Ancho
      * @param height Nuevo Alto
      */
     @Override
@@ -442,7 +440,6 @@ oldMap = 0;
         mapRenderer.dispose();
         world.dispose();
         hud.dispose();
-
 
 
     }

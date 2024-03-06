@@ -8,11 +8,11 @@ public class SpellVFX {
     /**
      * The number of frames.
      */
-    public int nFrames;
+    public final int nFrames;
     /**
      * The Frame duration.
      */
-    public int frameDuration;
+    public final int frameDuration;
 
     /**
      * Instantiates a new Spell vfx.

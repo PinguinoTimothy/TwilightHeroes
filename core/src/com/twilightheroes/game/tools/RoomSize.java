@@ -8,19 +8,19 @@ public class RoomSize {
     /**
      * The Room width.
      */
-    public float roomWidth;
+    public final float roomWidth;
     /**
      * The Room height.
      */
-    public float roomHeight;
+    public final float roomHeight;
     /**
      * The Room start x.
      */
-    public float roomStartX;
+    public final float roomStartX;
     /**
      * The Room start y.
      */
-    public float roomStartY;
+    public final float roomStartY;
 
     /**
      * Instantiates a new Room size.

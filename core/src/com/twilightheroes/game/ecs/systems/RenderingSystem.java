@@ -34,7 +34,7 @@ public class RenderingSystem extends IteratingSystem {
      */
     private final SpriteBatch batch;
     /**
-     *  an array used to allow sorting of images allowing us to draw images on top of each other
+     * an array used to allow sorting of images allowing us to draw images on top of each other
      */
     private final Array<Entity> renderQueue;
     /**
@@ -119,6 +119,7 @@ public class RenderingSystem extends IteratingSystem {
 
     /**
      * Update the system
+     *
      * @param deltaTime The time passed since last frame in seconds.
      */
     @Override
@@ -160,7 +161,8 @@ public class RenderingSystem extends IteratingSystem {
 
     /**
      * This method is called on every entity on every update call of the EntitySystem.
-     * @param entity The current Entity being processed
+     *
+     * @param entity    The current Entity being processed
      * @param deltaTime The delta time between the last and current frame
      */
     @Override

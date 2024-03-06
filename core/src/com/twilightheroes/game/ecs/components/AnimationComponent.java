@@ -13,13 +13,12 @@ public class AnimationComponent implements Component, Pool.Poolable {
     /**
      * The Animations.
      */
-    public IntMap<Animation<TextureRegion>> animations = new IntMap<>();
+    public final IntMap<Animation<TextureRegion>> animations = new IntMap<>();
 
     /**
      * The Current frame.
      */
     public int currentFrame = 0;
-
 
 
     /**

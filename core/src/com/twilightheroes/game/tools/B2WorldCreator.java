@@ -41,12 +41,12 @@ import com.twilightheroes.game.ecs.components.StateComponent;
 import com.twilightheroes.game.ecs.components.StatsComponent;
 import com.twilightheroes.game.ecs.components.TextureComponent;
 import com.twilightheroes.game.ecs.components.TypeComponent;
-import com.twilightheroes.game.ecs.components.tipoObjetoInteractivo;
 import com.twilightheroes.game.ecs.components.effectComponents.StatusComponent;
 import com.twilightheroes.game.ecs.components.spells.Spell;
 import com.twilightheroes.game.ecs.components.spells.SpellComponent;
 import com.twilightheroes.game.ecs.components.spells.SpellList;
 import com.twilightheroes.game.ecs.components.spells.SpellVFX;
+import com.twilightheroes.game.ecs.components.tipoObjetoInteractivo;
 import com.twilightheroes.game.screens.MainScreen;
 
 import java.util.HashMap;
@@ -113,7 +113,7 @@ public class B2WorldCreator {
                 Spell[] auxSpells = new Spell[auxSpellString.length];
                 for (int j = 0; j < auxSpellString.length; j++) {
                     JsonValue jsonSpell = jsonSpells.get(auxSpellString[j]);
-                    auxSpells[j] = new Spell(SpellList.spells.valueOf(jsonSpell.get("spellId").asString()).ordinal(), jsonSpell.get("manaCost").asInt(), jsonSpell.get("castingTime").asFloat() , new SpellVFX(4, 4),jsonSpell.get("duration").asInt(),jsonSpell.get("value").asInt());
+                    auxSpells[j] = new Spell(SpellList.spells.valueOf(jsonSpell.get("spellId").asString()).ordinal(), jsonSpell.get("manaCost").asInt(), jsonSpell.get("castingTime").asFloat(), new SpellVFX(4, 4), jsonSpell.get("duration").asInt(), jsonSpell.get("value").asInt());
                 }
                 spells = auxSpells;
             }
@@ -173,7 +173,11 @@ public class B2WorldCreator {
             TypeComponent type = engine.createComponent(TypeComponent.class);
 
 
-            type.type = TypeComponent.FLOOR;
+            if (object.getProperties().get("type") != null && object.getProperties().get("type").equals("floor")) {
+                type.type = TypeComponent.FLOOR;
+            } else {
+                type.type = TypeComponent.WALL;
+            }
 
             Rectangle rectangle = object.getRectangle();
             bodyDef.type = BodyDef.BodyType.StaticBody;
@@ -345,8 +349,8 @@ public class B2WorldCreator {
             b2dbody.startY = rectangle.getY();
 
 
-            if (object.getProperties().get("type") != null){
-                switch (object.getProperties().get("type").toString()){
+            if (object.getProperties().get("type") != null) {
+                switch (object.getProperties().get("type").toString()) {
                     case "lever":
                         interactiveObjectComponent.tipoObjeto = tipoObjetoInteractivo.LEVER;
                         break;
@@ -361,16 +365,16 @@ public class B2WorldCreator {
                 interactiveObjectComponent.id = (int) object.getProperties().get("id");
             }
 
-            if (interactiveObjectComponent.tipoObjeto == tipoObjetoInteractivo.OBELISK){
+            if (interactiveObjectComponent.tipoObjeto == tipoObjetoInteractivo.OBELISK) {
                 AnimationComponent animationComponent = new AnimationComponent();
                 StateComponent stateComponent = new StateComponent();
                 TextureComponent textureComponent = new TextureComponent();
 
 
                 stateComponent.set(StateComponent.STATE_OBELISK_IDLE);
-            textureComponent.sprite.setRegion(manager.get("variety/obelisk.atlas", TextureAtlas.class).findRegion("IDLE"));
-                textureComponent.sprite.setPosition((rectangle.getX() + rectangle.getWidth() / 2) / TwilightHeroes.PPM, (rectangle.getY())-1000 / TwilightHeroes.PPM);
-            textureComponent.sprite.setSize(0.5f,0.5f);
+                textureComponent.sprite.setRegion(manager.get("variety/obelisk.atlas", TextureAtlas.class).findRegion("IDLE"));
+                textureComponent.sprite.setPosition((rectangle.getX() + rectangle.getWidth() / 2) / TwilightHeroes.PPM, (rectangle.getY()) - 1000 / TwilightHeroes.PPM);
+                textureComponent.sprite.setSize(0.5f, 0.5f);
 
 
                 animationComponent.animations.put(StateComponent.STATE_OBELISK_IDLE, AnimationMaker.crearAnimacion(manager.get("variety/obelisk.atlas", TextureAtlas.class), "IDLE", 14, 7));
@@ -397,7 +401,7 @@ public class B2WorldCreator {
     /**
      * Crear puertas.
      */
-    public void crearPuertas(){
+    public void crearPuertas() {
         BodyDef bodyDef = new BodyDef();
         PolygonShape shape = new PolygonShape();
         FixtureDef fixtureDef = new FixtureDef();
@@ -432,7 +436,6 @@ public class B2WorldCreator {
             doorComponent.id = (int) object.getProperties().get("id");
 
 
-
             // add the components to the entity
             entity.add(b2dbody);
             entity.add(doorComponent);
@@ -456,7 +459,7 @@ public class B2WorldCreator {
 
             if (screen.parent.playerSettings.doorsOpened[doorComponent.id]) {
                 // La puerta está abierta, elimina la entidad y cambia las tiles
-                changeTilesForOpenedDoor(door,true);
+                changeTilesForOpenedDoor(door, true);
                 destroyDoor(door);
             }
         }
@@ -466,11 +469,10 @@ public class B2WorldCreator {
 
             if (interactiveObjectComponent.tipoObjeto == tipoObjetoInteractivo.LEVER && screen.parent.playerSettings.doorsOpened[interactiveObjectComponent.id]) {
                 // La puerta está abierta, elimina la entidad y cambia las tiles
-                changeTilesForOpenedDoor(lvr,false);
+                changeTilesForOpenedDoor(lvr, false);
             }
         }
     }
-
 
 
     private void destroyDoor(Entity door) {
@@ -478,12 +480,12 @@ public class B2WorldCreator {
         B2dBodyComponent b2dbody = Mappers.b2dCom.get(door);
 
         // Elimina el cuerpo del mundo físico y la entidad del motor
-        screen.bodies.removeValue(b2dbody.body,true);
+        screen.bodies.removeValue(b2dbody.body, true);
         world.destroyBody(b2dbody.body);
         engine.removeEntity(door);
     }
 
-    private void changeTilesForOpenedDoor(Entity entity,Boolean door) {
+    private void changeTilesForOpenedDoor(Entity entity, Boolean door) {
         B2dBodyComponent b2dbody = Mappers.b2dCom.get(entity);
         TiledMapTileLayer layerToChange;
         TiledMapTile[] newDoorTile = new TiledMapTile[0];
@@ -492,7 +494,7 @@ public class B2WorldCreator {
             layerToChange = (TiledMapTileLayer) map.getLayers().get("doorTexture");
             TiledMapTileSet newTileSets = map.getTileSets().getTileSet("Dungeon Tile Set");
             newDoorTile = new TiledMapTile[]{newTileSets.getTile(10527 + 162), newTileSets.getTile(10527 + 177)};
-        }else {
+        } else {
             layerToChange = (TiledMapTileLayer) map.getLayers().get("leverTexture");
         }
 
@@ -502,27 +504,27 @@ public class B2WorldCreator {
         int tileEndX = (int) ((b2dbody.startX + b2dbody.width) / layerToChange.getTileWidth());
         int tileEndY = (int) ((b2dbody.startY + b2dbody.height) / layerToChange.getTileHeight());
 
-            int i = 0;
+        int i = 0;
 
-            // Itera sobre todas las tiles dentro del área cubierta por la puerta
-            for (int tileX = tileStartX; tileX < tileEndX; tileX++) {
-                for (int tileY = tileStartY; tileY < tileEndY; tileY++) {
+        // Itera sobre todas las tiles dentro del área cubierta por la puerta
+        for (int tileX = tileStartX; tileX < tileEndX; tileX++) {
+            for (int tileY = tileStartY; tileY < tileEndY; tileY++) {
 
-                    if (door){
-                        layerToChange.getCell(tileX, tileY).setTile(newDoorTile[i]);
-                        i++;
+                if (door) {
+                    layerToChange.getCell(tileX, tileY).setTile(newDoorTile[i]);
+                    i++;
 
-                    }else{
-                        TiledMapTileLayer.Cell cell =  layerToChange.getCell(tileX, tileY);
-                        if (cell != null){
-                       cell.setFlipHorizontally(true);
-
-                        }
+                } else {
+                    TiledMapTileLayer.Cell cell = layerToChange.getCell(tileX, tileY);
+                    if (cell != null) {
+                        cell.setFlipHorizontally(true);
 
                     }
+
                 }
             }
         }
+    }
 
 
     /**
@@ -557,13 +559,13 @@ public class B2WorldCreator {
             texture.sprite.setRegion(aux);
             Rectangle spawn = null;
             for (RectangleMapObject object : map.getLayers().get("spawn").getObjects().getByType(RectangleMapObject.class)) {
-                if ( object.getProperties().get("id",int.class) == oldMap){
+                if (object.getProperties().get("id", int.class) == oldMap) {
                     spawn = object.getRectangle();
                 }
             }
 
 
-                texture.sprite.setBounds(spawn.x / TwilightHeroes.PPM, spawn.y / TwilightHeroes.PPM, jsonPlayer.get("width").asFloat() / TwilightHeroes.PPM, jsonPlayer.get("height").asFloat() / TwilightHeroes.PPM);
+            texture.sprite.setBounds(spawn.x / TwilightHeroes.PPM, spawn.y / TwilightHeroes.PPM, jsonPlayer.get("width").asFloat() / TwilightHeroes.PPM, jsonPlayer.get("height").asFloat() / TwilightHeroes.PPM);
 
             type.type = TypeComponent.PLAYER;
             stateCom.set(StateComponent.STATE_IDLE);
@@ -642,10 +644,10 @@ public class B2WorldCreator {
 
 
             JsonValue auxSpell = jsonSpells.get(screen.parent.playerSettings.spell1);
-            spellComponent.spell1 = new Spell(SpellList.spells.valueOf(auxSpell.get("spellId").asString()).ordinal(), auxSpell.get("manaCost").asInt(), auxSpell.get("castingTime").asFloat(), new SpellVFX(16, 16),auxSpell.get("duration").asInt(),auxSpell.get("value").asInt());
+            spellComponent.spell1 = new Spell(SpellList.spells.valueOf(auxSpell.get("spellId").asString()).ordinal(), auxSpell.get("manaCost").asInt(), auxSpell.get("castingTime").asFloat(), new SpellVFX(16, 16), auxSpell.get("duration").asInt(), auxSpell.get("value").asInt());
 
             auxSpell = jsonSpells.get(screen.parent.playerSettings.spell2);
-            spellComponent.spell2 = new Spell(SpellList.spells.valueOf(auxSpell.get("spellId").asString()).ordinal(), auxSpell.get("manaCost").asInt(), auxSpell.get("castingTime").asFloat(), new SpellVFX(16, 16),auxSpell.get("duration").asInt(),auxSpell.get("value").asInt());
+            spellComponent.spell2 = new Spell(SpellList.spells.valueOf(auxSpell.get("spellId").asString()).ordinal(), auxSpell.get("manaCost").asInt(), auxSpell.get("castingTime").asFloat(), new SpellVFX(16, 16), auxSpell.get("duration").asInt(), auxSpell.get("value").asInt());
 
 
             entity.add(b2dbody);
@@ -675,7 +677,7 @@ public class B2WorldCreator {
 
             Rectangle spawn = null;
             for (RectangleMapObject object : map.getLayers().get("spawn").getObjects().getByType(RectangleMapObject.class)) {
-                if ( (int)object.getProperties().get("id") == oldMap){
+                if ((int) object.getProperties().get("id") == oldMap) {
                     spawn = object.getRectangle();
                 }
             }
@@ -772,7 +774,7 @@ public class B2WorldCreator {
                 FixtureDef fdef2 = new FixtureDef();
                 EdgeShape feet = new EdgeShape();
 
-                feet.set(new Vector2(-4 / TwilightHeroes.PPM, -12 / TwilightHeroes.PPM), new Vector2(4 / TwilightHeroes.PPM, -12 / TwilightHeroes.PPM));
+                feet.set(new Vector2(-4 / TwilightHeroes.PPM, -9 / TwilightHeroes.PPM), new Vector2(4 / TwilightHeroes.PPM, -9 / TwilightHeroes.PPM));
                 fdef2.shape = feet;
                 fdef2.friction = 1;
                 fdef2.filter.categoryBits = TwilightHeroes.ENEMY_BIT;
@@ -899,7 +901,6 @@ public class B2WorldCreator {
 
         engine.addEntity(entity);
     }
-
 
 
 }

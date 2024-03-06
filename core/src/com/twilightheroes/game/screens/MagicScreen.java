@@ -36,6 +36,14 @@ import com.twilightheroes.game.tools.WidgetContainer;
  */
 public class MagicScreen implements Screen {
 
+    /**
+     * The Name.
+     */
+    public final Label name;
+    /**
+     * The Description.
+     */
+    public final Label description;
     private final Stage stage;
     private final TwilightHeroes parent;
     private final ImageButton btnSpell1;
@@ -49,14 +57,6 @@ public class MagicScreen implements Screen {
      * The Last selected.
      */
     public ImageButton lastSelected;
-    /**
-     * The Name.
-     */
-    public Label name;
-    /**
-     * The Description.
-     */
-    public Label description;
 
     /**
      * Instantiates a new Magic screen.
@@ -80,7 +80,7 @@ public class MagicScreen implements Screen {
         stack.addActor(image);
 
         Table mainTable = new Table();
-      //  mainTable.setDebug(true);
+        //  mainTable.setDebug(true);
         mainTable.setFillParent(true);
 
         mainTable.top().padTop(20.0f);
@@ -167,7 +167,7 @@ public class MagicScreen implements Screen {
 
         // Adding a scrollable table with 50 buttons below
         Table buttonTable = new Table();
-       // buttonTable.setDebug(true);
+        // buttonTable.setDebug(true);
 
 
         JsonValue json = new JsonReader().parse(Gdx.files.internal("config/spells.json"));
@@ -193,7 +193,7 @@ public class MagicScreen implements Screen {
 
         // Create a Table for information on the right
         Table rightTable = new Table();
-      //  rightTable.setDebug(true);
+        //  rightTable.setDebug(true);
 
         // Add information labels to the rightTable
         Label.LabelStyle labelStyle = new Label.LabelStyle();
@@ -227,8 +227,10 @@ public class MagicScreen implements Screen {
         parent.widgets.add(widgetContainer);
     }
 
-   /** Called when this screen becomes the current screen for the game. */
- @Override
+    /**
+     * Called when this screen becomes the current screen for the game.
+     */
+    @Override
     public void show() {
         Gdx.input.setInputProcessor(stage);
 
@@ -278,10 +280,10 @@ public class MagicScreen implements Screen {
 
 
         if (selectedSlot.getName().equals("Button1")) {
-            spellComponent.spell1 = new Spell(SpellList.spells.valueOf(jsonSpell.get("spellId").asString()).ordinal(), jsonSpell.get("manaCost").asInt(), jsonSpell.get("castingTime").asFloat(), new SpellVFX(16, 16),jsonSpell.get("duration").asInt(),jsonSpell.get("value").asInt());
+            spellComponent.spell1 = new Spell(SpellList.spells.valueOf(jsonSpell.get("spellId").asString()).ordinal(), jsonSpell.get("manaCost").asInt(), jsonSpell.get("castingTime").asFloat(), new SpellVFX(16, 16), jsonSpell.get("duration").asInt(), jsonSpell.get("value").asInt());
             parent.playerSettings.spell1 = jsonSpell.get("spellId").asString();
         } else {
-            spellComponent.spell2 = new Spell(SpellList.spells.valueOf(jsonSpell.get("spellId").asString()).ordinal(), jsonSpell.get("manaCost").asInt(), jsonSpell.get("castingTime").asFloat(), new SpellVFX(16, 16),jsonSpell.get("duration").asInt(),jsonSpell.get("value").asInt());
+            spellComponent.spell2 = new Spell(SpellList.spells.valueOf(jsonSpell.get("spellId").asString()).ordinal(), jsonSpell.get("manaCost").asInt(), jsonSpell.get("castingTime").asFloat(), new SpellVFX(16, 16), jsonSpell.get("duration").asInt(), jsonSpell.get("value").asInt());
             parent.playerSettings.spell2 = jsonSpell.get("spellId").asString();
 
         }
@@ -309,9 +311,12 @@ public class MagicScreen implements Screen {
         return new ImageButton(imageButtonStyle);
     }
 
-    /** Called when the screen should render itself.
-	 * @param delta The time in seconds since the last render. */
-@Override
+    /**
+     * Called when the screen should render itself.
+     *
+     * @param delta The time in seconds since the last render.
+     */
+    @Override
     public void render(float delta) {
         Gdx.gl.glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);

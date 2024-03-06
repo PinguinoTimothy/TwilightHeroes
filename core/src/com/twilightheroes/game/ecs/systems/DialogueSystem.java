@@ -77,9 +77,11 @@ public class DialogueSystem extends IteratingSystem {
             }
         });
     }
+
     /**
      * This method is called on every entity on every update call of the EntitySystem.
-     * @param entity The current Entity being processed
+     *
+     * @param entity    The current Entity being processed
      * @param deltaTime The delta time between the last and current frame
      */
     @Override
@@ -134,8 +136,8 @@ public class DialogueSystem extends IteratingSystem {
         if (dialog == null) {
 
             dialog = new Window("", screen.parent.assMan.manager.get("hud/dialogSkin.json", Skin.class));
-            dialog.setBounds(10, screen.hud.stage.getHeight()/2, screen.hud.stage.getWidth()-20, 75);
-            label.setBounds(10,dialog.getHeight(),dialog.getWidth(),dialog.getWidth());
+            dialog.setBounds(10, screen.hud.stage.getHeight() / 2, screen.hud.stage.getWidth() - 20, 75);
+            label.setBounds(10, dialog.getHeight(), dialog.getWidth(), dialog.getWidth());
             dialog.add(label);
 
             screen.hud.hideHudElements();

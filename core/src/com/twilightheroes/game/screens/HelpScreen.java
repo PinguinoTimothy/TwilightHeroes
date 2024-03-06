@@ -2,28 +2,19 @@ package com.twilightheroes.game.screens;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.BitmapFont;
-import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
-import com.badlogic.gdx.scenes.scene2d.ui.Label;
-import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
 import com.badlogic.gdx.scenes.scene2d.ui.Stack;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
-import com.badlogic.gdx.utils.Align;
-import com.badlogic.gdx.utils.JsonReader;
-import com.badlogic.gdx.utils.JsonValue;
 import com.badlogic.gdx.utils.Scaling;
 import com.badlogic.gdx.utils.viewport.StretchViewport;
 import com.twilightheroes.game.TwilightHeroes;
-import com.twilightheroes.game.tools.KillCounter;
 
 
 /**
@@ -31,20 +22,17 @@ import com.twilightheroes.game.tools.KillCounter;
  */
 public class HelpScreen implements Screen {
 
+    /**
+     * The Stack.
+     */
+    final Stack stack = new Stack();
     private final Stage stage;
-
-
     private final Table mainTable;
     private final TwilightHeroes parent;
     private final ImageButton backButton;
     private final ImageButton rightArrow;
     private final ImageButton leftArrow;
-
-    /**
-     * The Stack.
-     */
-    Stack stack = new Stack();
-    private String[] menus = new String[]{"principales.jpeg","hechizos.jpeg"};
+    private final String[] menus = new String[]{"principales.jpeg", "hechizos.jpeg"};
     private int imgActual = 0;
 
     /**
@@ -58,7 +46,7 @@ public class HelpScreen implements Screen {
         this.mainTable = new Table();
 
 
-mainTable.padLeft(400f).padBottom(100f);
+        mainTable.padLeft(400f).padBottom(100f);
 
 
         // Configurar la tabla principal y el scroll
@@ -79,7 +67,7 @@ mainTable.padLeft(400f).padBottom(100f);
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 super.clicked(event, x, y);
-                if (imgActual < menus.length-1) {
+                if (imgActual < menus.length - 1) {
                     imgActual++;
                     cambiarImagen();
                 }
@@ -88,15 +76,15 @@ mainTable.padLeft(400f).padBottom(100f);
         });
 
         leftArrow = new ImageButton(new TextureRegionDrawable(parent.assMan.manager.get("help/flechaIzquierda.png", Texture.class)));
-leftArrow.getImage().setScale(10f);
+        leftArrow.getImage().setScale(10f);
         leftArrow.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 super.clicked(event, x, y);
-                if (imgActual>0){
+                if (imgActual > 0) {
 
-                imgActual--;
-                cambiarImagen();
+                    imgActual--;
+                    cambiarImagen();
                 }
 
             }
@@ -104,15 +92,17 @@ leftArrow.getImage().setScale(10f);
 
 
         backButton.setBounds(50, stage.getHeight() - 150, 100, 100);
-        leftArrow.setBounds(50,stage.getHeight()/2-100,100,100);
-        rightArrow.setBounds(stage.getWidth()-400,stage.getHeight()/2-100,100,100);
-mainTable.setBounds(100,0,100,100);
+        leftArrow.setBounds(50, stage.getHeight() / 2 - 100, 100, 100);
+        rightArrow.setBounds(stage.getWidth() - 400, stage.getHeight() / 2 - 100, 100, 100);
+        mainTable.setBounds(100, 0, 100, 100);
         stack.addActor(mainTable);
 
     }
 
-   /** Called when this screen becomes the current screen for the game. */
- @Override
+    /**
+     * Called when this screen becomes the current screen for the game.
+     */
+    @Override
     public void show() {
         stage.clear();
         stack.clear();
@@ -135,9 +125,12 @@ mainTable.setBounds(100,0,100,100);
         Gdx.input.setInputProcessor(stage);
     }
 
-    /** Called when the screen should render itself.
-	 * @param delta The time in seconds since the last render. */
-@Override
+    /**
+     * Called when the screen should render itself.
+     *
+     * @param delta The time in seconds since the last render.
+     */
+    @Override
     public void render(float delta) {
         // Limpiar la pantalla
         Gdx.gl.glClearColor(0, 0, 0, 1);
@@ -151,15 +144,15 @@ mainTable.setBounds(100,0,100,100);
     // Método para agregar una fila a la tabla principal con la textura, nombre y cantidad
     private void cambiarImagen() {
 
-mainTable.clear();
-        Texture texture = parent.assMan.manager.get("help/"+menus[imgActual], Texture.class);
+        mainTable.clear();
+        Texture texture = parent.assMan.manager.get("help/" + menus[imgActual], Texture.class);
         texture.setFilter(Texture.TextureFilter.Nearest, Texture.TextureFilter.Nearest);
         Image imagen = new Image(texture);
         imagen.setScale(0.7f);
 
         // Agregar la fila a la tabla principal y configurar el evento de clic
         mainTable.add(imagen);
-stack.addActor(mainTable);
+        stack.addActor(mainTable);
     }
 
     @Override
